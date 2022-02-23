@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/widgets/search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -38,44 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(''),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10),
-            child: IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: _profileIcon(),
-          )
-        ],
-      ),
+      appBar: SearchBar(),
       body: Container(),
     );
-  }
-
-  Widget _profileIcon() {
-    if (_currentUser == null) {
-      return IconButton(
-        icon: Icon(Icons.account_circle),
-        onPressed: _signIn,
-      );
-    } else {
-      return GestureDetector(
-        onTap: () {
-
-        },
-        child: _currentUser!.photoUrl == null ?
-          CircleAvatar(
-            backgroundColor: Colors.blueGrey,
-            child: Text(_currentUser!.displayName!.substring(0, 1)),
-          ) :
-          CircleAvatar(backgroundImage: NetworkImage(_currentUser!.photoUrl!))
-      );
-    }
   }
 }
