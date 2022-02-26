@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/search_result_screen.dart';
 
 /// search bar
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
@@ -20,7 +21,7 @@ class SearchBar extends StatefulWidget with PreferredSizeWidget {
 /// search bar state
 class _SearchBarState extends State<SearchBar> {
   /// api service
-  ApiService api = ApiService.instance;
+  ApiService _api = ApiService.instance;
   /// current user
   GoogleSignInAccount? _currentUser;
   /// search query
@@ -32,7 +33,7 @@ class _SearchBarState extends State<SearchBar> {
   void initState() {
     super.initState();
     Future(() async {
-      var user = await api.user;
+      final user = await _api.user;
       setState(() {
         _currentUser = user;
       });
@@ -42,12 +43,12 @@ class _SearchBarState extends State<SearchBar> {
   /// transit to search result screen with search query
   _search() {
     if (_query != '') {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) => SearchResultScreen(query: _query,),
-      //   )
-      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SearchResultScreen(query: _query,),
+        )
+      );
     }
   }
 
@@ -141,7 +142,7 @@ class _SearchBarState extends State<SearchBar> {
       return IconButton(
         icon: Icon(Icons.account_circle),
         onPressed: () async {
-          var user = await api.logIn();
+          final user = await _api.logIn();
           setState(() {
             _currentUser = user;
           });

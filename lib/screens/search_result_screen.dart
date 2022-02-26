@@ -1,51 +1,77 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/youtube/v3.dart';
+import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/widgets/search_bar.dart';
 
+/// search result screen
 class SearchResultScreen extends StatefulWidget {
-  SearchResultScreen({Key? key}) : super(key: key);
+  /// constructor
+  SearchResultScreen({required this.query});
+
+  /// search query
+  final String query;
 
   @override
   _SearchResultScreenState createState() => _SearchResultScreenState();
 }
 
+/// search result screen state class
 class _SearchResultScreenState extends State<SearchResultScreen> {
+  /// api service
+  ApiService _api = ApiService.instance;
+  /// search list response
+  SearchListResponse? _response;
+  /// search result list
+  List<SearchResult> _items = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future(() async {
+      final response = await _api.searchWithQuery(widget.query);
+      setState(() {
+        _response = response;
+        _items = response.items!;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: _searchTextField(),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {}
-          )
-        ]
-      ),
-      body: Container(),
+      appBar: SearchBar('検索結果'),
+      body: _searchResultScreenBody(),
     );
   }
 
-  Widget _searchTextField() {
-    return TextField(
-      cursorColor: Colors.white,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-      ),
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white)
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white)
-        ),
-        hintText: 'Search',
-        hintStyle: TextStyle(
-          color: Colors.white60,
-          fontSize: 20,
-        ),
-      ),
-    );
+  Widget _searchResultScreenBody() {
+    if (_response != null) {
+      return Column(
+        children: [
+          NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollDetails) {
+              if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
+                Future(() async {
+                  final response = await _api.searchWithQuery(widget.query);
+                  setState(() {
+                    _response = response;
+                    _items.addAll(response.items!);
+                  });
+                });
+              }
+              return false;
+            },
+            child: ListView.builder(
+              itemCount: _items.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Text(_items[index].snippet!.title!);
+              },
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Center(child: CircularProgressIndicator(),);
+    }
   }
 }
