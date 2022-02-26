@@ -45,12 +45,12 @@ class ApiService {
     return YouTubeApi(httpClient!);
   }
 
-  /// search with query
-  Future<SearchListResponse> searchWithQuery(String query, [String pageToken = '']) async {
+  /// get search resources by query
+  Future<SearchListResponse> getSearchListResponse(String query, [String pageToken = '']) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
-      maxResults: 10,
+      maxResults: 8,
       pageToken: pageToken,
       q: query,
     );
@@ -58,9 +58,9 @@ class ApiService {
   }
 
   /// get video detail by video id
-  Future<Video> getVideoDetail(String id) async {
+  Future<Video> getVideo(String id) async {
     final youTubeApi = await getYouTubeApi();
-    final VideoListResponse response = await youTubeApi.video.list(
+    final VideoListResponse response = await youTubeApi.videos.list(
       ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
       id: [id],
     );
@@ -68,12 +68,24 @@ class ApiService {
   }
 
   /// get channel detail by channel id
-  Future<Channel> getChannelDetail(String id) async {
+  Future<Channel> getChannel(String id) async {
     final youTubeApi = await getYouTubeApi();
-    final ChannelListResponse response = await youTubeApi.channel.list(
-      ['snippet', 'statistics'],
+    final ChannelListResponse response = await youTubeApi.channels.list(
+      ['snippet', 'contentDetails', 'statistics'],
       id: [id]
     );
     return response.items![0];
+  }
+
+  /// get playlist items resource by playlist id
+  Future<PlaylistItemListResponse> getPlaylistItemsListResponse(String playlistId, [String pageToken = '']) async {
+    final youTubeApi = await getYouTubeApi();
+    final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
+      ['snippet', 'contentDetails'],
+      maxResults: 8,
+      pageToken: pageToken,
+      playlistId: playlistId,
+    );
+    return response;
   }
 }

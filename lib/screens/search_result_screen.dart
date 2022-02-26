@@ -29,7 +29,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.searchWithQuery(widget.query);
+      final response = await _api.getSearchListResponse(widget.query);
       setState(() {
         _response = response;
         _items = response.items!;
@@ -51,7 +51,10 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         onNotification: (ScrollNotification scrollDetails) {
           if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
             Future(() async {
-              final response = await _api.searchWithQuery(widget.query);
+              final response = await _api.getSearchListResponse(
+                widget.query,
+                _response!.nextPageToken!
+              );
               setState(() {
                 _response = response;
                 _items.addAll(response.items!);
@@ -70,7 +73,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             }
             return Padding(
               padding: EdgeInsets.only(bottom: 8),
-              child: SearchResultVideoCard(searchResult: _items[index]),
+              child: VideoCardForSearchResult(searchResult: _items[index]),
             );
           },
         ),

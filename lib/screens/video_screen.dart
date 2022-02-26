@@ -49,8 +49,8 @@ class _VideoScreenState extends State<VideoScreen> {
     );
     // get video and channel info
     Future(() async {
-      final video = await _api.getVideoDetail(widget.videoId);
-      final channel = await _api.getChannelDetail(video.snippet!.channelId!);
+      final video = await _api.getVideo(widget.videoId);
+      final channel = await _api.getChannel(video.snippet!.channelId!);
       setState(() {
         _video = video;
         _channel = channel;
@@ -128,7 +128,7 @@ class _VideoScreenState extends State<VideoScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 8,),
-                    ProfileCardForVideoScreen(channel: _channel!),
+                    ProfileCard(channel: _channel!),
                     SizedBox(height: 8,),
                     Text(
                       _video!.snippet!.description!,

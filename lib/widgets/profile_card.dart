@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
+import 'package:min_tube/screens/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 
 /// search result screen
-class ProfileCardForVideoScreen extends StatefulWidget {
+class ProfileCard extends StatefulWidget {
   /// search query
   final Channel channel;
 
   /// constructor
-  ProfileCardForVideoScreen({required this.channel});
+  ProfileCard({required this.channel});
 
   @override
-  _ProfileCardForVideoScreenState createState() => _ProfileCardForVideoScreenState();
+  _ProfileCardState createState() => _ProfileCardState();
 }
 
 /// search result screen state class
-class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
+class _ProfileCardState extends State<ProfileCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      // onTap: () => Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) => ChannelScreen(channelId: ,),
-      //   ),
-      // ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChannelScreen(channel: widget.channel,),
+        ),
+      ),
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 8,
@@ -34,26 +35,34 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 16, left: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.channel.snippet!.title!,
-                        overflow: TextOverflow.ellipsis,
+              GestureDetector(
+                onTap: () {
+
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 16, left: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              widget.channel.snippet!.title!,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            _subscriber(widget.channel.statistics!.subscriberCount),
+                          ],
+                        ),
                       ),
-                      _subscriber(widget.channel.statistics!.subscriberCount),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

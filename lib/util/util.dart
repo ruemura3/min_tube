@@ -17,7 +17,7 @@ class Util {
   /// return null when private
   static String? formatSubScriberCount(String? subscriberCount) {
     if (subscriberCount != null) {
-      int intSubscriberCount = int.parse(subscriberCount!);
+      int intSubscriberCount = int.parse(subscriberCount);
       if (intSubscriberCount < 10000) {
         return 'チャンネル登録者数 $subscriberCount 人';
       } else if (intSubscriberCount < 1000000) {
