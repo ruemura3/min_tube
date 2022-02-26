@@ -5,11 +5,11 @@ import 'package:min_tube/screens/search_result_screen.dart';
 
 /// search bar
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
-  /// constructor
-  SearchBar([this.appBarText = '']);
-
   /// app bar text
   final String appBarText;
+
+  /// constructor
+  SearchBar([this.appBarText = '']);
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);

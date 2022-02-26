@@ -7,6 +7,12 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// video screen
 class VideoScreen extends StatefulWidget {
+  /// video id
+  final String videoId;
+
+  /// constructor
+  VideoScreen({required this.videoId});
+
   @override
   _VideoScreenState createState() => _VideoScreenState();
 }
@@ -16,14 +22,11 @@ class _VideoScreenState extends State<VideoScreen> {
   /// youtube player controller
   late YoutubePlayerController _controller;
 
-  /// video id
-  final String _videoId = 'a_IA-8nQ4FY';
-
   @override
   void initState() {
     super.initState();
     _controller = YoutubePlayerController(
-      initialVideoId: _videoId,
+      initialVideoId: widget.videoId,
       flags: const YoutubePlayerFlags(
         hideThumbnail: true,
         captionLanguage: 'ja',

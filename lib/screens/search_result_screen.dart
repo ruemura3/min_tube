@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/video_card.dart';
 
 /// search result screen
 class SearchResultScreen extends StatefulWidget {
-  /// constructor
-  SearchResultScreen({required this.query});
-
   /// search query
   final String query;
+
+  /// constructor
+  SearchResultScreen({required this.query});
 
   @override
   _SearchResultScreenState createState() => _SearchResultScreenState();
@@ -39,36 +40,40 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar('検索結果'),
+      appBar: SearchBar(widget.query),
       body: _searchResultScreenBody(),
     );
   }
 
   Widget _searchResultScreenBody() {
-    if (_response != null) {
-      return Column(
-        children: [
-          NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification scrollDetails) {
-              if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
-                Future(() async {
-                  final response = await _api.searchWithQuery(widget.query);
-                  setState(() {
-                    _response = response;
-                    _items.addAll(response.items!);
-                  });
-                });
-              }
-              return false;
-            },
-            child: ListView.builder(
-              itemCount: _items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Text(_items[index].snippet!.title!);
-              },
-            ),
-          ),
-        ],
+    if (_response == null) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollDetails) {
+          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
+            Future(() async {
+              final response = await _api.searchWithQuery(widget.query);
+              setState(() {
+                _response = response;
+                _items.addAll(response.items!);
+              });
+            });
+          }
+          return false;
+        },
+        child: ListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(16),
+          itemCount: _items.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == _items.length) {
+              return Center(child: CircularProgressIndicator(),);
+            }
+            return Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: SearchResultVideoCard(searchResult: _items[index]),
+            );
+          },
+        ),
       );
     } else {
       return Center(child: CircularProgressIndicator(),);

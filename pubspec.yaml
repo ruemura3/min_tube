@@ -18,6 +18,7 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.4
   youtube_player_flutter: ^8.0.0
   font_awesome_flutter: ^9.2.0
+  timeago: ^3.2.2
 
 dev_dependencies:
   flutter_test:
