@@ -15,7 +15,8 @@ class ApiService {
   /// google_sign_in instance
   static final GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: <String>[
-      YouTubeApi.youtubeReadonlyScope,
+      // YouTubeApi.youtubeReadonlyScope,
+      YouTubeApi.youtubeScope,
     ],
   );
 
@@ -37,7 +38,7 @@ class ApiService {
     return _user;
   }
 
-  /// get YouTube api
+  /// get youtube api
   getYouTubeApi() async {
     final httpClient = await ApiService.googleSignIn.authenticatedClient();
     assert(httpClient != null, 'Authenticated client missing!');
@@ -56,11 +57,23 @@ class ApiService {
     return response;
   }
 
-  Future<void> _getLikedList() async {
+  /// get video detail by video id
+  Future<Video> getVideoDetail(String id) async {
     final youTubeApi = await getYouTubeApi();
-    final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
-      ['snippet'],
-      playlistId: 'LL', // Liked List
+    final VideoListResponse response = await youTubeApi.video.list(
+      ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
+      id: [id],
     );
+    return response.items![0];
+  }
+
+  /// get channel detail by channel id
+  Future<Channel> getChannelDetail(String id) async {
+    final youTubeApi = await getYouTubeApi();
+    final ChannelListResponse response = await youTubeApi.channel.list(
+      ['snippet', 'statistics'],
+      id: [id]
+    );
+    return response.items![0];
   }
 }
