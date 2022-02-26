@@ -4,8 +4,11 @@ import 'package:min_tube/api/api_service.dart';
 
 /// search bar
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
+  /// constructor
+  SearchBar([this.appBarText = '']);
+
   /// app bar text
-  final String appBarText = 'MinTube';
+  final String appBarText;
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
@@ -16,6 +19,8 @@ class SearchBar extends StatefulWidget with PreferredSizeWidget {
 
 /// search bar state
 class _SearchBarState extends State<SearchBar> {
+  /// api service
+  ApiService api = ApiService.instance;
   /// current user
   GoogleSignInAccount? _currentUser;
   /// search query
@@ -26,27 +31,17 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void initState() {
     super.initState();
-    ApiService.googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
+    Future(() async {
+      var user = await api.user;
       setState(() {
-        _currentUser = account;
+        _currentUser = user;
       });
-      if (_currentUser != null) {
-
-      }
-    });
-    ApiService.googleSignIn.signInSilently();
-  }
-
-  Future _signIn() async {
-    await ApiService.instance.setUser();
-    setState(() {
-      _currentUser = ApiService.instance.getUser();
     });
   }
 
-  /// クエリを引数に検索結果画面に遷移する
+  /// transit to search result screen with search query
   _search() {
-    if (_query != '') { // クエリが未入力でない場合
+    if (_query != '') {
       // Navigator.push(
       //   context,
       //   MaterialPageRoute(
@@ -56,7 +51,7 @@ class _SearchBarState extends State<SearchBar> {
     }
   }
 
-  /// 検索ダイアログを表示する
+  /// pop search dialog
   _showSearchDialog(BuildContext context) {
     return showDialog(
       context: context,
@@ -140,16 +135,25 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 
+  /// profile Icon
   Widget _profileIcon() {
     if (_currentUser == null) {
       return IconButton(
         icon: Icon(Icons.account_circle),
-        onPressed: _signIn,
+        onPressed: () async {
+          var user = await api.logIn();
+          setState(() {
+            _currentUser = user;
+          });
+        },
       );
     } else {
       return GestureDetector(
         onTap: () {
-
+          ApiService.googleSignIn.disconnect();
+          setState(() {
+            _currentUser = null;
+          });
         },
         child: _currentUser!.photoUrl == null
         ?  CircleAvatar(
