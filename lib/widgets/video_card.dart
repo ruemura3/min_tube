@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/screens/video_screen.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:min_tube/util/util.dart';
 
-/// search result video card class
-/// note that use only when kind: 'youtube#video'
+/// video card for search result class
+/// use only when kind is 'youtube#video'
 class VideoCardForSearchResult extends StatelessWidget {
   /// search result
   final SearchResult searchResult;
@@ -18,7 +18,10 @@ class VideoCardForSearchResult extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => VideoScreen(videoId: searchResult.id!.videoId!,),
+          builder: (_) => VideoScreen(
+            videoId: searchResult.id!.videoId!,
+            videoTitle: searchResult.snippet!.title!,
+          ),
         ),
       ),
       child: Card(
@@ -30,7 +33,7 @@ class VideoCardForSearchResult extends StatelessWidget {
         child: Column(
           children: [
             Image.network(
-              'https://i.ytimg.com/vi/NihpPvvVt5k/mqdefault.jpg',
+              searchResult.snippet!.thumbnails!.medium!.url!,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -51,7 +54,7 @@ class VideoCardForSearchResult extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
-                    timeago.format(searchResult.snippet!.publishedAt!),
+                    Util.formatTimeago(searchResult.snippet!.publishedAt!),
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -64,6 +67,7 @@ class VideoCardForSearchResult extends StatelessWidget {
   }
 }
 
+/// video card for playlist class
 class VideoCardForPlaylist extends StatelessWidget {
   /// search result
   final PlaylistItem playlistItem;
@@ -77,7 +81,10 @@ class VideoCardForPlaylist extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => VideoScreen(videoId: playlistItem.contentDetails!.videoId!,),
+          builder: (_) => VideoScreen(
+            videoId: playlistItem.contentDetails!.videoId!,
+            videoTitle: playlistItem.snippet!.title!,
+          ),
         ),
       ),
       child: Card(
@@ -89,7 +96,7 @@ class VideoCardForPlaylist extends StatelessWidget {
         child: Column(
           children: [
             Image.network(
-              'https://i.ytimg.com/vi/NihpPvvVt5k/mqdefault.jpg',
+              playlistItem.snippet!.thumbnails!.medium!.url!,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -110,7 +117,7 @@ class VideoCardForPlaylist extends StatelessWidget {
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
-                    timeago.format(playlistItem.snippet!.publishedAt!),
+                    Util.formatTimeago(playlistItem.snippet!.publishedAt!),
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],

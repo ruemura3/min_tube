@@ -31,4 +31,39 @@ class Util {
       return null;
     }
   }
+
+  /// format timeago
+  static String formatTimeago(DateTime date) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(date);
+    int sec = difference.inSeconds;
+    if (sec < 60) {
+      return '$sec 秒前';
+    } else if (sec < 3600) {
+      return '${difference.inMinutes} 分前';
+    } else if (sec < 86400) {
+      return '${difference.inHours} 時間前';
+    } else if (sec < 604800) {
+      return '${difference.inDays} 日前';
+    } else if (sec < 3024000) {
+      return '${(difference.inDays / 7).floor()} 週間前';
+    } else {
+      DateTime tmp = new DateTime(now.year - 1, now.month, now.day);
+      if (tmp.isBefore(date)) {
+        for (int month = 1; true; month++) {
+          tmp = new DateTime(now.year, now.month - month, now.day);
+          if (tmp.isBefore(date)) {
+            return '${month - 1} か月前';
+          }
+        }
+      } else {
+        for (int year = 2; true; year++) {
+          tmp = new DateTime(now.year - year, now.month, now.day);
+          if (tmp.isBefore(date)) {
+            return '${year - 1} 年前';
+          }
+        }
+      }
+    }
+  }
 }

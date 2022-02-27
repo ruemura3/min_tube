@@ -9,10 +9,13 @@ import 'package:min_tube/widgets/video_card.dart';
 class ChannelScreen extends StatefulWidget {
   /// channel id
   final String? channelId;
+  /// channel instance
   final Channel? channel;
+  /// channel title
+  final String channelTitle;
 
   /// constructor
-  ChannelScreen({this.channelId, this.channel});
+  ChannelScreen({this.channelId, this.channel, required this.channelTitle});
 
   @override
   _ChannelScreenState createState() => _ChannelScreenState();
@@ -61,48 +64,50 @@ class _ChannelScreenState extends State<ChannelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(),
+      appBar: SearchBar(widget.channelTitle),
       body: _channelScreenBody(),
     );
   }
 
+  /// channel screen body
   Widget _channelScreenBody() {
-    if (_response == null) {
-      return Column(
-        children: [
-          ProfileCard(channel: _channel!),
-          NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification scrollDetails) {
-              if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
-                Future(() async {
-                  final response = await _api.getPlaylistItemsListResponse(
-                    _channel!.contentDetails!.relatedPlaylists!.uploads!,
-                    _response!.nextPageToken!
-                  );
-                  setState(() {
-                    _response = response;
-                    _items.addAll(response.items!);
-                  });
-                });
-              }
-              return false;
-            },
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.all(16),
-              itemCount: _items.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == _items.length) {
-                  return Center(child: CircularProgressIndicator(),);
-                }
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 8),
-                  child: VideoCardForPlaylist(playlistItem: _items[index]),
-                );
-              },
-            ),
-          ),
-        ],
+    if (_response != null) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollDetails) {
+          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
+            Future(() async {
+              final response = await _api.getPlaylistItemsListResponse(
+                _channel!.contentDetails!.relatedPlaylists!.uploads!,
+                _response!.nextPageToken!
+              );
+              setState(() {
+                _response = response;
+                _items.addAll(response.items!);
+              });
+            });
+          }
+          return false;
+        },
+        child: ListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(16),
+          itemCount: _items.length + 2,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == 0) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: ProfileCardForChannelScreen(channel: _channel!,),
+              );
+            }
+            if (index == _items.length + 1) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Center(child: CircularProgressIndicator(),),
+              );
+            }
+            return VideoCardForPlaylist(playlistItem: _items[index - 1]);
+          },
+        ),
       );
     } else {
       return Center(child: CircularProgressIndicator(),);

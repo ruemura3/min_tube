@@ -15,7 +15,7 @@ class ApiService {
   /// google_sign_in instance
   static final GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: <String>[
-      // YouTubeApi.youtubeReadonlyScope,
+      YouTubeApi.youtubeReadonlyScope,
       YouTubeApi.youtubeScope,
     ],
   );
@@ -41,7 +41,6 @@ class ApiService {
   /// get youtube api
   getYouTubeApi() async {
     final httpClient = await ApiService.googleSignIn.authenticatedClient();
-    assert(httpClient != null, 'Authenticated client missing!');
     return YouTubeApi(httpClient!);
   }
 
@@ -85,6 +84,18 @@ class ApiService {
       maxResults: 8,
       pageToken: pageToken,
       playlistId: playlistId,
+    );
+    return response;
+  }
+
+  /// get user's subscriptions resource
+  Future<SubscriptionListResponse> getSubscriptionsResource([String pageToken = '']) async {
+    final youTubeApi = await getYouTubeApi();
+    final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
+      ['snippet', 'contentDetails'],
+      maxResults: 8,
+      mine: true,
+      pageToken: pageToken,
     );
     return response;
   }

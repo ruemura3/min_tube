@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
@@ -45,8 +46,9 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     );
   }
 
+  /// search result screen body
   Widget _searchResultScreenBody() {
-    if (_response == null) {
+    if (_response != null && _items.length != 0) {
       return NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollDetails) {
           if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
@@ -65,16 +67,25 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         },
         child: ListView.builder(
           shrinkWrap: true,
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(8),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
               return Center(child: CircularProgressIndicator(),);
             }
-            return Padding(
-              padding: EdgeInsets.only(bottom: 8),
-              child: VideoCardForSearchResult(searchResult: _items[index]),
-            );
+            if (_items[index].id!.kind! == 'youtube#video') {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: VideoCardForSearchResult(searchResult: _items[index]),
+              );
+            }
+            if (_items[index].id!.kind! == 'youtube#channel') {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: ProfileCardForSearchResult(searchResult: _items[index]),
+              );
+            }
+            return Container();
           },
         ),
       );
