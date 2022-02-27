@@ -7,12 +7,20 @@ import 'package:min_tube/screens/search_result_screen.dart';
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
   /// app bar text
   final String appBarText;
+  /// tab bar
+  final TabBar? tabBar;
 
   /// constructor
-  SearchBar([this.appBarText = '']);
+  SearchBar([this.appBarText = '', this.tabBar]);
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize {
+    if (tabBar == null) {
+      return Size.fromHeight(kToolbarHeight);
+    } else {
+      return Size.fromHeight(kToolbarHeight + kTextTabBarHeight);
+    }
+  }
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -133,6 +141,7 @@ class _SearchBarState extends State<SearchBar> {
           child: _profileIcon(),
         )
       ],
+      bottom: widget.tabBar,
     );
   }
 

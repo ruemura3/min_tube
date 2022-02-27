@@ -49,7 +49,7 @@ class ApiService {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
-      maxResults: 8,
+      maxResults: 5,
       pageToken: pageToken,
       q: query,
     );
@@ -93,7 +93,7 @@ class ApiService {
     final youTubeApi = await getYouTubeApi();
     final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
       ['snippet', 'contentDetails'],
-      maxResults: 8,
+      maxResults: 5,
       mine: true,
       pageToken: pageToken,
     );

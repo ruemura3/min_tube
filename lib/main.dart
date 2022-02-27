@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/screens/search_result_screen.dart';
 
 void main() {
   runApp(MyApp());

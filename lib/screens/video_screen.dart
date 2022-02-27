@@ -118,7 +118,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         ),
                         SizedBox(height: 8,),
                         Text(
-                          _viewsAndTimeago(
+                          Util.viewsAndTimeago(
                             _video!.statistics!.viewCount!,
                             _video!.snippet!.publishedAt!
                           ),
@@ -148,9 +148,5 @@ class _VideoScreenState extends State<VideoScreen> {
     } else {
       return Center(child: CircularProgressIndicator(),);
     }
-  }
-
-  String _viewsAndTimeago(String viewCount, DateTime timeago) {
-    return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
   }
 }

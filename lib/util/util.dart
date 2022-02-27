@@ -66,4 +66,8 @@ class Util {
       }
     }
   }
+
+  static String viewsAndTimeago(String viewCount, DateTime timeago) {
+    return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
+  }
 }

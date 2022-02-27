@@ -87,46 +87,62 @@ class VideoCardForPlaylist extends StatelessWidget {
           ),
         ),
       ),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            Image.network(
-              playlistItem.snippet!.thumbnails!.medium!.url!,
-              fit: BoxFit.cover,
-              width: double.infinity,
-            ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    playlistItem.snippet!.title!,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 8,),
-                  Text(
-                    playlistItem.snippet!.channelTitle!,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  Text(
-                    Util.formatTimeago(playlistItem.snippet!.publishedAt!),
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
+      child: Container(
+          height: 112,
+          padding: EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+          child: Row(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(top: 0, right: 16, bottom: 0, left: 0),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Image(
+                      image: NetworkImage(playlistItem.snippet!.thumbnails!.medium!.url!),
+                    ),
+                    // Container(
+                    //   padding: EdgeInsets.only(top: 0, right: 4, bottom: 4, left: 0),
+                    //   child: Container(
+                    //     color: video.liveBroadcastContent == 'live' ? Colors.red.withOpacity(0.8) : Colors.black.withOpacity(0.8),
+                    //     padding: EdgeInsets.only(top: 1, right: 2, bottom: 1, left: 2),
+                    //     child: Text(
+                    //       video.formattedDuration(),
+                    //       style: TextStyle(
+                    //         fontSize: 13,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        playlistItem.snippet!.title!,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      Util.formatTimeago(playlistItem.snippet!.publishedAt!),
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
     );
-
   }
 }

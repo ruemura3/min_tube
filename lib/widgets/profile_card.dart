@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/screens/channel_screen.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 
 /// profile card for search result class
