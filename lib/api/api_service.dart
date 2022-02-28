@@ -73,7 +73,7 @@ class ApiService {
   Future<Channel> getChannel(String id) async {
     final youTubeApi = await getYouTubeApi();
     final ChannelListResponse response = await youTubeApi.channels.list(
-      ['snippet', 'contentDetails', 'statistics'],
+      ['snippet', 'contentDetails', 'statistics', 'brandingSettings'],
       id: [id]
     );
     return response.items![0];

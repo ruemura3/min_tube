@@ -124,7 +124,12 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
                           widget.channel.snippet!.title!,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        _subscriber(widget.channel.statistics!.subscriberCount),
+                        widget.channel.statistics!.subscriberCount != null
+                        ? Text(
+                          Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
+                          style: TextStyle(color: Colors.grey),
+                        )
+                        : Container()
                       ],
                     ),
                   ),
@@ -154,61 +159,53 @@ class ProfileCardForChannelScreen extends StatefulWidget {
 class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 96,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 32,
-                backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.channel.snippet!.title!,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      _subscriber(widget.channel.statistics!.subscriberCount),
-                    ],
-                  ),
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          widget.channel.brandingSettings!.image != null
+          ? Image.network(
+            widget.channel.brandingSettings!.image!.bannerExternalUrl!,
+            fit: BoxFit.cover,
+            width: double.infinity,
+          )
+          : Container(),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 48,
+                  backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
                 ),
-              ),
-            ],
+                SizedBox(height: 16,),
+                Text(
+                  widget.channel.snippet!.title!,
+                  style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(height: 8,),
+                widget.channel.statistics!.subscriberCount != null
+                ? Text(
+                  Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
+                  style: TextStyle(color: Colors.grey),
+                )
+                : Container(),
+                SizedBox(height: 16,),
+                // ElevatedButton(
+                //   onPressed: () {},
+                //   child: Text('登録済み'),
+                // ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
-
-/// subscriber count
-/// return empty container when private
-Widget _subscriber(String? subscriberCount) {
-  String? formattedSubscriberCount = Util.formatSubScriberCount(subscriberCount);
-  if (formattedSubscriberCount != null) {
-    return Text(
-    formattedSubscriberCount,
-      style: TextStyle(
-        color: Colors.grey,
-        fontSize: 13,
-        fontWeight: FontWeight.w300,
-      )
-    );
-  } else {
-    return Container();
-  }
-}
-
