@@ -29,7 +29,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.getPlaylistItemsListResponse(
+      final response = await _api.getPlaylistItemListResponse(
         widget.channel!.contentDetails!.relatedPlaylists!.uploads!
       );
       setState(() {
@@ -51,7 +51,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         onNotification: (ScrollNotification scrollDetails) {
           if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
             Future(() async {
-              final response = await _api.getPlaylistItemsListResponse(
+              final response = await _api.getPlaylistItemListResponse(
                 widget.channel!.contentDetails!.relatedPlaylists!.uploads!,
                 _response!.nextPageToken!
               );
@@ -65,7 +65,6 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         },
         child: ListView.builder(
           shrinkWrap: true,
-          padding: EdgeInsets.all(16),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {

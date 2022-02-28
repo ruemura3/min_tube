@@ -39,13 +39,16 @@ class ApiService {
   }
 
   /// get youtube api
-  getYouTubeApi() async {
+  Future<YouTubeApi> getYouTubeApi() async {
     final httpClient = await ApiService.googleSignIn.authenticatedClient();
     return YouTubeApi(httpClient!);
   }
 
   /// get search resources by query
-  Future<SearchListResponse> getSearchListResponse(String query, [String pageToken = '']) async {
+  Future<SearchListResponse> getSearchListResponse(
+    String query,
+    [String pageToken = '']
+  ) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
@@ -77,13 +80,31 @@ class ApiService {
   }
 
   /// get playlist items resource by playlist id
-  Future<PlaylistItemListResponse> getPlaylistItemsListResponse(String playlistId, [String pageToken = '']) async {
+  Future<PlaylistItemListResponse> getPlaylistItemListResponse(
+    String playlistId,
+    [String pageToken = '']
+  ) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
       ['snippet', 'contentDetails'],
       maxResults: 8,
       pageToken: pageToken,
       playlistId: playlistId,
+    );
+    return response;
+  }
+
+  /// get playlists resource by channel id
+  Future<PlaylistListResponse> getPlaylistListResponse(
+    String channelId,
+    [String pageToken = '']
+  ) async {
+    final youTubeApi = await getYouTubeApi();
+    final PlaylistListResponse response = await youTubeApi.playlists.list(
+      ['snippet', 'contentDetails'],
+      maxResults: 8,
+      pageToken: pageToken,
+      channelId: channelId,
     );
     return response;
   }
