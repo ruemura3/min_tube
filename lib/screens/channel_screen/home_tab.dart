@@ -19,32 +19,10 @@ class HomeTab extends StatefulWidget {
 
 /// channel home tab state class
 class _HomeTabState extends State<HomeTab> {
-  /// api service
-  ApiService _api = ApiService.instance;
-  /// channel instance
-  Channel? _channel;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.channel == null) {
-      Future(() async {
-        final channel = await _api.getChannel(widget.channelId!);
-        setState(() {
-          _channel = channel;
-        });
-      });
-    } else {
-      setState(() {
-        _channel = widget.channel;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_channel != null) {
-      return ProfileCardForChannelScreen(channel: _channel!,);
+    if (widget.channel != null) {
+      return ProfileCardForChannelScreen(channel: widget.channel!,);
     } else {
       return Center(child: CircularProgressIndicator(),);
     }

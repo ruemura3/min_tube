@@ -6,13 +6,11 @@ import 'package:min_tube/widgets/video_card.dart';
 
 /// channel home tab
 class UploadVideoTab extends StatefulWidget {
-  /// channel id
-  final String? channelId;
   /// channel instance
   final Channel? channel;
 
   /// constructor
-  UploadVideoTab({this.channelId, this.channel});
+  UploadVideoTab({this.channel});
 
   @override
   _UploadVideoTabState createState() => _UploadVideoTabState();
@@ -22,8 +20,6 @@ class UploadVideoTab extends StatefulWidget {
 class _UploadVideoTabState extends State<UploadVideoTab> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// channel instance
-  Channel? _channel;
   /// playlist items list response
   PlaylistItemListResponse? _response;
   /// search result list
@@ -32,30 +28,15 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   @override
   void initState() {
     super.initState();
-    if (widget.channel == null){
-      Future(() async {
-        final channel = await _api.getChannel(widget.channelId!);
-        final response = await _api.getPlaylistItemsListResponse(
-          channel.contentDetails!.relatedPlaylists!.uploads!
-        );
-        setState(() {
-          _channel = channel;
-          _response = response;
-          _items = response.items!;
-        });
+    Future(() async {
+      final response = await _api.getPlaylistItemsListResponse(
+        widget.channel!.contentDetails!.relatedPlaylists!.uploads!
+      );
+      setState(() {
+        _response = response;
+        _items = response.items!;
       });
-    } else {
-      Future(() async {
-        final response = await _api.getPlaylistItemsListResponse(
-          widget.channel!.contentDetails!.relatedPlaylists!.uploads!
-        );
-        setState(() {
-          _channel = widget.channel;
-          _response = response;
-          _items = response.items!;
-        });
-      });
-    }
+    });
   }
 
   @override
@@ -71,7 +52,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
           if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
             Future(() async {
               final response = await _api.getPlaylistItemsListResponse(
-                _channel!.contentDetails!.relatedPlaylists!.uploads!,
+                widget.channel!.contentDetails!.relatedPlaylists!.uploads!,
                 _response!.nextPageToken!
               );
               setState(() {
