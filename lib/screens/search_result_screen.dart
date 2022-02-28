@@ -51,7 +51,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     if (_response != null && _items.length != 0) {
       return NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollDetails) {
-          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
+          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+            _items.length < _response!.pageInfo!.totalResults!) {
             Future(() async {
               final response = await _api.getSearchListResponse(
                 widget.query,
@@ -71,7 +72,14 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
-              return Center(child: CircularProgressIndicator(),);
+              if (_items.length < _response!.pageInfo!.totalResults!) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Center(child: CircularProgressIndicator(),),
+                );
+              } else {
+                return Container();
+              }
             }
             if (_items[index].id!.kind! == 'youtube#video') {
               return Padding(

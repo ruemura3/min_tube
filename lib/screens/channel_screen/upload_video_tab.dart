@@ -49,7 +49,8 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollDetails) {
-          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent) {
+          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+            _items.length < _response!.pageInfo!.totalResults!) {
             Future(() async {
               final response = await _api.getPlaylistItemListResponse(
                 widget.channel!.contentDetails!.relatedPlaylists!.uploads!,
@@ -63,18 +64,25 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
           }
           return false;
         },
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: _items.length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == _items.length) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Center(child: CircularProgressIndicator(),),
-              );
-            }
-            return VideoCardForPlaylist(playlistItem: _items[index]);
-          },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _items.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == _items.length) {
+                if (_items.length < _response!.pageInfo!.totalResults!) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Center(child: CircularProgressIndicator(),),
+                  );
+                } else {
+                  return Container();
+                }
+              }
+              return VideoCardForPlaylist(playlistItem: _items[index]);
+            },
+          ),
         ),
       );
     } else {
