@@ -1,3 +1,4 @@
+/// util
 class Util {
   /// format view count
   static String formatViewCount(String viewCount) {
@@ -27,9 +28,8 @@ class Util {
       } else {
         return 'チャンネル登録者数 ${(intSubscriberCount / 100000000).toString()} 億人';
       }
-    } else {
-      return null;
     }
+    return null;
   }
 
   /// format timeago
@@ -67,6 +67,7 @@ class Util {
     }
   }
 
+  /// format view count and timeago
   static String viewsAndTimeago(String viewCount, DateTime timeago) {
     return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
   }

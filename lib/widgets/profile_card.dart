@@ -3,7 +3,7 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 
-/// profile card for search result class
+/// profile card for search result
 /// use only when kind is 'youtube#channel'
 class ProfileCardForSearchResult extends StatefulWidget {
   /// search result
@@ -16,7 +16,7 @@ class ProfileCardForSearchResult extends StatefulWidget {
   _ProfileCardForSearchResultState createState() => _ProfileCardForSearchResultState();
 }
 
-/// profile card for search result state class
+/// profile card for search result state
 class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult> {
   @override
   Widget build(BuildContext context) {
@@ -44,23 +44,21 @@ class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult>
                 radius: 32,
                 backgroundImage: NetworkImage(widget.searchResult.snippet!.thumbnails!.medium!.url!),
               ),
+              SizedBox(width: 16,),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16, left: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.searchResult.snippet!.title!,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      widget.searchResult.snippet!.title!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
                       ),
-                      // _subscriber(widget.searchResult.statistics!.subscriberCount),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -71,7 +69,7 @@ class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult>
   }
 }
 
-/// profile card for video screen class
+/// profile card for video screen
 class ProfileCardForVideoScreen extends StatefulWidget {
   /// search query
   final Channel channel;
@@ -83,7 +81,7 @@ class ProfileCardForVideoScreen extends StatefulWidget {
   _ProfileCardForVideoScreenState createState() => _ProfileCardForVideoScreenState();
 }
 
-/// profile card for video screen state class
+/// profile card for video screen state
 class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
   @override
   Widget build(BuildContext context) {
@@ -113,25 +111,23 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
                   radius: 32,
                   backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
                 ),
+                SizedBox(width: 16,),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          widget.channel.snippet!.title!,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        widget.channel.statistics!.subscriberCount != null
-                        ? Text(
-                          Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
-                          style: TextStyle(color: Colors.grey),
-                        )
-                        : Container()
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        widget.channel.snippet!.title!,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      widget.channel.statistics!.subscriberCount != null
+                      ? Text(
+                        Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
+                        style: TextStyle(color: Colors.grey),
+                      )
+                      : Container()
+                    ],
                   ),
                 ),
               ],
@@ -143,7 +139,7 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
   }
 }
 
-/// profile card for channel screen class
+/// profile card for channel screen
 class ProfileCardForChannelScreen extends StatefulWidget {
   /// search query
   final Channel channel;
@@ -155,7 +151,7 @@ class ProfileCardForChannelScreen extends StatefulWidget {
   _ProfileCardForChannelScreenState createState() => _ProfileCardForChannelScreenState();
 }
 
-/// profile card for channel screen state class
+/// profile card for channel screen state
 class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScreen> {
   @override
   Widget build(BuildContext context) {

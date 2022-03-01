@@ -3,30 +3,20 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 
 /// channel home tab
-class HomeTab extends StatefulWidget {
+class HomeTab extends StatelessWidget {
   /// channel instance
-  final Channel? channel;
+  final Channel channel;
 
   /// constructor
-  HomeTab({this.channel});
+  HomeTab({required this.channel});
 
-  @override
-  _HomeTabState createState() => _HomeTabState();
-}
-
-/// channel home tab state class
-class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
-    if (widget.channel != null) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: ProfileCardForChannelScreen(channel: widget.channel!,),
-        ),
-      );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
-    }
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: SingleChildScrollView(
+        child: ProfileCardForChannelScreen(channel: channel,),
+      ),
+    );
   }
 }

@@ -22,12 +22,13 @@ class ChannelScreen extends StatefulWidget {
   _ChannelScreenState createState() => _ChannelScreenState();
 }
 
-/// channel home tab state class
+/// channel home tab state
 class _ChannelScreenState extends State<ChannelScreen> {
   /// api service
   ApiService _api = ApiService.instance;
   /// channel instance
   Channel? _channel;
+
   /// channel screen tabs
   final _tabs = <Tab> [
     Tab(text: 'ホーム'),
@@ -38,16 +39,16 @@ class _ChannelScreenState extends State<ChannelScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.channel == null) {
-      Future(() async {
-        final channel = await _api.getChannel(widget.channelId!);
-        setState(() {
-          _channel = channel;
-        });
-      });
-    } else {
+    if (widget.channel != null) {
       setState(() {
         _channel = widget.channel;
+      });
+    } else {
+      Future(() async {
+        final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
+        setState(() {
+          _channel = channels.items![0];
+        });
       });
     }
   }
@@ -58,19 +59,24 @@ class _ChannelScreenState extends State<ChannelScreen> {
       length: _tabs.length,
       child: Scaffold(
         appBar: SearchBar(
-          widget.channelTitle,
-          TabBar(tabs: _tabs,)
+          title: widget.channelTitle,
+          tabBar: TabBar(tabs: _tabs,),
         ),
-        body: _channel != null
-        ? TabBarView(
-            children: [
-              HomeTab(channel: _channel),
-              UploadVideoTab(channel: _channel),
-              PlaylistTab(channel: _channel),
-            ],
-          )
-        : Center(child: CircularProgressIndicator(),)
+        body: _channelScreenBody(),
       ),
     );
+  }
+
+  Widget _channelScreenBody() {
+    if (_channel != null) {
+      return TabBarView(
+        children: [
+          HomeTab(channel: _channel!),
+          UploadVideoTab(channel: _channel!),
+          PlaylistTab(channel: _channel!),
+        ],
+      );
+    }
+    return Center(child: CircularProgressIndicator(),);
   }
 }

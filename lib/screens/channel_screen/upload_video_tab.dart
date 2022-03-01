@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
-/// channel home tab
+/// channel upload video tab
 class UploadVideoTab extends StatefulWidget {
   /// channel instance
-  final Channel? channel;
+  final Channel channel;
 
   /// constructor
-  UploadVideoTab({this.channel});
+  UploadVideoTab({required this.channel});
 
   @override
   _UploadVideoTabState createState() => _UploadVideoTabState();
 }
 
-/// search result screen state class
+/// channel upload video tab
 class _UploadVideoTabState extends State<UploadVideoTab> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// playlist items list response
+  /// upload video response
   PlaylistItemListResponse? _response;
-  /// search result list
+  /// upload video list
   List<PlaylistItem> _items = [];
 
   @override
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.getPlaylistItemListResponse(
-        widget.channel!.contentDetails!.relatedPlaylists!.uploads!
+      final response = await _api.getPlaylistItemResponse(
+        id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
       );
       setState(() {
         _response = response;
@@ -39,54 +38,46 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return _channelScreenBody();
+  /// get additional upload video
+  bool _getAdditionalUploadVideo(ScrollNotification scrollDetails) {
+    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      _items.length < _response!.pageInfo!.totalResults!) {
+      Future(() async {
+        final response = await _api.getPlaylistItemResponse(
+          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+          pageToken: _response!.nextPageToken!,
+        );
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+        });
+      });
+    }
+    return false;
   }
 
-  /// channel screen body
-  Widget _channelScreenBody() {
+  @override
+  Widget build(BuildContext context) {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollDetails) {
-          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-            _items.length < _response!.pageInfo!.totalResults!) {
-            Future(() async {
-              final response = await _api.getPlaylistItemListResponse(
-                widget.channel!.contentDetails!.relatedPlaylists!.uploads!,
-                _response!.nextPageToken!
-              );
-              setState(() {
-                _response = response;
-                _items.addAll(response.items!);
-              });
-            });
-          }
-          return false;
-        },
+        onNotification: _getAdditionalUploadVideo,
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
-            shrinkWrap: true,
             itemCount: _items.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == _items.length) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Center(child: CircularProgressIndicator(),),
-                  );
-                } else {
-                  return Container();
+                  return Center(child: CircularProgressIndicator(),);
                 }
+                return Container();
               }
               return VideoCardForPlaylist(playlistItem: _items[index]);
             },
           ),
         ),
       );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
     }
+    return Center(child: CircularProgressIndicator(),);
   }
 }

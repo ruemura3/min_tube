@@ -17,20 +17,20 @@ class SearchResultScreen extends StatefulWidget {
   _SearchResultScreenState createState() => _SearchResultScreenState();
 }
 
-/// search result screen state class
+/// search result screen state
 class _SearchResultScreenState extends State<SearchResultScreen> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// search list response
+  /// search response
   SearchListResponse? _response;
-  /// search result list
+  /// search list
   List<SearchResult> _items = [];
 
   @override
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.getSearchListResponse(widget.query);
+      final response = await _api.getSearchResponse(query: widget.query);
       setState(() {
         _response = response;
         _items = response.items!;
@@ -38,10 +38,28 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     });
   }
 
+  /// get additional search result
+  bool _getAdditionalSearchResult(ScrollNotification scrollDetails) {
+    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      _items.length < _response!.pageInfo!.totalResults!) {
+      Future(() async {
+        final response = await _api.getSearchResponse(
+          query: widget.query,
+          pageToken: _response!.nextPageToken!
+        );
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+        });
+      });
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(widget.query),
+      appBar: SearchBar(title: widget.query,),
       body: _searchResultScreenBody(),
     );
   }
@@ -50,55 +68,34 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   Widget _searchResultScreenBody() {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollDetails) {
-          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-            _items.length < _response!.pageInfo!.totalResults!) {
-            Future(() async {
-              final response = await _api.getSearchListResponse(
-                widget.query,
-                _response!.nextPageToken!
-              );
-              setState(() {
-                _response = response;
-                _items.addAll(response.items!);
-              });
-            });
-          }
-          return false;
-        },
+        onNotification: _getAdditionalSearchResult,
         child: ListView.builder(
-          shrinkWrap: true,
           padding: const EdgeInsets.all(8),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
               if (_items.length < _response!.pageInfo!.totalResults!) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Center(child: CircularProgressIndicator(),),
-                );
-              } else {
-                return Container();
+                return Center(child: CircularProgressIndicator(),);
               }
+              return Container();
             }
             if (_items[index].id!.kind! == 'youtube#video') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: VideoCardForSearchResult(searchResult: _items[index]),
+                child: VideoCardForSearchResult(searchResult: _items[index],),
               );
             }
             if (_items[index].id!.kind! == 'youtube#channel') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: ProfileCardForSearchResult(searchResult: _items[index]),
+                child: ProfileCardForSearchResult(searchResult: _items[index],),
               );
             }
             return Container();
           },
         ),
       );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
     }
+    return Center(child: CircularProgressIndicator(),);
   }
 }

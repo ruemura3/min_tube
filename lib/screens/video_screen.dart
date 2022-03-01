@@ -48,11 +48,11 @@ class _VideoScreenState extends State<VideoScreen> {
     );
     // get video and channel info
     Future(() async {
-      final video = await _api.getVideo(widget.videoId);
-      final channel = await _api.getChannel(video.snippet!.channelId!);
+      var video = await _api.getVideoResponse(ids: [widget.videoId]);
+      var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
       setState(() {
-        _video = video;
-        _channel = channel;
+        _video = video.items![0];
+        _channel = channel.items![0];
       });
     });
   }
@@ -80,15 +80,11 @@ class _VideoScreenState extends State<VideoScreen> {
         controller: _controller,
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.blueAccent,
-        onReady: () {
-
-        },
-        onEnded: (data) {
-
-        },
+        onReady: () {},
+        onEnded: (data) {},
       ),
       builder: (context, player) => Scaffold(
-        appBar: SearchBar(widget.videoTitle),
+        appBar: SearchBar(title: widget.videoTitle,),
         body: _videoScreenBody(player),
       ),
     );
@@ -100,53 +96,56 @@ class _VideoScreenState extends State<VideoScreen> {
       return Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Column(
-            children: [
-              player,
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _video!.snippet!.title!,
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        SizedBox(height: 8,),
-                        Text(
-                          Util.viewsAndTimeago(
-                            _video!.statistics!.viewCount!,
-                            _video!.snippet!.publishedAt!
-                          ),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w300,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 8,),
-                        Divider(color: Colors.grey,),
-                        SizedBox(height: 8,),
-                        Text(_video!.snippet!.description!,),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _videoDetails(player),
           Padding(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 24),
+            padding: const EdgeInsets.all(16).copyWith(bottom: 32),
             child: ProfileCardForVideoScreen(channel: _channel!,),
           )
         ]
       );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
     }
+    return Center(child: CircularProgressIndicator(),);
+  }
+
+  Widget _videoDetails(Widget player) {
+    return Column(
+      children: [
+        player,
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _video!.snippet!.title!,
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(height: 8,),
+                  Text(
+                    Util.viewsAndTimeago(
+                      _video!.statistics!.viewCount!,
+                      _video!.snippet!.publishedAt!
+                    ),
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w300,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 8,),
+                  Divider(color: Colors.grey,),
+                  SizedBox(height: 8,),
+                  Text(_video!.snippet!.description!,),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

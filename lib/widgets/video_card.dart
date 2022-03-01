@@ -3,7 +3,7 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
-/// video card for search result class
+/// video card for search result
 /// use only when kind is 'youtube#video'
 class VideoCardForSearchResult extends StatelessWidget {
   /// search result
@@ -51,6 +51,7 @@ class VideoCardForSearchResult extends StatelessWidget {
                   SizedBox(height: 8,),
                   Text(
                     searchResult.snippet!.channelTitle!,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: Colors.grey),
                   ),
                   Text(
@@ -67,7 +68,7 @@ class VideoCardForSearchResult extends StatelessWidget {
   }
 }
 
-/// video card for playlist class
+/// video card for playlist
 class VideoCardForPlaylist extends StatelessWidget {
   /// search result
   final PlaylistItem playlistItem;
@@ -92,30 +93,10 @@ class VideoCardForPlaylist extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(right: 16),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Image(
-                      image: NetworkImage(playlistItem.snippet!.thumbnails!.medium!.url!),
-                    ),
-                    // Container(
-                    //   padding: const EdgeInsets.only(right: 4, bottom: 4),
-                    //   child: Container(
-                    //     color: video.liveBroadcastContent == 'live' ? Colors.red.withOpacity(0.8) : Colors.black.withOpacity(0.8),
-                    //     padding: const EdgeInsets.only(top: 1, right: 2, bottom: 1, left: 2),
-                    //     child: Text(
-                    //       video.formattedDuration(),
-                    //       style: TextStyle(
-                    //         fontSize: 13,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
+              Image(
+                image: NetworkImage(playlistItem.snippet!.thumbnails!.medium!.url!),
               ),
+              SizedBox(width: 16,),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

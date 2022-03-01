@@ -3,31 +3,33 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/widgets/playlist_card.dart';
 
-/// playlist tab
+/// channel playlist tab
 class PlaylistTab extends StatefulWidget {
   /// channel instance
-  final Channel? channel;
+  final Channel channel;
 
-  PlaylistTab({this.channel});
+  /// constructor
+  PlaylistTab({required this.channel});
 
   @override
   _PlaylistTabState createState() => _PlaylistTabState();
 }
 
+/// channel playlist tab state
 class _PlaylistTabState extends State<PlaylistTab> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// playlist items list response
+  /// playlist item response
   PlaylistListResponse? _response;
-  /// search result list
+  /// playlist item list
   List<Playlist> _items = [];
 
   @override
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.getPlaylistListResponse(
-        widget.channel!.id!
+      final response = await _api.getPlaylistResponse(
+        id: widget.channel.id!
       );
       setState(() {
         _response = response;
@@ -36,49 +38,46 @@ class _PlaylistTabState extends State<PlaylistTab> {
     });
   }
 
+  /// get additional playlist
+  bool _getAdditionalPlaylistItem(ScrollNotification scrollDetails) {
+    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      _items.length < _response!.pageInfo!.totalResults!) {
+      Future(() async {
+        final response = await _api.getPlaylistResponse(
+          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+          pageToken: _response!.nextPageToken!,
+        );
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+        });
+      });
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollDetails) {
-          if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-            _items.length < _response!.pageInfo!.totalResults!) {
-            Future(() async {
-              final response = await _api.getPlaylistListResponse(
-                widget.channel!.contentDetails!.relatedPlaylists!.uploads!,
-                _response!.nextPageToken!
-              );
-              setState(() {
-                _response = response;
-                _items.addAll(response.items!);
-              });
-            });
-          }
-          return false;
-        },
+        onNotification: _getAdditionalPlaylistItem,
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
-            shrinkWrap: true,
             itemCount: _items.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == _items.length) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Center(child: CircularProgressIndicator(),),
-                  );
-                } else {
-                  return Container();
+                  return Center(child: CircularProgressIndicator(),);
                 }
+                return Container();
               }
               return PlaylistCard(playlist: _items[index]);
             },
           ),
         ),
       );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
     }
+    return Center(child: CircularProgressIndicator(),);
   }
 }

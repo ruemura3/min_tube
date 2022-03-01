@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:googleapis/youtube/v3.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 
-/// api service class
+/// api service
 class ApiService {
   /// private constructor
   ApiService._instantiate();
@@ -12,109 +10,115 @@ class ApiService {
   /// singleton instance
   static final ApiService instance = ApiService._instantiate();
 
-  /// google_sign_in instance
-  static final GoogleSignIn googleSignIn = GoogleSignIn(
+  /// google sign in instance
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>[
-      YouTubeApi.youtubeReadonlyScope,
+      // YouTubeApi.youtubeReadonlyScope,
       YouTubeApi.youtubeScope,
     ],
   );
 
   /// current user
-  GoogleSignInAccount? _user = googleSignIn.currentUser;
+  GoogleSignInAccount? _user = _googleSignIn.currentUser;
 
   /// get login user
   /// return null when user isn't logged in
   Future<GoogleSignInAccount?> get user async {
     if (_user == null) {
-      _user = await googleSignIn.signInSilently();
+      _user = await _googleSignIn.signInSilently();
     }
     return _user;
   }
 
   /// login
-  Future<GoogleSignInAccount?> logIn() async {
-    _user = await googleSignIn.signIn();
+  Future<GoogleSignInAccount?> login() async {
+    _user = await _googleSignIn.signIn();
     return _user;
+  }
+
+  /// login
+  Future<GoogleSignInAccount?> logout() async {
+    await _googleSignIn.signOut();
+    _user = null;
   }
 
   /// get youtube api
   Future<YouTubeApi> getYouTubeApi() async {
-    final httpClient = await ApiService.googleSignIn.authenticatedClient();
+    final httpClient = await _googleSignIn.authenticatedClient();
     return YouTubeApi(httpClient!);
   }
 
-  /// get search resources by query
-  Future<SearchListResponse> getSearchListResponse(
-    String query,
-    [String pageToken = '']
-  ) async {
+  /// get search by query
+  Future<SearchListResponse> getSearchResponse({
+    required String query,
+    String pageToken = '',
+  }) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
-      maxResults: 5,
       pageToken: pageToken,
       q: query,
     );
     return response;
   }
 
-  /// get video detail by video id
-  Future<Video> getVideo(String id) async {
+  /// get videos by video ids
+  Future<VideoListResponse> getVideoResponse({required List<String> ids,}) async {
     final youTubeApi = await getYouTubeApi();
     final VideoListResponse response = await youTubeApi.videos.list(
       ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
-      id: [id],
+      id: ids,
+      maxResults: ids.length,
     );
-    return response.items![0];
+    return response;
   }
 
-  /// get channel detail by channel id
-  Future<Channel> getChannel(String id) async {
+  /// get channels by channel id
+  Future<ChannelListResponse> getChannelResponse({required List<String> ids,}) async {
     final youTubeApi = await getYouTubeApi();
     final ChannelListResponse response = await youTubeApi.channels.list(
       ['snippet', 'contentDetails', 'statistics', 'brandingSettings'],
-      id: [id]
+      id: ids,
+      maxResults: ids.length,
     );
-    return response.items![0];
+    return response;
   }
 
-  /// get playlist items resource by playlist id
-  Future<PlaylistItemListResponse> getPlaylistItemListResponse(
-    String playlistId,
-    [String pageToken = '']
-  ) async {
+  /// get playlist item by playlist id
+  Future<PlaylistItemListResponse> getPlaylistItemResponse({
+    required String id,
+    String pageToken = '',
+  }) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
       ['snippet', 'contentDetails'],
       maxResults: 8,
       pageToken: pageToken,
-      playlistId: playlistId,
+      playlistId: id,
     );
     return response;
   }
 
-  /// get playlists resource by channel id
-  Future<PlaylistListResponse> getPlaylistListResponse(
-    String channelId,
-    [String pageToken = '']
-  ) async {
+  /// get playlist by channel id
+  Future<PlaylistListResponse> getPlaylistResponse({
+    required String id,
+    String pageToken = '',
+  }) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistListResponse response = await youTubeApi.playlists.list(
       ['snippet', 'contentDetails'],
+      channelId: id,
       maxResults: 8,
       pageToken: pageToken,
-      channelId: channelId,
     );
     return response;
   }
 
-  /// get user's subscriptions resource
-  Future<SubscriptionListResponse> getSubscriptionsResource([String pageToken = '']) async {
+  /// get login user's subscription
+  Future<SubscriptionListResponse> getSubscriptionResponse({String pageToken = ''}) async {
     final youTubeApi = await getYouTubeApi();
     final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
       ['snippet', 'contentDetails'],
-      maxResults: 5,
       mine: true,
       pageToken: pageToken,
     );

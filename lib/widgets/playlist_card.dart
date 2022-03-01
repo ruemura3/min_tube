@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 
-/// video card for playlist class
+/// playlist card
 class PlaylistCard extends StatelessWidget {
-  /// search result
+  /// playlist instance
   final Playlist playlist;
 
   /// constructor
@@ -12,44 +12,16 @@ class PlaylistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      // onTap: () => Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) => VideoScreen(
-      //       videoId: playlistItem.contentDetails!.videoId!,
-      //       videoTitle: playlistItem.snippet!.title!,
-      //     ),
-      //   ),
-      // ),
+      onTap: () {},
       child: Container(
           height: 112,
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              Container(
-                padding: const EdgeInsets.only(right: 16),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Image(
-                      image: NetworkImage(playlist.snippet!.thumbnails!.medium!.url!),
-                    ),
-                    // Container(
-                    //   padding: const EdgeInsets.only(right: 4, bottom: 4,),
-                    //   child: Container(
-                    //     color: video.liveBroadcastContent == 'live' ? Colors.red.withOpacity(0.8) : Colors.black.withOpacity(0.8),
-                    //     padding: const EdgeInsets.only(top: 1, right: 2, bottom: 1, left: 2),
-                    //     child: Text(
-                    //       video.formattedDuration(),
-                    //       style: TextStyle(
-                    //         fontSize: 13,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
+              Image(
+                image: NetworkImage(playlist.snippet!.thumbnails!.medium!.url!),
               ),
+              SizedBox(width: 16,),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,7 +5,7 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
-/// home screen class
+/// home screen
 class HomeScreen extends StatefulWidget {
   /// constructor
   HomeScreen({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-/// home screen state class
+/// home screen state
 class _HomeScreenState extends State<HomeScreen> {
   /// api service
   ApiService _api = ApiService.instance;
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoginFinished = true;
       });
       if (_currentUser != null) {
-        final response = await _api.getSubscriptionsResource();
+        final response = await _api.getSubscriptionResponse();
         setState(() {
           _response = response;
           _items = response.items!;
@@ -52,7 +52,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar('MinTube', null, _shouldShowTitle, _currentUser),
+      appBar: SearchBar(
+        title: null,
+        shouldShowTitle: _shouldShowTitle,
+        shouldShowBack: false,
+      ),
       body: _homeScreenBody(),
     );
   }
@@ -61,19 +65,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _homeScreenBody() {
     if (!_isLoginFinished) {
       return Center(child: CircularProgressIndicator(),);
-    } else {
-      if (_currentUser != null) {
-        return _homeBody();
-      } else {
-        return _loginBody();
-      }
     }
+    if (_currentUser != null) {
+      return _homeBody();
+    }
+    return _loginBody();
   }
 
   /// login body
   Widget _loginBody() {
     /// sign in button height
-    final double buttonHeight = 50;
+    final double buttonHeight = 56;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -90,15 +92,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton.icon(
             icon: FaIcon(
               FontAwesomeIcons.google,
-              color: Colors.red,
             ),
-            label: Text('Sign in with Google',),
+            label: Text(
+              'Sign in with Google',
+              style: TextStyle(fontSize: 18),
+            ),
             onPressed: () async {
-              final user = await _api.logIn();
+              final user = await _api.login();
               setState(() {
                 _currentUser = user;
               });
-              final response = await _api.getSubscriptionsResource();
+              final response = await _api.getSubscriptionResponse();
               setState(() {
                 _response = response;
                 _items = response.items!;
@@ -106,8 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
-              onPrimary: Colors.black,
               minimumSize: Size(double.infinity, buttonHeight),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(buttonHeight/2),
@@ -123,15 +125,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _homeBody() {
     if (_response != null) {
       return ListView.builder(
-        shrinkWrap: true,
         padding: const EdgeInsets.all(8),
         itemCount: _items.length,
         itemBuilder: (BuildContext context, int index) {
           return Text(_items[index].snippet!.title!);
         },
       );
-    } else {
-      return Center(child: CircularProgressIndicator(),);
     }
+    return Center(child: CircularProgressIndicator(),);
   }
 }
