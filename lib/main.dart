@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:min_tube/screens/home_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MinTube());
 }
 
-class MyApp extends StatelessWidget {
+class MinTube extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

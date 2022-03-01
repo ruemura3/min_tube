@@ -38,7 +38,7 @@ class VideoCardForSearchResult extends StatelessWidget {
               width: double.infinity,
             ),
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -89,11 +89,11 @@ class VideoCardForPlaylist extends StatelessWidget {
       ),
       child: Container(
           height: 112,
-          padding: EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+          padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 0, right: 16, bottom: 0, left: 0),
+                padding: const EdgeInsets.only(right: 16),
                 child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
@@ -101,10 +101,10 @@ class VideoCardForPlaylist extends StatelessWidget {
                       image: NetworkImage(playlistItem.snippet!.thumbnails!.medium!.url!),
                     ),
                     // Container(
-                    //   padding: EdgeInsets.only(top: 0, right: 4, bottom: 4, left: 0),
+                    //   padding: const EdgeInsets.only(right: 4, bottom: 4),
                     //   child: Container(
                     //     color: video.liveBroadcastContent == 'live' ? Colors.red.withOpacity(0.8) : Colors.black.withOpacity(0.8),
-                    //     padding: EdgeInsets.only(top: 1, right: 2, bottom: 1, left: 2),
+                    //     padding: const EdgeInsets.only(top: 1, right: 2, bottom: 1, left: 2),
                     //     child: Text(
                     //       video.formattedDuration(),
                     //       style: TextStyle(

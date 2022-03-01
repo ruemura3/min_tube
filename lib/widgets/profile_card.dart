@@ -37,7 +37,7 @@ class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult>
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               CircleAvatar(
@@ -46,7 +46,7 @@ class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult>
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(right: 16, left: 16),
+                  padding: const EdgeInsets.only(right: 16, left: 16),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +106,7 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 CircleAvatar(
@@ -115,7 +115,7 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.only(left: 16),
+                    padding: const EdgeInsets.only(left: 16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,

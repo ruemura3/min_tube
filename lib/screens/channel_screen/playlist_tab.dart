@@ -65,7 +65,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
               if (index == _items.length) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 8),
                     child: Center(child: CircularProgressIndicator(),),
                   );
                 } else {

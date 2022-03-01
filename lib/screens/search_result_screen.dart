@@ -48,7 +48,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
 
   /// search result screen body
   Widget _searchResultScreenBody() {
-    if (_response != null && _items.length != 0) {
+    if (_response != null) {
       return NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollDetails) {
           if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
@@ -68,7 +68,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         },
         child: ListView.builder(
           shrinkWrap: true,
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
@@ -83,13 +83,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             }
             if (_items[index].id!.kind! == 'youtube#video') {
               return Padding(
-                padding: EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: VideoCardForSearchResult(searchResult: _items[index]),
               );
             }
             if (_items[index].id!.kind! == 'youtube#channel') {
               return Padding(
-                padding: EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: ProfileCardForSearchResult(searchResult: _items[index]),
               );
             }

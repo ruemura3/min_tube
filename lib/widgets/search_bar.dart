@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/screens/search_result_screen.dart';
+import 'package:min_tube/util/color_util.dart';
 
 /// search bar
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
@@ -9,9 +11,13 @@ class SearchBar extends StatefulWidget with PreferredSizeWidget {
   final String appBarText;
   /// tab bar
   final TabBar? tabBar;
+  /// should show title
+  final bool shouldShowTitle;
+  /// current user
+  GoogleSignInAccount? currentUser;
 
   /// constructor
-  SearchBar([this.appBarText = '', this.tabBar]);
+  SearchBar([this.appBarText = '', this.tabBar, this.shouldShowTitle = true, this.currentUser]);
 
   @override
   Size get preferredSize {
@@ -40,12 +46,18 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void initState() {
     super.initState();
-    Future(() async {
-      final user = await _api.user;
+    if (widget.currentUser != null) {
       setState(() {
-        _currentUser = user;
+        _currentUser = widget.currentUser;
       });
-    });
+    } else {
+      Future(() async {
+        final user = await _api.user;
+        setState(() {
+          _currentUser = user;
+        });
+      });
+    }
   }
 
   /// transit to search result screen with search query
@@ -120,57 +132,74 @@ class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-          widget.appBarText,
-          style: TextStyle(
-            fontSize: 20,
-          ),
-        ),
+      elevation: 0,
+      backgroundColor: ColorUtil.backGround(Theme.of(context).brightness),
+      title: _appBarTitle(),
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _showSearchDialog(context);
-            },
+        _currentUser != null
+        ? IconButton(
+          icon: Icon(
+            Icons.search,
+            color: ColorUtil.text(Theme.of(context).brightness),
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(10.0),
-          child: _profileIcon(),
+          onPressed: () {
+            _showSearchDialog(context);
+          },
         )
+        : Container()
       ],
       bottom: widget.tabBar,
+    );
+  }
+
+  /// app bar title
+  Widget _appBarTitle() {
+    if (!widget.shouldShowTitle) {
+      return Container();
+    }
+    if (widget.appBarText == '') {
+      return Text(
+        widget.appBarText,
+        style: TextStyle(
+          fontSize: 20,
+        ),
+      );
+    }
+    return Image.asset(
+      Theme.of(context).brightness == Brightness.dark
+      ? 'assets/images/logo_dark.png'
+      : 'assets/images/logo_light.png',
+      width: 120,
     );
   }
 
   /// profile Icon
   Widget _profileIcon() {
     if (_currentUser == null) {
-      return IconButton(
-        icon: Icon(Icons.account_circle),
-        onPressed: () async {
-          final user = await _api.logIn();
-          setState(() {
-            _currentUser = user;
-          });
-        },
+      return Icon(
+        Icons.account_circle,
+        color: ColorUtil.text(Theme.of(context).brightness),
       );
     } else {
-      return GestureDetector(
-        onTap: () {
-          ApiService.googleSignIn.disconnect();
+      return InkWell(
+        onTap: () async {
+          await ApiService.googleSignIn.disconnect();
           setState(() {
             _currentUser = null;
           });
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(),
+            )
+          );
         },
-        child: _currentUser!.photoUrl == null
-        ?  CircleAvatar(
+        child: _currentUser!.photoUrl != null
+        ? CircleAvatar(backgroundImage: NetworkImage(_currentUser!.photoUrl!))
+        : CircleAvatar(
             backgroundColor: Colors.blueGrey,
             child: Text(_currentUser!.displayName!.substring(0, 1)),
           )
-        : CircleAvatar(backgroundImage: NetworkImage(_currentUser!.photoUrl!))
       );
     }
   }
