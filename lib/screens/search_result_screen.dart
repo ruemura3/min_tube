@@ -23,7 +23,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   ApiService _api = ApiService.instance;
   /// search response
   SearchListResponse? _response;
-  /// search list
+  /// search result list
   List<SearchResult> _items = [];
 
   @override

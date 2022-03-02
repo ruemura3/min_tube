@@ -48,14 +48,18 @@ class ApiService {
     return YouTubeApi(httpClient!);
   }
 
-  /// get search by query
+  /// get search response
   Future<SearchListResponse> getSearchResponse({
-    required String query,
+    String channelId = '',
+    String order = 'relevance',
     String pageToken = '',
+    String query = '',
   }) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
+      channelId: channelId,
+      order: order,
       pageToken: pageToken,
       q: query,
     );

@@ -3,6 +3,7 @@
         "autofocus",
         "googleapis",
         "mintube",
-        "Timeago"
+        "Timeago",
+        "vsync"
     ]
 }

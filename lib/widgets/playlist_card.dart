@@ -19,7 +19,9 @@ class PlaylistCard extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Image(
-                image: NetworkImage(playlist.snippet!.thumbnails!.medium!.url!),
+                image: NetworkImage(
+                  playlist.snippet!.thumbnails!.medium!.url!
+                ),
               ),
               SizedBox(width: 16,),
               Expanded(

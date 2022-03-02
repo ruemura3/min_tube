@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/home_screen/subscription_items.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
 /// home screen
@@ -30,6 +31,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  bool _getAdditionalSubscription(ScrollNotification scrollDetails) {
+    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      _items.length < _response!.pageInfo!.totalResults!) {
+      Future(() async {
+        final response = await _api.getSubscriptionResponse(
+          pageToken: _response!.nextPageToken!,
+        );
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+        });
+      });
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,12 +62,20 @@ class _HomeScreenState extends State<HomeScreen> {
   /// home screen body
   Widget _homeScreenBody() {
     if (_response != null) {
-      return ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: _items.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(_items[index].snippet!.title!);
-        },
+      return NotificationListener<ScrollNotification>(
+        onNotification: _getAdditionalSubscription,
+        child: ListView.builder(
+          itemCount: _items.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == _items.length) {
+              if (_items.length < _response!.pageInfo!.totalResults!) {
+                return Center(child: CircularProgressIndicator(),);
+              }
+              return Container();
+            }
+            return SubscriptionItems(subscription: _items[index],);
+          },
+        ),
       );
     }
     return Center(child: CircularProgressIndicator(),);

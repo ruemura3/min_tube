@@ -42,7 +42,9 @@ class _ProfileCardForSearchResultState extends State<ProfileCardForSearchResult>
             children: [
               CircleAvatar(
                 radius: 32,
-                backgroundImage: NetworkImage(widget.searchResult.snippet!.thumbnails!.medium!.url!),
+                backgroundImage: NetworkImage(
+                  widget.searchResult.snippet!.thumbnails!.medium!.url!
+                ),
               ),
               SizedBox(width: 16,),
               Expanded(
@@ -109,7 +111,9 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
               children: [
                 CircleAvatar(
                   radius: 32,
-                  backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
+                  backgroundImage: NetworkImage(
+                    widget.channel.snippet!.thumbnails!.medium!.url!
+                  ),
                 ),
                 SizedBox(width: 16,),
                 Expanded(
@@ -178,7 +182,9 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
               children: [
                 CircleAvatar(
                   radius: 48,
-                  backgroundImage: NetworkImage(widget.channel.snippet!.thumbnails!.medium!.url!),
+                  backgroundImage: NetworkImage(
+                    widget.channel.snippet!.thumbnails!.medium!.url!
+                  ),
                 ),
                 SizedBox(height: 16,),
                 Text(

@@ -14,20 +14,24 @@ class ChannelScreen extends StatefulWidget {
   final Channel? channel;
   /// channel title
   final String channelTitle;
+  /// animate to
+  final int tabPage;
 
   /// constructor
-  ChannelScreen({this.channelId, this.channel, required this.channelTitle});
+  ChannelScreen({this.channelId, this.channel, required this.channelTitle, this.tabPage = 0});
 
   @override
   _ChannelScreenState createState() => _ChannelScreenState();
 }
 
 /// channel home tab state
-class _ChannelScreenState extends State<ChannelScreen> {
+class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProviderStateMixin {
   /// api service
   ApiService _api = ApiService.instance;
   /// channel instance
   Channel? _channel;
+  /// tab controller
+  late TabController _tabController;
 
   /// channel screen tabs
   final _tabs = <Tab> [
@@ -39,6 +43,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
     if (widget.channel != null) {
       setState(() {
         _channel = widget.channel;
@@ -51,6 +56,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
         });
       });
     }
+    _tabController.animateTo(widget.tabPage);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,16 +72,21 @@ class _ChannelScreenState extends State<ChannelScreen> {
       child: Scaffold(
         appBar: SearchBar(
           title: widget.channelTitle,
-          tabBar: TabBar(tabs: _tabs,),
+          tabBar: TabBar(
+            controller: _tabController,
+            tabs: _tabs,
+          ),
         ),
         body: _channelScreenBody(),
       ),
     );
   }
 
+  /// channel screen body
   Widget _channelScreenBody() {
     if (_channel != null) {
       return TabBarView(
+        controller: _tabController,
         children: [
           HomeTab(channel: _channel!),
           UploadVideoTab(channel: _channel!),
