@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/util/util.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -86,6 +87,7 @@ class _VideoScreenState extends State<VideoScreen> {
       builder: (context, player) => Scaffold(
         appBar: SearchBar(title: widget.videoTitle,),
         body: _videoScreenBody(player),
+        floatingActionButton: FloatingSearchButton(),
       ),
     );
   }

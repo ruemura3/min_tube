@@ -134,6 +134,11 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
                     ],
                   ),
                 ),
+                SizedBox(width: 16,),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('チャンネル登録'),
+                ),
               ],
             ),
           ),
@@ -199,10 +204,12 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
                 )
                 : Container(),
                 SizedBox(height: 16,),
-                // ElevatedButton(
-                //   onPressed: () {},
-                //   child: Text('登録済み'),
-                // ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('チャンネル登録'),
+                ),
+                SizedBox(height: 16,),
+                Text(widget.channel.snippet!.description!,),
               ],
             ),
           ),

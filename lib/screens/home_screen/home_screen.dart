@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen/subscription_items.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
 /// home screen
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shouldShowBack: false,
       ),
       body: _homeScreenBody(),
+      floatingActionButton: FloatingSearchButton(),
     );
   }
 

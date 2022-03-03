@@ -55,37 +55,49 @@ class ApiService {
     String pageToken = '',
     String query = '',
   }) async {
-    final youTubeApi = await getYouTubeApi();
-    final SearchListResponse response = await youTubeApi.search.list(
-      ['snippet'],
-      channelId: channelId,
-      order: order,
-      pageToken: pageToken,
-      q: query,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final SearchListResponse response = await youTubeApi.search.list(
+        ['snippet'],
+        channelId: channelId,
+        order: order,
+        pageToken: pageToken,
+        q: query,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /// get videos by video ids
   Future<VideoListResponse> getVideoResponse({required List<String> ids,}) async {
-    final youTubeApi = await getYouTubeApi();
-    final VideoListResponse response = await youTubeApi.videos.list(
-      ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
-      id: ids,
-      maxResults: ids.length,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final VideoListResponse response = await youTubeApi.videos.list(
+        ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
+        id: ids,
+        maxResults: ids.length,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /// get channels by channel id
   Future<ChannelListResponse> getChannelResponse({required List<String> ids,}) async {
-    final youTubeApi = await getYouTubeApi();
-    final ChannelListResponse response = await youTubeApi.channels.list(
-      ['snippet', 'contentDetails', 'statistics', 'brandingSettings'],
-      id: ids,
-      maxResults: ids.length,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final ChannelListResponse response = await youTubeApi.channels.list(
+        ['snippet', 'contentDetails', 'statistics', 'brandingSettings'],
+        id: ids,
+        maxResults: ids.length,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /// get playlist item by playlist id
@@ -93,14 +105,18 @@ class ApiService {
     required String id,
     String pageToken = '',
   }) async {
-    final youTubeApi = await getYouTubeApi();
-    final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
-      ['snippet', 'contentDetails'],
-      maxResults: 8,
-      pageToken: pageToken,
-      playlistId: id,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
+        ['snippet', 'contentDetails'],
+        maxResults: 8,
+        pageToken: pageToken,
+        playlistId: id,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /// get playlist by channel id
@@ -108,24 +124,32 @@ class ApiService {
     required String id,
     String pageToken = '',
   }) async {
-    final youTubeApi = await getYouTubeApi();
-    final PlaylistListResponse response = await youTubeApi.playlists.list(
-      ['snippet', 'contentDetails'],
-      channelId: id,
-      maxResults: 8,
-      pageToken: pageToken,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final PlaylistListResponse response = await youTubeApi.playlists.list(
+        ['snippet', 'contentDetails'],
+        channelId: id,
+        maxResults: 8,
+        pageToken: pageToken,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 
   /// get login user's subscription
   Future<SubscriptionListResponse> getSubscriptionResponse({String pageToken = ''}) async {
-    final youTubeApi = await getYouTubeApi();
-    final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
-      ['snippet', 'contentDetails'],
-      mine: true,
-      pageToken: pageToken,
-    );
-    return response;
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
+        ['snippet', 'contentDetails'],
+        mine: true,
+        pageToken: pageToken,
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
   }
 }

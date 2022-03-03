@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/home_tab.dart';
 import 'package:min_tube/screens/channel_screen/playlist_tab.dart';
 import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
 /// channel screen
@@ -78,6 +81,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
           ),
         ),
         body: _channelScreenBody(),
+        floatingActionButton: FloatingSearchButton(),
       ),
     );
   }
