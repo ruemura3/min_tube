@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
@@ -5,6 +6,7 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// video screen
@@ -68,6 +70,38 @@ class _VideoScreenState extends State<VideoScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  List<TextSpan> _getSplitMessage(String message) {
+    final RegExp urlRegExp = RegExp(
+      r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?'
+    );
+    final Iterable<RegExpMatch> urlMatches = urlRegExp.allMatches(message);
+    String tmpMessage = message;
+    List<TextSpan> textSpans = [];
+    for (RegExpMatch urlMatch in urlMatches) {
+      final String url = message.substring(urlMatch.start, urlMatch.end);
+      var tmp = tmpMessage.split(url);
+      textSpans.add(
+        TextSpan(text: tmp[0]),
+      );
+      textSpans.add(
+        TextSpan(
+          text: url.length > 30
+          ? url.substring(0, 30) + '...'
+          : url,
+          style: TextStyle(color: Colors.lightBlue),
+          recognizer: TapGestureRecognizer()..onTap = () {
+            launch(url);
+          },
+        ),
+      );
+      tmpMessage = tmp[1];
+    }
+    textSpans.add(
+      TextSpan(text: tmpMessage),
+    );
+    return textSpans;
   }
 
   @override
@@ -139,7 +173,12 @@ class _VideoScreenState extends State<VideoScreen> {
                   SizedBox(height: 8,),
                   Divider(color: Colors.grey,),
                   SizedBox(height: 8,),
-                  Text(_video!.snippet!.description!,),
+                  RichText(
+                    text: TextSpan(
+                      children: _getSplitMessage(_video!.snippet!.description!),
+                    )
+                  ),
+                  SizedBox(height: 136,),
                 ],
               ),
             ),
