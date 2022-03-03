@@ -66,7 +66,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 
@@ -81,7 +81,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 
@@ -96,7 +96,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 
@@ -115,7 +115,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 
@@ -134,7 +134,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 
@@ -150,7 +150,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw Exception();
+      throw e;
     }
   }
 }

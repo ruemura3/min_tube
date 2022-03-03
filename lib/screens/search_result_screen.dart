@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
@@ -69,7 +68,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     return Scaffold(
       appBar: SearchBar(title: widget.query,),
       body: _searchResultScreenBody(),
-      floatingActionButton: FloatingSearchButton(),
     );
   }
 

@@ -50,7 +50,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
       _isLoading = true;
       Future(() async {
         final response = await _api.getPlaylistResponse(
-          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+          id: widget.channel.id!,
           pageToken: _response!.nextPageToken!,
         );
         setState(() {
@@ -65,6 +65,11 @@ class _PlaylistTabState extends State<PlaylistTab> {
 
   @override
   Widget build(BuildContext context) {
+    if (_items.length == 0) {
+      return Center(
+        child: Text('このチャンネルにはプレイリストがありません'),
+      );
+    }
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalPlaylistItem,

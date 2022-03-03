@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     /// sign in button height
     final double buttonHeight = 56;
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [

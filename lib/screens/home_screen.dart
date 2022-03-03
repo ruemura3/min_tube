@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
@@ -65,13 +64,17 @@ class _HomeScreenState extends State<HomeScreen> {
         shouldShowBack: false,
       ),
       body: _homeScreenBody(),
-      floatingActionButton: FloatingSearchButton(),
     );
   }
 
   /// home screen body
   Widget _homeScreenBody() {
     if (_response != null) {
+      if (_items.length == 0) {
+        return Center(
+          child: Text('このチャンネルには動画がありません'),
+        );
+      }
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSubscription,
         child: ListView.builder(
@@ -83,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return Container();
             }
-            return ProfileCardForHome(subscription: _items[index]);
+            return ProfileCardForHomeScreen(subscription: _items[index]);
           },
         ),
       );

@@ -66,6 +66,11 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   @override
   Widget build(BuildContext context) {
     if (_response != null) {
+      if (_items.length == 0) {
+      return Center(
+        child: Text('このチャンネルには動画がありません'),
+      );
+    }
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalUploadVideo,
         child: Padding(

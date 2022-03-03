@@ -36,6 +36,76 @@ class _SearchBarState extends State<SearchBar> {
   ApiService _api = ApiService.instance;
   /// current user
   GoogleSignInAccount? _currentUser;
+  /// search query
+  String _query = '';
+  /// search query text editing controller
+  final _controller = TextEditingController();
+
+  /// pop search dialog
+  _showSearchDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(),
+              ),
+              hintText: 'YouTubeを検索',
+              suffixIcon: IconButton(
+                onPressed: () {
+                  _controller.clear();
+                  _query = '';
+                },
+                icon: Icon(
+                  Icons.clear,
+                ),
+              ),
+            ),
+            onChanged: (text) {
+              _query = text;
+            },
+            onEditingComplete: () {
+              _search();
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'キャンセル',
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text(
+                '検索',
+              ),
+              onPressed: () {
+                _search();
+              },
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  /// transit to search result screen with search query
+  void _search() {
+    if (_query != '') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SearchResultScreen(query: _query,),
+        )
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -84,6 +154,13 @@ class _SearchBarState extends State<SearchBar> {
   List<Widget> _appBarActions() {
     if (_currentUser != null) {
       return [
+        IconButton(
+          onPressed: () {
+            _showSearchDialog(context);
+          },
+          icon: Icon(Icons.search),
+        ),
+        SizedBox(width: 16,),
         InkWell(
           onTap: () async {
             await _api.logout();
@@ -99,11 +176,11 @@ class _SearchBarState extends State<SearchBar> {
           },
           child: _currentUser!.photoUrl != null
           ? CircleAvatar(
-            radius: 20,
+            radius: 18,
             backgroundImage: NetworkImage(_currentUser!.photoUrl!)
           )
           : CircleAvatar(
-            radius: 20,
+            radius: 18,
             backgroundColor: Colors.blueGrey,
             child: Text(_currentUser!.displayName!.substring(0, 1)),
           )
