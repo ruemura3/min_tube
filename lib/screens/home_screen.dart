@@ -72,22 +72,25 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_response != null) {
       if (_items.length == 0) {
         return Center(
-          child: Text('このチャンネルには動画がありません'),
+          child: Text('登録しているチャンネルがありません'),
         );
       }
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSubscription,
-        child: ListView.builder(
-          itemCount: _items.length + 1,
-          itemBuilder: (BuildContext context, int index) {
-            if (index == _items.length) {
-              if (_items.length < _response!.pageInfo!.totalResults!) {
-                return Center(child: CircularProgressIndicator(),);
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: ListView.builder(
+            itemCount: _items.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == _items.length) {
+                if (_items.length < _response!.pageInfo!.totalResults!) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                return Container();
               }
-              return Container();
-            }
-            return ProfileCardForHomeScreen(subscription: _items[index]);
-          },
+              return ProfileCardForHomeScreen(subscription: _items[index]);
+            },
+          ),
         ),
       );
     }

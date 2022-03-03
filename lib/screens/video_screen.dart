@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
@@ -6,7 +5,6 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// video screen
@@ -32,22 +30,11 @@ class _VideoScreenState extends State<VideoScreen> {
   /// channel instance
   Channel? _channel;
   /// youtube player controller
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
 
   @override
   void initState() {
     super.initState();
-    // init youtube player controller
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(
-        hideThumbnail: true,
-        captionLanguage: 'ja',
-        disableDragSeek: false,
-        isLive: false,
-        startAt: 0,
-      ),
-    );
     // get video and channel info
     Future(() async {
       var video = await _api.getVideoResponse(ids: [widget.videoId]);
@@ -55,65 +42,70 @@ class _VideoScreenState extends State<VideoScreen> {
       setState(() {
         _video = video.items![0];
         _channel = channel.items![0];
+        _controller = YoutubePlayerController(
+          initialVideoId: widget.videoId,
+          flags: YoutubePlayerFlags(
+            hideThumbnail: true,
+            captionLanguage: 'ja',
+          ),
+        );
       });
     });
   }
-
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller.pause();
+    _controller!.pause();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
-  }
-
-  List<TextSpan> _getSplitMessage(String message) {
-    final RegExp urlRegExp = RegExp(
-      r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?'
-    );
-    final Iterable<RegExpMatch> urlMatches = urlRegExp.allMatches(message);
-    String tmpMessage = message;
-    List<TextSpan> textSpans = [];
-    for (RegExpMatch urlMatch in urlMatches) {
-      final String url = message.substring(urlMatch.start, urlMatch.end);
-      var tmp = tmpMessage.split(url);
-      textSpans.add(
-        TextSpan(text: tmp[0]),
-      );
-      textSpans.add(
-        TextSpan(
-          text: url.length > 30
-          ? url.substring(0, 30) + '...'
-          : url,
-          style: TextStyle(color: Colors.lightBlue),
-          recognizer: TapGestureRecognizer()..onTap = () {
-            launch(url);
-          },
-        ),
-      );
-      tmpMessage = tmp[1];
-    }
-    textSpans.add(
-      TextSpan(text: tmpMessage),
-    );
-    return textSpans;
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
+    return _controller != null
+    ? YoutubePlayerBuilder(
       onExitFullScreen: () {
         SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       },
       player: YoutubePlayer(
-        controller: _controller,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: Colors.blueAccent,
+        controller: _controller!,
+        progressColors: ProgressBarColors(
+          playedColor: Colors.red,
+          handleColor: Colors.redAccent,
+        ),
+        bottomActions: _video!.snippet!.liveBroadcastContent! != 'live'
+        ? [
+          const SizedBox(width: 14.0),
+          CurrentPosition(),
+          const SizedBox(width: 8.0),
+          ProgressBar(
+            isExpanded: true,
+            colors: ProgressBarColors(
+              backgroundColor: Colors.white.withOpacity(0.6),
+              playedColor: Colors.red,
+              bufferedColor: Colors.white,
+              handleColor: Colors.redAccent,
+            ),
+          ),
+          RemainingDuration(),
+          const PlaybackSpeedButton(),
+          FullScreenButton(),
+        ]
+        : [
+          SizedBox(width: 10,),
+          Container(
+            padding: const EdgeInsets.only(left: 3, top: 2, right: 3, bottom: 2),
+            color: Colors.red.withOpacity(0.7),
+            child: Text('LIVE'),
+          ),
+          Expanded(child: Row(),),
+          FullScreenButton(),
+        ],
         onReady: () {},
         onEnded: (data) {},
       ),
@@ -121,24 +113,25 @@ class _VideoScreenState extends State<VideoScreen> {
         appBar: SearchBar(title: widget.videoTitle,),
         body: _videoScreenBody(player),
       ),
+    )
+    : Scaffold(
+      appBar: SearchBar(title: widget.videoTitle,),
+      body: Center(child: CircularProgressIndicator(),),
     );
   }
 
   /// video screen body
   Widget _videoScreenBody(Widget player) {
-    if (_video != null && _channel != null) {
-      return Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          _videoDetails(player),
-          Padding(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 32),
-            child: ProfileCardForVideoScreen(channel: _channel!,),
-          )
-        ]
-      );
-    }
-    return Center(child: CircularProgressIndicator(),);
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        _videoDetails(player),
+        Padding(
+          padding: const EdgeInsets.all(16).copyWith(bottom: 32),
+          child: ProfileCardForVideoScreen(channel: _channel!,),
+        )
+      ]
+    );
   }
 
   Widget _videoDetails(Widget player) {
@@ -173,11 +166,7 @@ class _VideoScreenState extends State<VideoScreen> {
                   SizedBox(height: 8,),
                   Divider(color: Colors.grey,),
                   SizedBox(height: 8,),
-                  RichText(
-                    text: TextSpan(
-                      children: _getSplitMessage(_video!.snippet!.description!),
-                    )
-                  ),
+                  Util.getDescriptionWithUrl(_video!.snippet!.description!),
                   SizedBox(height: 136,),
                 ],
               ),

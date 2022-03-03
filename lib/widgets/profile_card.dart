@@ -203,7 +203,7 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
                 SizedBox(height: 16,),
                 ElevatedButton(
                   onPressed: () {},
-                  
+
                   child: Text('チャンネル登録'),
                 ),
                 widget.channel.snippet!.description! != ''
@@ -212,7 +212,7 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
                     SizedBox(height: 8,),
                     Divider(color: Colors.grey,),
                     SizedBox(height: 8,),
-                    Text(widget.channel.snippet!.description!,),
+                    Util.getDescriptionWithUrl(widget.channel.snippet!.description!,),
                   ]
                 )
                 : Container(),

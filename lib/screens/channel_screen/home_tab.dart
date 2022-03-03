@@ -12,11 +12,9 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: SingleChildScrollView(
-        child: ProfileCardForChannelScreen(channel: channel,),
-      ),
+      child: ProfileCardForChannelScreen(channel: channel,),
     );
   }
 }

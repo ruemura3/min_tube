@@ -77,7 +77,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSearchResult,
         child: ListView.builder(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(16),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {

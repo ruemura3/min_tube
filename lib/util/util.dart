@@ -1,3 +1,7 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 /// util
 class Util {
   /// format view count
@@ -70,5 +74,43 @@ class Util {
   /// format view count and timeago
   static String viewsAndTimeago(String viewCount, DateTime timeago) {
     return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
+  }
+
+  /// get description with url
+  static RichText getDescriptionWithUrl(String description) {
+    final RegExp urlRegExp = RegExp(
+      r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?'
+    );
+    final Iterable<RegExpMatch> urlMatches = urlRegExp.allMatches(description);
+    String tmpMessage = description;
+    List<TextSpan> textSpans = [];
+    for (RegExpMatch urlMatch in urlMatches) {
+      final String url = description.substring(urlMatch.start, urlMatch.end);
+      var tmp = tmpMessage.split(url);
+      textSpans.add(
+        TextSpan(text: tmp[0]),
+      );
+      textSpans.add(
+        TextSpan(
+          text: url.length > 30
+          ? url.substring(0, 30) + '...'
+          : url,
+          style: TextStyle(color: Colors.lightBlue),
+          recognizer: TapGestureRecognizer()..onTap = () {
+            launch(url);
+          },
+        ),
+      );
+      tmpMessage = tmp[1];
+    }
+    textSpans.add(
+      TextSpan(text: tmpMessage),
+    );
+    
+    return RichText(
+      text: TextSpan(
+        children: textSpans,
+      )
+    );
   }
 }
