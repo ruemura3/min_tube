@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/screens/home_screen/subscription_items.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
+import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
 /// home screen
@@ -15,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// is loading
+  bool _isLoading = false;
   /// subscription response
   SubscriptionListResponse? _response;
   ///  subscription list
@@ -23,18 +25,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
     Future(() async {
       final response = await _api.getSubscriptionResponse();
       setState(() {
         _response = response;
         _items = response.items!;
       });
+      _isLoading = false;
     });
   }
 
+  /// get additional subscription
   bool _getAdditionalSubscription(ScrollNotification scrollDetails) {
-    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+    if (!_isLoading &&
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
+      _isLoading = true;
       Future(() async {
         final response = await _api.getSubscriptionResponse(
           pageToken: _response!.nextPageToken!,
@@ -43,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _response = response;
           _items.addAll(response.items!);
         });
+        _isLoading = false;
       });
     }
     return false;
@@ -75,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return Container();
             }
-            return SubscriptionItems(subscription: _items[index],);
+            return ProfileCardForHome(subscription: _items[index]);
           },
         ),
       );

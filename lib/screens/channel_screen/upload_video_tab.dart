@@ -19,6 +19,8 @@ class UploadVideoTab extends StatefulWidget {
 class _UploadVideoTabState extends State<UploadVideoTab> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// is loading
+  bool _isLoading = false;
   /// upload video response
   PlaylistItemListResponse? _response;
   /// upload video list
@@ -27,6 +29,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
     Future(() async {
       final response = await _api.getPlaylistItemResponse(
         id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
@@ -35,13 +38,16 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         _response = response;
         _items = response.items!;
       });
+      _isLoading = false;
     });
   }
 
   /// get additional upload video
   bool _getAdditionalUploadVideo(ScrollNotification scrollDetails) {
-    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+    if (!_isLoading &&
+    scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
+      _isLoading = true;
       Future(() async {
         final response = await _api.getPlaylistItemResponse(
           id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
@@ -51,6 +57,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
           _response = response;
           _items.addAll(response.items!);
         });
+        _isLoading = false;
       });
     }
     return false;

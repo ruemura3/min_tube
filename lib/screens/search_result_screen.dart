@@ -22,6 +22,8 @@ class SearchResultScreen extends StatefulWidget {
 class _SearchResultScreenState extends State<SearchResultScreen> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// is loading
+  bool _isLoading = false;
   /// search response
   SearchListResponse? _response;
   /// search result list
@@ -30,19 +32,23 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
     Future(() async {
       final response = await _api.getSearchResponse(query: widget.query);
       setState(() {
         _response = response;
         _items = response.items!;
       });
+      _isLoading = false;
     });
   }
 
   /// get additional search result
   bool _getAdditionalSearchResult(ScrollNotification scrollDetails) {
-    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+    if (!_isLoading &&
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
+      _isLoading = true;
       Future(() async {
         final response = await _api.getSearchResponse(
           query: widget.query,
@@ -52,6 +58,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           _response = response;
           _items.addAll(response.items!);
         });
+        _isLoading = false;
       });
     }
     return false;

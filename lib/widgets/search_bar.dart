@@ -98,8 +98,12 @@ class _SearchBarState extends State<SearchBar> {
             );
           },
           child: _currentUser!.photoUrl != null
-          ? CircleAvatar(backgroundImage: NetworkImage(_currentUser!.photoUrl!))
+          ? CircleAvatar(
+            radius: 20,
+            backgroundImage: NetworkImage(_currentUser!.photoUrl!)
+          )
           : CircleAvatar(
+            radius: 20,
             backgroundColor: Colors.blueGrey,
             child: Text(_currentUser!.displayName!.substring(0, 1)),
           )

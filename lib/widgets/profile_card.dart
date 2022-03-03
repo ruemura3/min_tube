@@ -218,3 +218,58 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
     );
   }
 }
+
+/// profile card for search result
+/// use only when kind is 'youtube#channel'
+class ProfileCardForHome extends StatelessWidget {
+  /// search result
+  final Subscription subscription;
+
+  /// constructor
+  ProfileCardForHome({required this.subscription});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChannelScreen(
+            channelId: subscription.snippet!.resourceId!.channelId!,
+            channelTitle: subscription.snippet!.title!,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundImage: NetworkImage(
+                subscription.snippet!.thumbnails!.medium!.url!
+              ),
+            ),
+            SizedBox(width: 16,),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    subscription.snippet!.title!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

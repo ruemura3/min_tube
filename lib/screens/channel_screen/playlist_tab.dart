@@ -19,6 +19,8 @@ class PlaylistTab extends StatefulWidget {
 class _PlaylistTabState extends State<PlaylistTab> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// is loading
+  bool _isLoading = false;
   /// playlist item response
   PlaylistListResponse? _response;
   /// playlist item list
@@ -27,6 +29,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
     Future(() async {
       final response = await _api.getPlaylistResponse(
         id: widget.channel.id!
@@ -35,13 +38,16 @@ class _PlaylistTabState extends State<PlaylistTab> {
         _response = response;
         _items = response.items!;
       });
+      _isLoading = false;
     });
   }
 
   /// get additional playlist
   bool _getAdditionalPlaylistItem(ScrollNotification scrollDetails) {
-    if (scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+    if (!_isLoading &&
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
+      _isLoading = true;
       Future(() async {
         final response = await _api.getPlaylistResponse(
           id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
@@ -51,6 +57,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
           _response = response;
           _items.addAll(response.items!);
         });
+        _isLoading = false;
       });
     }
     return false;

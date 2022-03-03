@@ -66,7 +66,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 
@@ -81,7 +81,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 
@@ -96,7 +96,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 
@@ -115,7 +115,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 
@@ -134,7 +134,7 @@ class ApiService {
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 
@@ -144,12 +144,13 @@ class ApiService {
       final youTubeApi = await getYouTubeApi();
       final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
         ['snippet', 'contentDetails'],
+        maxResults: 10,
         mine: true,
         pageToken: pageToken,
       );
       return response;
     } catch (e) {
-      throw e;
+      throw Exception();
     }
   }
 }
