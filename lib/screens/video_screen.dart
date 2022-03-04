@@ -52,6 +52,7 @@ class _VideoScreenState extends State<VideoScreen> {
       });
     });
   }
+  
   @override
   void deactivate() {
     // Pauses video while navigating to next page.

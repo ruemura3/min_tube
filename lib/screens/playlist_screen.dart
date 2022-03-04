@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/widgets/search_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
-/// channel upload video tab
-class UploadVideoTab extends StatefulWidget {
-  /// channel instance
-  final Channel channel;
+/// playlist screen
+class PlaylistScreen extends StatefulWidget {
+  /// playlist Id
+  final Playlist playlist;
 
   /// constructor
-  UploadVideoTab({required this.channel});
+  PlaylistScreen({required this.playlist});
 
   @override
-  _UploadVideoTabState createState() => _UploadVideoTabState();
+  _PlaylistScreenState createState() => _PlaylistScreenState();
 }
 
-/// channel upload video tab
-class _UploadVideoTabState extends State<UploadVideoTab> {
+/// playlist screen item
+class _PlaylistScreenState extends State<PlaylistScreen> {
   /// api service
   ApiService _api = ApiService.instance;
   /// is loading
@@ -32,14 +33,12 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     _isLoading = true;
     Future(() async {
       final response = await _api.getPlaylistItemResponse(
-        id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+        id: widget.playlist.id!,
       );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items = response.items!;
-        });
-      }
+      setState(() {
+        _response = response;
+        _items = response.items!;
+      });
       _isLoading = false;
     });
   }
@@ -52,7 +51,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
       _isLoading = true;
       Future(() async {
         final response = await _api.getPlaylistItemResponse(
-          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+          id: widget.playlist.id!,
           pageToken: _response!.nextPageToken!,
         );
         setState(() {
@@ -67,6 +66,14 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: SearchBar(title: widget.playlist.snippet!.title!,),
+      body: _playlistScreenBody(),
+    );
+  }
+
+  /// playlist screen body
+  Widget _playlistScreenBody() {
     if (_response != null) {
       if (_items.length == 0) {
         return Center(
@@ -78,20 +85,52 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
-            itemCount: _items.length + 1,
+            itemCount: _items.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if (index == _items.length) {
+              if (index == 0) {
+                return _playlistDetail();
+              }
+              if (index == _items.length + 1) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
                   return Center(child: CircularProgressIndicator(),);
                 }
                 return Container();
               }
-              return VideoCardForPlaylist(playlistItem: _items[index]);
+              return VideoCardForPlaylist(playlistItem: _items[index - 1]);
             },
           ),
         ),
       );
     }
     return Center(child: CircularProgressIndicator(),);
+  }
+
+  /// playlist detail
+  Widget _playlistDetail() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            child: Text(
+              widget.playlist.snippet!.title!,
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          SizedBox(height: 8,),
+          Text(
+            widget.playlist.snippet!.channelTitle!,
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8,),
+          Text(
+            widget.playlist.snippet!.description!,
+            style: TextStyle(color: Colors.grey),
+          )
+        ],
+      ),
+    );
   }
 }

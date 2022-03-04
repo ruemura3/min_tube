@@ -34,10 +34,12 @@ class _PlaylistTabState extends State<PlaylistTab> {
       final response = await _api.getPlaylistResponse(
         id: widget.channel.id!
       );
-      setState(() {
-        _response = response;
-        _items = response.items!;
-      });
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+        });
+      }
       _isLoading = false;
     });
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
+import 'package:min_tube/screens/playlist_screen.dart';
 
 /// playlist card
 class PlaylistCard extends StatelessWidget {
@@ -12,7 +13,14 @@ class PlaylistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PlaylistScreen(
+            playlist: playlist,
+          ),
+        ),
+      ),
       child: Container(
           height: 112,
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
@@ -28,23 +36,21 @@ class PlaylistCard extends StatelessWidget {
                   ),
                   Container(
                     color: Colors.black.withOpacity(0.7),
-                    width: 84,
+                    width: 64,
                     height: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text(
+                          '${playlist.contentDetails!.itemCount!.toString()}',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                         SizedBox(height: 8,),
                         Icon(
                           Icons.play_arrow,
                           color: Colors.white,
-                        ),
-                        SizedBox(height: 8,),
-                        Text(
-                          '${playlist.contentDetails!.itemCount!.toString()}本の動画',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
                         ),
                       ],
                     ),

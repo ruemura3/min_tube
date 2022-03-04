@@ -42,11 +42,14 @@ class VideoCardForSearchResult extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    searchResult.snippet!.title!,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16),
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      searchResult.snippet!.title!,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                   SizedBox(height: 8,),
                   Text(
