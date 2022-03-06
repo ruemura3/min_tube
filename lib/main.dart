@@ -28,10 +28,12 @@ class _MinTubeState extends State<MinTube> {
     super.initState();
     Future(() async {
       final user = await _api.user;
-      setState(() {
-        _currentUser = user;
-        _isLaunched = true;
-      });
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+          _isLaunched = true;
+        });
+      }
     });
   }
 
@@ -56,6 +58,7 @@ class _MinTubeState extends State<MinTube> {
     );
   }
 
+  /// root screen
   Widget _home() {
     if (_isLaunched) {
       if (_currentUser != null) {

@@ -39,20 +39,22 @@ class _VideoScreenState extends State<VideoScreen> {
     Future(() async {
       var video = await _api.getVideoResponse(ids: [widget.videoId]);
       var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
-      setState(() {
-        _video = video.items![0];
-        _channel = channel.items![0];
-        _controller = YoutubePlayerController(
-          initialVideoId: widget.videoId,
-          flags: YoutubePlayerFlags(
-            hideThumbnail: true,
-            captionLanguage: 'ja',
-          ),
-        );
-      });
+      if (mounted) {
+        setState(() {
+          _video = video.items![0];
+          _channel = channel.items![0];
+          _controller = YoutubePlayerController(
+            initialVideoId: widget.videoId,
+            flags: YoutubePlayerFlags(
+              hideThumbnail: true,
+              captionLanguage: 'ja',
+            ),
+          );
+        });
+      }
     });
   }
-  
+
   @override
   void deactivate() {
     // Pauses video while navigating to next page.

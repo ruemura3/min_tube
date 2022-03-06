@@ -45,10 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
         final response = await _api.getSubscriptionResponse(
           pageToken: _response!.nextPageToken!,
         );
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-        });
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+          });
+        }
         _isLoading = false;
       });
     }

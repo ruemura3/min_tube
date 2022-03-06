@@ -55,10 +55,12 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
           id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
           pageToken: _response!.nextPageToken!,
         );
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-        });
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+          });
+        }
         _isLoading = false;
       });
     }

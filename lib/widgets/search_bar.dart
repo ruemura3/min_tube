@@ -112,9 +112,11 @@ class _SearchBarState extends State<SearchBar> {
     super.initState();
     Future(() async {
       final user = await _api.user;
-      setState(() {
-        _currentUser = user;
-      });
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
     });
   }
 
@@ -164,9 +166,11 @@ class _SearchBarState extends State<SearchBar> {
         InkWell(
           onTap: () async {
             await _api.logout();
-            setState(() {
-              _currentUser = null;
-            });
+            if (mounted) {
+              setState(() {
+                _currentUser = null;
+              });
+            }
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -190,9 +194,11 @@ class _SearchBarState extends State<SearchBar> {
     }
     Future(() async {
       final user = await _api.user;
-      setState(() {
-        _currentUser = user;
-      });
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
     });
     return [];
   }

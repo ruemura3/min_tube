@@ -34,10 +34,12 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     _isLoading = true;
     Future(() async {
       final response = await _api.getSearchResponse(query: widget.query);
-      setState(() {
-        _response = response;
-        _items = response.items!;
-      });
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+        });
+      }
       _isLoading = false;
     });
   }
@@ -53,10 +55,12 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           query: widget.query,
           pageToken: _response!.nextPageToken!
         );
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-        });
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+          });
+        }
         _isLoading = false;
       });
     }

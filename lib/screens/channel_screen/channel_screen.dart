@@ -52,9 +52,11 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
     } else {
       Future(() async {
         final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
-        setState(() {
-          _channel = channels.items![0];
-        });
+        if (mounted) {
+          setState(() {
+            _channel = channels.items![0];
+          });
+        }
       });
     }
     _tabController.animateTo(widget.tabPage);

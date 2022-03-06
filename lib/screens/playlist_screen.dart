@@ -35,10 +35,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       final response = await _api.getPlaylistItemResponse(
         id: widget.playlist.id!,
       );
-      setState(() {
-        _response = response;
-        _items = response.items!;
-      });
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+        });
+      }
       _isLoading = false;
     });
   }
@@ -54,10 +56,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           id: widget.playlist.id!,
           pageToken: _response!.nextPageToken!,
         );
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-        });
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+          });
+        }
         _isLoading = false;
       });
     }
@@ -116,13 +120,16 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
             child: Text(
               widget.playlist.snippet!.title!,
               textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(fontSize: 20),
             ),
           ),
           SizedBox(height: 8,),
-          Text(
-            widget.playlist.snippet!.channelTitle!,
-            style: TextStyle(fontSize: 16),
+          Container(
+            width: double.infinity,
+            child: Text(
+              widget.playlist.snippet!.channelTitle!,
+              style: TextStyle(fontSize: 16),
+            ),
           ),
           SizedBox(height: 8,),
           Text(

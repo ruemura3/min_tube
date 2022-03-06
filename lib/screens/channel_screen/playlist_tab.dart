@@ -55,10 +55,12 @@ class _PlaylistTabState extends State<PlaylistTab> {
           id: widget.channel.id!,
           pageToken: _response!.nextPageToken!,
         );
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-        });
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+          });
+        }
         _isLoading = false;
       });
     }
