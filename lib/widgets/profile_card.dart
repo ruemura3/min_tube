@@ -282,6 +282,8 @@ class _SubscribeButtonState extends State<SubscribeButton> {
   bool _isSubscribed = false;
   /// subscription
   Subscription? _subscription;
+  /// is button enabled
+  bool _isEnabled = false;
 
   @override
   void initState() {
@@ -294,6 +296,7 @@ class _SubscribeButtonState extends State<SubscribeButton> {
           if (_isSubscribed) {
             _subscription = response.items![0];
           }
+          _isEnabled = true;
         });
       }
     });
@@ -307,15 +310,23 @@ class _SubscribeButtonState extends State<SubscribeButton> {
   Widget _button() {
     if (_isSubscribed) {
       return TextButton(
-        onPressed: () async {
-          await _api.deleteSubscription(subscription: _subscription!);
-          if (mounted) {
-            setState(() {
-              _isSubscribed = false;
-              _subscription = null;
-            });
-          }
-        },
+        onPressed: _isEnabled
+        ? () {
+          setState(() {
+            _isEnabled = false;
+          });
+          Future(() async {
+            await _api.deleteSubscription(subscription: _subscription!);
+            if (mounted) {
+              setState(() {
+                _isSubscribed = false;
+                _subscription = null;
+                _isEnabled = true;
+              });
+            }
+          });
+        }
+        : null,
         style:  ButtonStyle(
           padding: MaterialStateProperty.all(EdgeInsets.zero),
           minimumSize: MaterialStateProperty.all(Size.zero),
@@ -328,15 +339,23 @@ class _SubscribeButtonState extends State<SubscribeButton> {
       );
     } else {
       return TextButton(
-        onPressed: () async {
-          final response = await _api.insertSubscription(channel: widget.channel);
-          if (mounted) {
-            setState(() {
-              _isSubscribed = true;
-              _subscription = response;
-            });
-          }
-        },
+        onPressed: _isEnabled
+        ? () {
+          setState(() {
+            _isEnabled = false;
+          });
+          Future(() async {
+            final response = await _api.insertSubscription(channel: widget.channel);
+            if (mounted) {
+              setState(() {
+                _isSubscribed = true;
+                _subscription = response;
+                _isEnabled = true;
+              });
+            }
+          });
+        }
+        : null,
         style:  ButtonStyle(
           padding: MaterialStateProperty.all(EdgeInsets.zero),
           minimumSize: MaterialStateProperty.all(Size.zero),
