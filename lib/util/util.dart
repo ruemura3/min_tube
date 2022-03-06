@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// util
@@ -77,7 +78,7 @@ class Util {
   }
 
   /// get description with url
-  static RichText getDescriptionWithUrl(String description) {
+  static RichText getDescriptionWithUrl(String description, BuildContext context) {
     final RegExp urlRegExp = RegExp(
       r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?'
     );
@@ -88,7 +89,10 @@ class Util {
       final String url = description.substring(urlMatch.start, urlMatch.end);
       var tmp = tmpMessage.split(url);
       textSpans.add(
-        TextSpan(text: tmp[0]),
+        TextSpan(
+          text: tmp[0],
+          style: TextStyle(color: ColorUtil.textColor(context)),
+        ),
       );
       textSpans.add(
         TextSpan(
@@ -101,12 +105,17 @@ class Util {
           },
         ),
       );
-      tmpMessage = tmp[1];
+      if (tmp.length > 1) {
+        tmpMessage = tmp[1];
+      }
     }
     textSpans.add(
-      TextSpan(text: tmpMessage),
+      TextSpan(
+        text: tmpMessage,
+        style: TextStyle(color: ColorUtil.textColor(context)),
+      ),
     );
-    
+
     return RichText(
       text: TextSpan(
         children: textSpans,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
+import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 
@@ -66,78 +67,67 @@ class ProfileCardForSearchResult extends StatelessWidget {
 }
 
 /// profile card for video screen
-class ProfileCardForVideoScreen extends StatefulWidget {
-  /// search query
+class ProfileCardForVideoScreen extends StatelessWidget {
+  /// channel instance
   final Channel channel;
 
   /// constructor
   ProfileCardForVideoScreen({required this.channel});
 
   @override
-  _ProfileCardForVideoScreenState createState() => _ProfileCardForVideoScreenState();
-}
-
-/// profile card for video screen state
-class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
-  @override
   Widget build(BuildContext context) {
     return Container(
       height:112,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChannelScreen(
+              channel: channel,
+              channelTitle: channel.snippet!.title!,
+            ),
+          ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChannelScreen(
-                      channel: widget.channel,
-                      channelTitle: widget.channel.snippet!.title!,
-                    ),
-                  ),
-                ),
-                child: CircleAvatar(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
                   radius: 32,
                   backgroundImage: NetworkImage(
-                    widget.channel.snippet!.thumbnails!.medium!.url!
+                    channel.snippet!.thumbnails!.medium!.url!
                   ),
                 ),
-              ),
-              SizedBox(width: 16,),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      widget.channel.snippet!.title!,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    widget.channel.statistics!.subscriberCount != null
-                    ? Text(
-                      Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey,),
-                    )
-                    : Container(),
-                    SizedBox(height: 8,),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'チャンネル登録',
+                SizedBox(width: 16,),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        channel.snippet!.title!,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                      channel.statistics!.subscriberCount != null
+                      ? Text(
+                        Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.grey,),
+                      )
+                      : Container(),
+                      SizedBox(height: 4,),
+                      SubscribeButton(channel: channel,),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -146,19 +136,13 @@ class _ProfileCardForVideoScreenState extends State<ProfileCardForVideoScreen> {
 }
 
 /// profile card for channel screen
-class ProfileCardForChannelScreen extends StatefulWidget {
-  /// search query
+class ProfileCardForChannelScreen extends StatelessWidget {
+  /// channel instance
   final Channel channel;
 
   /// constructor
   ProfileCardForChannelScreen({required this.channel});
 
-  @override
-  _ProfileCardForChannelScreenState createState() => _ProfileCardForChannelScreenState();
-}
-
-/// profile card for channel screen state
-class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScreen> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -170,9 +154,9 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          widget.channel.brandingSettings!.image != null
+          channel.brandingSettings!.image != null
           ? Image.network(
-            widget.channel.brandingSettings!.image!.bannerExternalUrl!,
+            channel.brandingSettings!.image!.bannerExternalUrl!,
             fit: BoxFit.cover,
             width: double.infinity,
           )
@@ -185,34 +169,33 @@ class _ProfileCardForChannelScreenState extends State<ProfileCardForChannelScree
                 CircleAvatar(
                   radius: 48,
                   backgroundImage: NetworkImage(
-                    widget.channel.snippet!.thumbnails!.medium!.url!
+                    channel.snippet!.thumbnails!.medium!.url!
                   ),
                 ),
                 SizedBox(height: 16,),
                 Text(
-                  widget.channel.snippet!.title!,
+                  channel.snippet!.title!,
                   style: TextStyle(fontSize: 18),
                 ),
                 SizedBox(height: 8,),
-                widget.channel.statistics!.subscriberCount != null
+                channel.statistics!.subscriberCount != null
                 ? Text(
-                  Util.formatSubScriberCount(widget.channel.statistics!.subscriberCount)!,
+                  Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
                   style: TextStyle(color: Colors.grey),
                 )
                 : Container(),
                 SizedBox(height: 16,),
-                ElevatedButton(
-                  onPressed: () {},
-
-                  child: Text('チャンネル登録'),
-                ),
-                widget.channel.snippet!.description! != ''
+                SubscribeButton(channel: channel,),
+                channel.snippet!.description! != ''
                 ? Column(
                   children: [
                     SizedBox(height: 8,),
                     Divider(color: Colors.grey,),
                     SizedBox(height: 8,),
-                    Util.getDescriptionWithUrl(widget.channel.snippet!.description!,),
+                    Util.getDescriptionWithUrl(
+                      channel.snippet!.description!,
+                      context
+                    ),
                   ]
                 )
                 : Container(),
@@ -278,5 +261,92 @@ class ProfileCardForHomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SubscribeButton extends StatefulWidget {
+  /// channel instance
+  final Channel channel;
+
+  /// constructor
+  SubscribeButton({required this.channel});
+
+  @override
+  _SubscribeButtonState createState() => _SubscribeButtonState();
+}
+
+class _SubscribeButtonState extends State<SubscribeButton> {
+  /// api service
+  ApiService _api = ApiService.instance;
+  /// is subscribed
+  bool _isSubscribed = false;
+  /// subscription
+  Subscription? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    Future(() async {
+      final response = await _api.getSubscriptionResponse(forChannelId: widget.channel.id!);
+      if (mounted) {
+        setState(() {
+          _isSubscribed = response.items!.length != 0;
+          if (_isSubscribed) {
+            _subscription = response.items![0];
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _button();
+  }
+
+  Widget _button() {
+    if (_isSubscribed) {
+      return TextButton(
+        onPressed: () async {
+          await _api.deleteSubscription(subscription: _subscription!);
+          if (mounted) {
+            setState(() {
+              _isSubscribed = false;
+              _subscription = null;
+            });
+          }
+        },
+        style:  ButtonStyle(
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
+          minimumSize: MaterialStateProperty.all(Size.zero),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          '登録済み',
+          style: TextStyle(color: Colors.grey,),
+        ),
+      );
+    } else {
+      return TextButton(
+        onPressed: () async {
+          final response = await _api.insertSubscription(channel: widget.channel);
+          if (mounted) {
+            setState(() {
+              _isSubscribed = true;
+              _subscription = response;
+            });
+          }
+        },
+        style:  ButtonStyle(
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
+          minimumSize: MaterialStateProperty.all(Size.zero),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          'チャンネル登録',
+          style: TextStyle(color: Colors.red,),
+        ),
+      );
+    }
   }
 }

@@ -139,16 +139,51 @@ class ApiService {
   }
 
   /// get login user's subscription
-  Future<SubscriptionListResponse> getSubscriptionResponse({String pageToken = ''}) async {
+  Future<SubscriptionListResponse> getSubscriptionResponse({
+    String forChannelId = '',String pageToken = ''
+  }) async {
     try {
       final youTubeApi = await getYouTubeApi();
       final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
         ['snippet', 'contentDetails'],
+        forChannelId: forChannelId,
         maxResults: 10,
         mine: true,
         pageToken: pageToken,
       );
       return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /// insert subscription
+  Future<Subscription> insertSubscription({
+    required Channel channel,
+  }) async {
+    try {
+      final youTubeApi = await getYouTubeApi();
+      final response = await youTubeApi.subscriptions.insert(
+        Subscription(
+          snippet: SubscriptionSnippet(
+            resourceId: ResourceId(channelId: channel.id)
+          ),
+        ),
+        ['snippet'],
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /// delete subscription
+  Future<void> deleteSubscription({
+    required Subscription subscription,
+  }) async {
+    try {
+      final youTubeApi = await getYouTubeApi();
+      await youTubeApi.subscriptions.delete(subscription.id!);
     } catch (e) {
       throw e;
     }

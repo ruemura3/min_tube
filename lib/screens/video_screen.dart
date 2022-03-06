@@ -169,7 +169,10 @@ class _VideoScreenState extends State<VideoScreen> {
                   SizedBox(height: 8,),
                   Divider(color: Colors.grey,),
                   SizedBox(height: 8,),
-                  Util.getDescriptionWithUrl(_video!.snippet!.description!),
+                  Util.getDescriptionWithUrl(
+                    _video!.snippet!.description!,
+                    context,
+                  ),
                   SizedBox(height: 136,),
                 ],
               ),
