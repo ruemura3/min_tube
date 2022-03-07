@@ -117,7 +117,7 @@ class VideoCardForPlaylist extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      Util.formatTimeago(playlistItem.snippet!.publishedAt!),
+                      Util.formatTimeago(playlistItem.contentDetails!.videoPublishedAt!),
                       style: TextStyle(
                         color: Colors.grey,
                       ),

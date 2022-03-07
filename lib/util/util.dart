@@ -48,7 +48,7 @@ class Util {
       return '${difference.inMinutes} 分前';
     } else if (sec < 86400) {
       return '${difference.inHours} 時間前';
-    } else if (sec < 604800) {
+    } else if (sec < 1209600) {
       return '${difference.inDays} 日前';
     } else if (sec < 3024000) {
       return '${(difference.inDays / 7).floor()} 週間前';

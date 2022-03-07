@@ -6,7 +6,7 @@ import 'package:min_tube/screens/login_screen.dart';
 
 void main() {
   runApp(MinTube());
-} 
+}
 
 /// mintube
 class MinTube extends StatefulWidget {
