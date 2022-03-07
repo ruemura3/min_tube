@@ -4,6 +4,7 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/home_tab.dart';
 import 'package:min_tube/screens/channel_screen/playlist_tab.dart';
 import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
@@ -52,11 +53,20 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       });
     } else {
       Future(() async {
-        final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
-        if (mounted) {
-          setState(() {
-            _channel = channels.items![0];
-          });
+        try {
+          final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
+          if (mounted) {
+            setState(() {
+              _channel = channels.items![0];
+            });
+          }
+        } catch (e) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ErrorScreen(),
+            )
+          );
         }
       });
     }

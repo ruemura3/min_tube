@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
 /// channel upload video tab
@@ -31,16 +32,25 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      final response = await _api.getPlaylistItemResponse(
-        id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
-      );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items = response.items!;
-        });
+      try {
+        final response = await _api.getPlaylistItemResponse(
+          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+        );
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items = response.items!;
+          });
+        }
+        _isLoading = false;
+      } catch (e) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ErrorScreen(),
+          )
+        );
       }
-      _isLoading = false;
     });
   }
 
@@ -51,17 +61,26 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getPlaylistItemResponse(
-          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
-          pageToken: _response!.nextPageToken!,
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items.addAll(response.items!);
-          });
+        try {
+          final response = await _api.getPlaylistItemResponse(
+            id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+            pageToken: _response!.nextPageToken!,
+          );
+          if (mounted) {
+            setState(() {
+              _response = response;
+              _items.addAll(response.items!);
+            });
+          }
+          _isLoading = false;
+        } catch (e) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ErrorScreen(),
+            )
+          );
         }
-        _isLoading = false;
       });
     }
     return false;

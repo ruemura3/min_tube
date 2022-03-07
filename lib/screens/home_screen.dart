@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
@@ -27,12 +28,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      final response = await _api.getSubscriptionResponse();
-      setState(() {
-        _response = response;
-        _items = response.items!;
-      });
-      _isLoading = false;
+      try {
+        final response = await _api.getSubscriptionResponse();
+        setState(() {
+          _response = response;
+          _items = response.items!;
+        });
+        _isLoading = false;
+      } catch (e) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ErrorScreen(),
+          )
+        );
+      }
     });
   }
 
@@ -43,16 +53,25 @@ class _HomeScreenState extends State<HomeScreen> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getSubscriptionResponse(
-          pageToken: _response!.nextPageToken!,
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items.addAll(response.items!);
-          });
+        try {
+          final response = await _api.getSubscriptionResponse(
+            pageToken: _response!.nextPageToken!,
+          );
+          if (mounted) {
+            setState(() {
+              _response = response;
+              _items.addAll(response.items!);
+            });
+          }
+          _isLoading = false;
+        } catch (e) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ErrorScreen(),
+            )
+          );
         }
-        _isLoading = false;
       });
     }
     return false;

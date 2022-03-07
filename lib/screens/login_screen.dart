@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
 /// login screen

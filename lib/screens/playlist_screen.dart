@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
@@ -33,37 +34,55 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      final response = await _api.getPlaylistItemResponse(
-        id: widget.playlist.id!,
-      );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items = response.items!;
-        });
+      try {
+        final response = await _api.getPlaylistItemResponse(
+          id: widget.playlist.id!,
+        );
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items = response.items!;
+          });
+        }
+        _isLoading = false;
+      } catch (e) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ErrorScreen(),
+          )
+        );
       }
-      _isLoading = false;
     });
   }
 
   /// get additional upload video
   bool _getAdditionalUploadVideo(ScrollNotification scrollDetails) {
     if (!_isLoading &&
-    scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getPlaylistItemResponse(
-          id: widget.playlist.id!,
-          pageToken: _response!.nextPageToken!,
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items.addAll(response.items!);
-          });
+        try {
+          final response = await _api.getPlaylistItemResponse(
+            id: widget.playlist.id!,
+            pageToken: _response!.nextPageToken!,
+          );
+          if (mounted) {
+            setState(() {
+              _response = response;
+              _items.addAll(response.items!);
+            });
+          }
+          _isLoading = false;
+        } catch (e) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ErrorScreen(),
+            )
+          );
         }
-        _isLoading = false;
       });
     }
     return false;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
@@ -38,20 +39,29 @@ class _VideoScreenState extends State<VideoScreen> {
     super.initState();
     // get video and channel info
     Future(() async {
-      var video = await _api.getVideoResponse(ids: [widget.videoId]);
-      var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
-      if (mounted) {
-        setState(() {
-          _video = video.items![0];
-          _channel = channel.items![0];
-          _controller = YoutubePlayerController(
-            initialVideoId: widget.videoId,
-            flags: YoutubePlayerFlags(
-              hideThumbnail: true,
-              captionLanguage: 'ja',
-            ),
-          );
-        });
+      try {
+        var video = await _api.getVideoResponse(ids: [widget.videoId]);
+        var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
+        if (mounted) {
+          setState(() {
+            _video = video.items![0];
+            _channel = channel.items![0];
+            _controller = YoutubePlayerController(
+              initialVideoId: widget.videoId,
+              flags: YoutubePlayerFlags(
+                hideThumbnail: true,
+                captionLanguage: 'ja',
+              ),
+            );
+          });
+        }
+      } catch (e) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ErrorScreen(),
+          )
+        );
       }
     });
   }
