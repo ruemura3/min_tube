@@ -305,21 +305,7 @@ class _SubscribeButtonState extends State<SubscribeButton> {
     if (_isSubscribed) {
       return TextButton(
         onPressed: _isEnabled
-        ? () {
-          setState(() {
-            _isEnabled = false;
-          });
-          Future(() async {
-            await _api.deleteSubscription(subscription: _subscription!);
-            if (mounted) {
-              setState(() {
-                _isSubscribed = false;
-                _subscription = null;
-                _isEnabled = true;
-              });
-            }
-          });
-        }
+        ? () => _showUnsubscribeButton()
         : null,
         style:  ButtonStyle(
           padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -364,5 +350,42 @@ class _SubscribeButtonState extends State<SubscribeButton> {
         ),
       );
     }
+  }
+
+  _showUnsubscribeButton() {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          content: Text("${widget.channel.snippet!.title} のチャンネル登録を解除しますか？"),
+          actions: <Widget>[
+            // ボタン領域
+            TextButton(
+              child: Text("キャンセル"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text("登録解除"),
+              onPressed: () {
+                setState(() {
+                  _isEnabled = false;
+                });
+                Future(() async {
+                  await _api.deleteSubscription(subscription: _subscription!);
+                  if (mounted) {
+                    setState(() {
+                      _isSubscribed = false;
+                      _subscription = null;
+                      _isEnabled = true;
+                    });
+                  }
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

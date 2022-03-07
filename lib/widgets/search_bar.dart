@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/login_screen.dart';
-import 'package:min_tube/screens/search_result_screen.dart';
 
 /// search bar
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
@@ -36,10 +35,6 @@ class _SearchBarState extends State<SearchBar> {
   ApiService _api = ApiService.instance;
   /// current user
   GoogleSignInAccount? _currentUser;
-  /// search query
-  String _query = '';
-  /// search query text editing controller
-  final _controller = TextEditingController();
 
   @override
   void initState() {
@@ -52,6 +47,41 @@ class _SearchBarState extends State<SearchBar> {
         });
       }
     });
+  }
+
+  _showUnsubscribeButton() {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          content: Text("ログアウトしますか？"),
+          actions: <Widget>[
+            // ボタン領域
+            TextButton(
+              child: Text("キャンセル"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text("ログアウト"),
+              onPressed: () async {
+                await _api.logout();
+                if (mounted) {
+                  setState(() {
+                    _currentUser = null;
+                  });
+                }
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LoginScreen(),
+                  )
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -91,20 +121,7 @@ class _SearchBarState extends State<SearchBar> {
     if (_currentUser != null) {
       return [
         InkWell(
-          onTap: () async {
-            await _api.logout();
-            if (mounted) {
-              setState(() {
-                _currentUser = null;
-              });
-            }
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => LoginScreen(),
-              )
-            );
-          },
+          onTap: () => _showUnsubscribeButton(),
           child: _currentUser!.photoUrl != null
           ? CircleAvatar(
             radius: 18,
