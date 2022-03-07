@@ -42,12 +42,24 @@ class _MinTubeState extends State<MinTube> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
+        colorScheme: ColorScheme.light().copyWith(
+          primary: Colors.cyan,
+          onPrimary: Colors.white,
+          secondary: Colors.cyan,
+          onSecondary: Colors.white,
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.grey[50],
           foregroundColor: Colors.black,
         )
       ),
       darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.dark().copyWith(
+          primary: Colors.cyan,
+          onPrimary: Colors.white,
+          secondary: Colors.cyan,
+          onSecondary: Colors.white,
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.grey[850],
           foregroundColor: Colors.white,

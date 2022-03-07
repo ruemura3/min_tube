@@ -140,7 +140,9 @@ class ApiService {
 
   /// get login user's subscription
   Future<SubscriptionListResponse> getSubscriptionResponse({
-    String forChannelId = '',String pageToken = ''
+    String forChannelId = '',
+    String order = 'unread',
+    String pageToken = ''
   }) async {
     try {
       final youTubeApi = await getYouTubeApi();
@@ -149,6 +151,7 @@ class ApiService {
         forChannelId: forChannelId,
         maxResults: 10,
         mine: true,
+        order: order,
         pageToken: pageToken,
       );
       return response;

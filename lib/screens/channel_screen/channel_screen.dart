@@ -79,7 +79,6 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
           tabBar: TabBar(
             labelColor: ColorUtil.textColor(context),
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.red,
             controller: _tabController,
             tabs: _tabs,
           ),
