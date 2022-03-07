@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/util/util.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -115,6 +116,7 @@ class _VideoScreenState extends State<VideoScreen> {
       builder: (context, player) => Scaffold(
         appBar: SearchBar(title: widget.videoTitle,),
         body: _videoScreenBody(player),
+        floatingActionButton: FloatingSearchButton(),
       ),
     )
     : Scaffold(
@@ -123,21 +125,7 @@ class _VideoScreenState extends State<VideoScreen> {
     );
   }
 
-  /// video screen body
   Widget _videoScreenBody(Widget player) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        _videoDetails(player),
-        Padding(
-          padding: const EdgeInsets.all(16).copyWith(bottom: 32),
-          child: ProfileCardForVideoScreen(channel: _channel!,),
-        )
-      ]
-    );
-  }
-
-  Widget _videoDetails(Widget player) {
     return Column(
       children: [
         player,
@@ -167,6 +155,8 @@ class _VideoScreenState extends State<VideoScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8,),
+                  Divider(color: Colors.grey,),
+                  ProfileCardForVideoScreen(channel: _channel!,),
                   Divider(color: Colors.grey,),
                   SizedBox(height: 8,),
                   Util.getDescriptionWithUrl(

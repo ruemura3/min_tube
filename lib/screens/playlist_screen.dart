@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
@@ -73,6 +74,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     return Scaffold(
       appBar: SearchBar(title: widget.playlist.snippet!.title!,),
       body: _playlistScreenBody(),
+      floatingActionButton: FloatingSearchButton(),
     );
   }
 

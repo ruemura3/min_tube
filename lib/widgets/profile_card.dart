@@ -77,7 +77,6 @@ class ProfileCardForVideoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height:112,
       child: InkWell(
         onTap: () => Navigator.push(
           context,
@@ -88,46 +87,41 @@ class ProfileCardForVideoScreen extends StatelessWidget {
             ),
           ),
         ),
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundImage: NetworkImage(
-                    channel.snippet!.thumbnails!.medium!.url!
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
+                  channel.snippet!.thumbnails!.medium!.url!
                 ),
-                SizedBox(width: 16,),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        channel.snippet!.title!,
-                        overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(width: 8,),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      channel.snippet!.title!,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    channel.statistics!.subscriberCount != null
+                    ? Text(
+                      Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13
                       ),
-                      channel.statistics!.subscriberCount != null
-                      ? Text(
-                        Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.grey,),
-                      )
-                      : Container(),
-                      SizedBox(height: 4,),
-                      SubscribeButton(channel: channel,),
-                    ],
-                  ),
+                    )
+                    : Container(),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              SubscribeButton(channel: channel,),
+            ],
           ),
         ),
       ),
@@ -363,7 +357,10 @@ class _SubscribeButtonState extends State<SubscribeButton> {
         ),
         child: Text(
           'チャンネル登録',
-          style: TextStyle(color: Colors.red,),
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 13
+          ),
         ),
       );
     }
