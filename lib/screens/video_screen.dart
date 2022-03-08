@@ -132,7 +132,11 @@ class _VideoScreenState extends State<VideoScreen> {
         onEnded: (data) {},
       ),
       builder: (context, player) => Scaffold(
-        appBar: SearchBar(),
+        appBar: SearchBar(
+          title: _video != null
+          ? _video!.snippet!.title!
+          : '',
+        ),
         body: _videoScreenBody(player),
         floatingActionButton: FloatingSearchButton(),
       ),

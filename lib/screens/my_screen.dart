@@ -4,6 +4,7 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/login_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
+import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
 
@@ -40,6 +41,7 @@ class _MyScreenState extends State<MyScreen> {
     return Scaffold(
       appBar: SearchBar(title: 'マイページ',),
       body: _myScreenBody(),
+      floatingActionButton: FloatingSearchButton(),
     );
   }
 
