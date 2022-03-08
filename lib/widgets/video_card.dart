@@ -20,7 +20,6 @@ class VideoCardForSearchResult extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => VideoScreen(
             videoId: searchResult.id!.videoId!,
-            videoTitle: searchResult.snippet!.title!,
           ),
         ),
       ),
@@ -87,7 +86,6 @@ class VideoCardForPlaylist extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => VideoScreen(
             videoId: playlistItem.contentDetails!.videoId!,
-            videoTitle: playlistItem.snippet!.title!,
           ),
         ),
       ),

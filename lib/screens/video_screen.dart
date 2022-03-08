@@ -13,11 +13,9 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class VideoScreen extends StatefulWidget {
   /// video id
   final String videoId;
-  /// video title
-  final String videoTitle;
 
   /// constructor
-  VideoScreen({required this.videoId, required this.videoTitle});
+  VideoScreen({required this.videoId});
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -124,13 +122,13 @@ class _VideoScreenState extends State<VideoScreen> {
         onEnded: (data) {},
       ),
       builder: (context, player) => Scaffold(
-        appBar: SearchBar(title: widget.videoTitle,),
+        appBar: SearchBar(),
         body: _videoScreenBody(player),
         floatingActionButton: FloatingSearchButton(),
       ),
     )
     : Scaffold(
-      appBar: SearchBar(title: widget.videoTitle,),
+      appBar: SearchBar(),
       body: Center(child: CircularProgressIndicator(),),
     );
   }

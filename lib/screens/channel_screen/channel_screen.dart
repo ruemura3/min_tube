@@ -15,13 +15,11 @@ class ChannelScreen extends StatefulWidget {
   final String? channelId;
   /// channel instance
   final Channel? channel;
-  /// channel title
-  final String channelTitle;
   /// animate to
   final int tabPage;
 
   /// constructor
-  ChannelScreen({this.channelId, this.channel, required this.channelTitle, this.tabPage = 0});
+  ChannelScreen({this.channelId, this.channel, this.tabPage = 0});
 
   @override
   _ChannelScreenState createState() => _ChannelScreenState();
@@ -85,7 +83,9 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       length: _tabs.length,
       child: Scaffold(
         appBar: SearchBar(
-          title: widget.channelTitle,
+          title: _channel != null
+          ? _channel!.snippet!.title
+          : '',
           tabBar: TabBar(
             labelColor: ColorUtil.textColor(context),
             unselectedLabelColor: Colors.grey,

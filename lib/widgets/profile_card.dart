@@ -21,7 +21,6 @@ class ProfileCardForSearchResult extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => ChannelScreen(
             channelId: searchResult.snippet!.channelId!,
-            channelTitle: searchResult.snippet!.title!,
           ),
         ),
       ),
@@ -83,7 +82,6 @@ class ProfileCardForVideoScreen extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => ChannelScreen(
               channel: channel,
-              channelTitle: channel.snippet!.title!,
             ),
           ),
         ),
@@ -219,7 +217,6 @@ class ProfileCardForHomeScreen extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => ChannelScreen(
             channelId: subscription.snippet!.resourceId!.channelId!,
-            channelTitle: subscription.snippet!.title!,
             tabPage: 1,
           ),
         ),

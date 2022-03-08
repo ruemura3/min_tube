@@ -34,7 +34,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
     Future(() async {
       try {
         final response = await _api.getPlaylistResponse(
-          id: widget.channel.id!
+          channelId: widget.channel.id!
         );
         if (mounted) {
           setState(() {
@@ -63,7 +63,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
       Future(() async {
         try {
           final response = await _api.getPlaylistResponse(
-            id: widget.channel.id!,
+            channelId: widget.channel.id!,
             pageToken: _response!.nextPageToken!,
           );
           if (mounted) {

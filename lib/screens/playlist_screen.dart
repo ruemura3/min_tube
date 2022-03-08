@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/search_bar.dart';
@@ -9,10 +10,12 @@ import 'package:min_tube/widgets/video_card.dart';
 /// playlist screen
 class PlaylistScreen extends StatefulWidget {
   /// playlist Id
-  final Playlist playlist;
+  final String? playlistId;
+  /// playlist
+  final Playlist? playlist;
 
   /// constructor
-  PlaylistScreen({required this.playlist});
+  PlaylistScreen({this.playlistId, this.playlist});
 
   @override
   _PlaylistScreenState createState() => _PlaylistScreenState();
@@ -24,6 +27,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   ApiService _api = ApiService.instance;
   /// is loading
   bool _isLoading = false;
+  /// playlist instance
+  Playlist? _playlist;
   /// upload video response
   PlaylistItemListResponse? _response;
   /// upload video list
@@ -33,27 +38,53 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   void initState() {
     super.initState();
     _isLoading = true;
-    Future(() async {
-      try {
-        final response = await _api.getPlaylistItemResponse(
-          id: widget.playlist.id!,
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items = response.items!;
-          });
+    if (widget.playlist != null) {
+      _playlist = widget.playlist;
+      Future(() async {
+        await _getPlaylistItems();
+      });
+    } else {
+      Future(() async {
+        try {
+          final response = await _api.getPlaylistResponse(ids: [widget.playlistId!]);
+          if (mounted) {
+            setState(() {
+              _playlist = response.items![0];
+            });
+          }
+          await _getPlaylistItems();
+        } catch (e) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ErrorScreen(),
+            )
+          );
         }
-        _isLoading = false;
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
-        );
+      });
+    }
+  }
+
+  Future<void> _getPlaylistItems() async {
+    try {
+      final response = await _api.getPlaylistItemResponse(
+        id: _playlist!.id!,
+      );
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+        });
       }
-    });
+      _isLoading = false;
+    } catch (e) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ErrorScreen(),
+        )
+      );
+    }
   }
 
   /// get additional upload video
@@ -65,7 +96,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       Future(() async {
         try {
           final response = await _api.getPlaylistItemResponse(
-            id: widget.playlist.id!,
+            id: _playlist!.id!,
             pageToken: _response!.nextPageToken!,
           );
           if (mounted) {
@@ -91,7 +122,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(title: widget.playlist.snippet!.title!,),
+      appBar: SearchBar(
+        title: _playlist != null
+        ? _playlist!.snippet!.title!
+        : '',
+      ),
       body: _playlistScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );
@@ -102,7 +137,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     if (_response != null) {
       if (_items.length == 0) {
         return Center(
-          child: Text('このチャンネルには動画がありません'),
+          child: Text('このプレイリストには動画がありません'),
         );
       }
       return NotificationListener<ScrollNotification>(
@@ -139,7 +174,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           Container(
             width: double.infinity,
             child: Text(
-              widget.playlist.snippet!.title!,
+              _playlist!.snippet!.title!,
               textAlign: TextAlign.left,
               style: TextStyle(fontSize: 20),
             ),
@@ -147,14 +182,24 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           SizedBox(height: 8,),
           Container(
             width: double.infinity,
-            child: Text(
-              widget.playlist.snippet!.channelTitle!,
-              style: TextStyle(fontSize: 16),
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChannelScreen(
+                    channelId: _playlist!.snippet!.channelId!,
+                  ),
+                ),
+              ),
+              child: Text(
+                _playlist!.snippet!.channelTitle!,
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
           SizedBox(height: 8,),
           Text(
-            widget.playlist.snippet!.description!,
+            _playlist!.snippet!.description!,
             style: TextStyle(color: Colors.grey),
           )
         ],

@@ -1,7 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
+import 'package:min_tube/screens/playlist_screen.dart';
+import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// util
 class Util {
@@ -79,9 +83,7 @@ class Util {
 
   /// get description with url
   static RichText getDescriptionWithUrl(String description, BuildContext context) {
-    final RegExp urlRegExp = RegExp(
-      r'((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?'
-    );
+    final RegExp urlRegExp = RegExp(r"https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+");
     final Iterable<RegExpMatch> urlMatches = urlRegExp.allMatches(description);
     String tmpMessage = description;
     List<TextSpan> textSpans = [];
@@ -96,11 +98,48 @@ class Util {
       );
       textSpans.add(
         TextSpan(
-          text: url.length > 30
-          ? url.substring(0, 30) + '...'
+          text: url.length > 37
+          ? url.substring(0, 37) + '...'
           : url,
           style: TextStyle(color: Colors.lightBlue),
           recognizer: TapGestureRecognizer()..onTap = () {
+            final videoId = convertUrlToVideoId(url);
+            if (videoId != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VideoScreen(
+                    videoId: videoId,
+                  ),
+                ),
+              );
+              return;
+            }
+            final channelId = convertUrlToChannelId(url);
+            if (channelId != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChannelScreen(
+                    channelId: channelId,
+                  ),
+                ),
+              );
+              return;
+            }
+            final playlistId = convertUrlToPlaylistId(url);
+            if (playlistId != null) {
+              print(playlistId);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PlaylistScreen(
+                    playlistId: playlistId,
+                  ),
+                ),
+              );
+              return;
+            }
             launch(url);
           },
         ),
@@ -115,11 +154,48 @@ class Util {
         style: TextStyle(color: ColorUtil.textColor(context)),
       ),
     );
-
     return RichText(
       text: TextSpan(
         children: textSpans,
       )
     );
+  }
+
+  /// convert youtube url to video id
+  /// return null when url is not youtube video url
+  static String? convertUrlToVideoId(String url,) {
+    for (var exp in [
+      RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$"),
+      RegExp(r"^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$"),
+      RegExp(r"^https:\/\/youtu\.be\/([_\-a-zA-Z0-9]{11}).*$")
+    ]) {
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) return match.group(1);
+    }
+    return null;
+  }
+
+  /// convert youtube url to channel id
+  /// return null when url is not youtube channel url
+  static String? convertUrlToChannelId(String url,) {
+    for (var exp in [
+      RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/channel\/([_\-a-zA-Z0-9]{24}).*$"),
+    ]) {
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) return match.group(1);
+    }
+    return null;
+  }
+
+  /// convert youtube url to playlist\?list= id
+  /// return null when url is not youtube playlist\?list= url
+  static String? convertUrlToPlaylistId(String url,) {
+    for (var exp in [
+      RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/playlist\?list=([_\-a-zA-Z0-9]{34}).*$"),
+    ]) {
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) return match.group(1);
+    }
+    return null;
   }
 }
