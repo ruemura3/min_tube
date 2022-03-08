@@ -52,12 +52,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             onPressed: () async {
               await _api.login();
-              Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => HomeScreen(),
-              )
-            );
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => HomeScreen(),
+                ),
+                (route) => false
+              );
             },
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, buttonHeight),

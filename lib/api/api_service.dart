@@ -50,10 +50,10 @@ class ApiService {
 
   /// get search response
   Future<SearchListResponse> getSearchResponse({
-    String channelId = '',
-    String order = 'relevance',
-    String pageToken = '',
-    String query = '',
+    String? channelId,
+    String? order,
+    String? pageToken,
+    String? query,
   }) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
@@ -91,12 +91,16 @@ class ApiService {
   }
 
   /// get channels by channel id
-  Future<ChannelListResponse> getChannelResponse({required List<String> ids,}) async {
+  Future<ChannelListResponse> getChannelResponse({
+    List<String>? ids,
+    bool? mine,
+  }) async {
     final youTubeApi = await getYouTubeApi();
     final ChannelListResponse response = await youTubeApi.channels.list(
       ['snippet', 'contentDetails', 'statistics', 'brandingSettings'],
       id: ids,
-      maxResults: ids.length,
+      maxResults: ids?.length,
+      mine: mine,
     );
     return response;
   }

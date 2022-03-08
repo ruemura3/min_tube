@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/screens/login_screen.dart';
 
 /// search bar
-class SearchBar extends StatefulWidget with PreferredSizeWidget {
+class SearchBar extends StatelessWidget with PreferredSizeWidget {
   /// app bar text
   final String? title;
   /// should show title
@@ -27,131 +24,50 @@ class SearchBar extends StatefulWidget with PreferredSizeWidget {
   }
 
   @override
-  _SearchBarState createState() => _SearchBarState();
-}
-
-/// search bar state
-class _SearchBarState extends State<SearchBar> {
-  /// api service
-  ApiService _api = ApiService.instance;
-  /// current user
-  GoogleSignInAccount? _currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    Future(() async {
-      final user = await _api.user;
-      if (mounted) {
-        setState(() {
-          _currentUser = user;
-        });
-      }
-    });
-  }
-
-  _showUnsubscribeButton() {
-    return showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          content: Text("ログアウトしますか？"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("キャンセル"),
-              onPressed: () => Navigator.pop(context),
-            ),
-            TextButton(
-              child: Text("ログアウト"),
-              onPressed: () async {
-                await _api.logout();
-                if (mounted) {
-                  setState(() {
-                    _currentUser = null;
-                  });
-                }
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LoginScreen(),
-                  )
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return AppBar(
       elevation: 0,
-      title: _appBarTitle(),
-      automaticallyImplyLeading: widget.shouldShowBack,
-      actions: _appBarActions(),
-      bottom: widget.tabBar,
+      title: _appBarTitle(context),
+      automaticallyImplyLeading: shouldShowBack,
+      actions: _appBarActions(context),
+      bottom: tabBar,
     );
   }
 
   /// app bar title
-  Widget _appBarTitle() {
-    if (!widget.shouldShowTitle) {
+  Widget _appBarTitle(BuildContext context) {
+    if (!shouldShowTitle) {
       return Container();
     }
-    if (widget.title != null) {
+    if (title != null) {
       return Text(
-        widget.title!,
+        title!,
         style: TextStyle(
           fontSize: 18,
         ),
       );
     }
-    return InkWell(
-      onTap: () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(),
-        )
-      ),
-      child: Image.asset(
-        Theme.of(context).brightness == Brightness.dark
-        ? 'assets/images/logo_dark.png'
-        : 'assets/images/logo_light.png',
-        width: 120,
-      ),
+    return Image.asset(
+      Theme.of(context).brightness == Brightness.dark
+      ? 'assets/images/logo_dark.png'
+      : 'assets/images/logo_light.png',
+      width: 120,
     );
   }
 
   /// profile Icon
-  List<Widget> _appBarActions() {
-    if (_currentUser != null) {
-      return [
-        InkWell(
-          onTap: () => _showUnsubscribeButton(),
-          child: _currentUser!.photoUrl != null
-          ? CircleAvatar(
-            radius: 18,
-            backgroundImage: NetworkImage(_currentUser!.photoUrl!)
-          )
-          : CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.blueGrey,
-            child: Text(_currentUser!.displayName!.substring(0, 1)),
+  List<Widget> _appBarActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () => Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(),
           )
         ),
-        SizedBox(width: 24,),
-      ];
-    }
-    Future(() async {
-      final user = await _api.user;
-      if (mounted) {
-        setState(() {
-          _currentUser = user;
-        });
-      }
-    });
-    return [];
+        icon: Icon(Icons.home)
+      ),
+      SizedBox(width: 16,),
+    ];
   }
 }

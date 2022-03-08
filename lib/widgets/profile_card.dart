@@ -392,10 +392,10 @@ class _SubscribeButtonState extends State<SubscribeButton> {
 /// my profile card
 class MyProfileCard extends StatelessWidget {
   /// current user
-  final GoogleSignInAccount currentUser;
+  final Channel channel;
 
   /// constructor
-  MyProfileCard({required this.currentUser});
+  MyProfileCard({required this.channel});
 
   @override
   Widget build(BuildContext context) {
@@ -403,27 +403,27 @@ class MyProfileCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => MyScreen(),
+          builder: (_) => ChannelScreen(channel: channel,),
         ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            currentUser.photoUrl != null
+            channel.snippet!.thumbnails!.medium != null
             ? CircleAvatar(
-            radius: 24,
-            backgroundImage: NetworkImage(currentUser.photoUrl!)
+            radius: 16,
+            backgroundImage: NetworkImage(channel.snippet!.thumbnails!.medium!.url!)
             )
             : CircleAvatar(
-              radius: 24,
+              radius: 16,
               backgroundColor: Colors.blueGrey,
-              child: Text(currentUser.displayName!.substring(0, 1)),
+              child: Text(channel.snippet!.title!.substring(0, 1)),
             ),
             SizedBox(width: 16,),
             Expanded(
               child: Text(
-                currentUser.displayName!,
+                channel.snippet!.title!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

@@ -138,7 +138,11 @@ class _VideoScreenState extends State<VideoScreen> {
       ),
     )
     : Scaffold(
-      appBar: SearchBar(),
+      appBar: SearchBar(
+        title: _video != null
+        ? _video!.snippet!.title!
+        : '',
+      ),
       body: Center(child: CircularProgressIndicator(),),
     );
   }

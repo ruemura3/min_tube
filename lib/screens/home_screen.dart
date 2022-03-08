@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/error_screen.dart';
+import 'package:min_tube/screens/my_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
@@ -17,8 +17,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// current user
-  GoogleSignInAccount? _currentUser;
   /// is loading
   bool _isLoading = false;
   /// subscription response
@@ -32,11 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _isLoading = true;
     Future(() async {
       try {
-        final user = await _api.user;
         final response = await _api.getSubscriptionResponse();
         if (mounted) {
           setState(() {
-            _currentUser = user;
             _response = response;
             _items = response.items!;
             _isLoading = false;
@@ -100,11 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
   /// home screen body
   Widget _homeScreenBody() {
     if (_response != null) {
-      if (_items.length == 0) {
-        return Center(
-          child: Text('登録しているチャンネルがありません'),
-        );
-      }
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSubscription,
         child: Padding(
@@ -115,7 +106,30 @@ class _HomeScreenState extends State<HomeScreen> {
               if (index == 0) {
                 return Column(
                   children: [
-                    MyProfileCard(currentUser: _currentUser!),
+                    InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MyScreen(),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'マイページ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Icon(Icons.arrow_forward_ios)
+                          ],
+                        ),
+                      ),
+                    ),
                     Divider(color: Colors.grey,),
                   ],
                 );
@@ -123,6 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
               if (index == _items.length + 1) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
                   return Center(child: CircularProgressIndicator(),);
+                }
+                if (_items.length == 0) {
+                  return Center(
+                    child: Text('登録しているチャンネルがありません'),
+                  );
                 }
                 return Container();
               }
