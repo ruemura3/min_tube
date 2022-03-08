@@ -182,7 +182,19 @@ class _VideoScreenState extends State<VideoScreen> {
                     _video!.snippet!.description!,
                     context,
                   ),
-                  SizedBox(height: 136,),
+                  SizedBox(height: 8,),
+                  Divider(color: Colors.grey,),
+                  SizedBox(height: 8,),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        launch('https://www.youtube.com/watch?v=${widget.videoId}');
+                      },
+                      child: Text('この動画を外部ブラウザで開く')
+                    ),
+                  ),
+                  SizedBox(height: 80,),
                 ],
               ),
             ),
@@ -194,12 +206,11 @@ class _VideoScreenState extends State<VideoScreen> {
 
   /// video buttons
   Widget _videoScreenButtons() {
-    var url = 'https://www.youtube.com/watch?v=';
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Column(
             children: [
@@ -253,7 +264,9 @@ class _VideoScreenState extends State<VideoScreen> {
             children: [
               IconButton(
                 onPressed: () async {
-                  final data = ClipboardData(text: url + widget.videoId);
+                  final data = ClipboardData(
+                    text: 'https://www.youtube.com/watch?v=${widget.videoId}'
+                  );
                   await Clipboard.setData(data);
                   final snackBar = SnackBar(
                     content: Text('動画のURLをコピーしました'),
@@ -265,12 +278,6 @@ class _VideoScreenState extends State<VideoScreen> {
               Text('コピー'),
             ],
           ),
-          TextButton(
-            onPressed: () {
-              launch(url + widget.videoId);
-            },
-            child: Text('ブラウザで開く')
-          )
         ],
       ),
     );

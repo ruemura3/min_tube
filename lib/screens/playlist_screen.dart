@@ -182,7 +182,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           SizedBox(height: 8,),
           Container(
             width: double.infinity,
-            child: GestureDetector(
+            child: InkWell(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(

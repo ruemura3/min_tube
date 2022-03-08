@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/screens/login_screen.dart';
 
 /// search bar
@@ -56,7 +57,6 @@ class _SearchBarState extends State<SearchBar> {
         return AlertDialog(
           content: Text("ログアウトしますか？"),
           actions: <Widget>[
-            // ボタン領域
             TextButton(
               child: Text("キャンセル"),
               onPressed: () => Navigator.pop(context),
@@ -108,11 +108,19 @@ class _SearchBarState extends State<SearchBar> {
         ),
       );
     }
-    return Image.asset(
-      Theme.of(context).brightness == Brightness.dark
-      ? 'assets/images/logo_dark.png'
-      : 'assets/images/logo_light.png',
-      width: 120,
+    return InkWell(
+      onTap: () => Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomeScreen(),
+        )
+      ),
+      child: Image.asset(
+        Theme.of(context).brightness == Brightness.dark
+        ? 'assets/images/logo_dark.png'
+        : 'assets/images/logo_light.png',
+        width: 120,
+      ),
     );
   }
 
