@@ -77,6 +77,19 @@ class ApiService {
     return response;
   }
 
+  /// get video rating
+  Future<VideoGetRatingResponse> getVideoRating({required List<String> ids,}) async {
+    final youTubeApi = await getYouTubeApi();
+    final VideoGetRatingResponse response = await youTubeApi.videos.getRating(ids);
+    return response;
+  }
+
+  /// rate video
+  Future<void> rateVideo({required String id, required String rating}) async {
+    final youTubeApi = await getYouTubeApi();
+    await youTubeApi.videos.rate(id, rating);
+  }
+
   /// get channels by channel id
   Future<ChannelListResponse> getChannelResponse({required List<String> ids,}) async {
     final youTubeApi = await getYouTubeApi();

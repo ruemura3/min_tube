@@ -7,6 +7,7 @@ import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/search_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// video screen
@@ -29,6 +30,12 @@ class _VideoScreenState extends State<VideoScreen> {
   Video? _video;
   /// channel instance
   Channel? _channel;
+  /// video rating
+  String? _rating;
+  /// is like button enabled
+  bool _isLikeEnabled = false;
+  /// is dislike button enabled
+  bool _isDislikeEnabled = false;
   /// youtube player controller
   YoutubePlayerController? _controller;
 
@@ -40,10 +47,12 @@ class _VideoScreenState extends State<VideoScreen> {
       try {
         var video = await _api.getVideoResponse(ids: [widget.videoId]);
         var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
+        var rating = await _api.getVideoRating(ids: [widget.videoId]);
         if (mounted) {
           setState(() {
             _video = video.items![0];
             _channel = channel.items![0];
+            _rating = rating.items![0].rating;
             _controller = YoutubePlayerController(
               initialVideoId: widget.videoId,
               flags: YoutubePlayerFlags(
@@ -51,6 +60,8 @@ class _VideoScreenState extends State<VideoScreen> {
                 captionLanguage: 'ja',
               ),
             );
+            _isLikeEnabled = true;
+            _isDislikeEnabled = true;
           });
         }
       } catch (e) {
@@ -162,7 +173,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 8,),
+                  _videoScreenButtons(),
                   Divider(color: Colors.grey,),
                   ProfileCardForVideoScreen(channel: _channel!,),
                   Divider(color: Colors.grey,),
@@ -178,6 +189,90 @@ class _VideoScreenState extends State<VideoScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// video buttons
+  Widget _videoScreenButtons() {
+    var url = 'https://www.youtube.com/watch?v=';
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              IconButton(
+                onPressed: _isLikeEnabled
+                ? () {
+                  setState(() {
+                    _isLikeEnabled = false;
+                  });
+                  Future(() async {
+                    await _api.rateVideo(id: widget.videoId, rating: 'like');
+                    setState(() {
+                      _rating = 'like';
+                      _isLikeEnabled = true;
+                    });
+                  });
+                }
+                : null,
+                icon: _rating == 'like'
+                ? Icon(Icons.thumb_up)
+                : Icon(Icons.thumb_up_outlined)
+              ),
+              Text('高評価'),
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                onPressed: _isDislikeEnabled
+                ? () {
+                  setState(() {
+                    _isDislikeEnabled = false;
+                  });
+                  Future(() async {
+                    await _api.rateVideo(id: widget.videoId, rating: 'dislike');
+                    setState(() {
+                      _rating = 'dislike';
+                      _isDislikeEnabled = true;
+                    });
+                  });
+                }
+                : null,
+                icon: _rating == 'dislike'
+                ? Icon(Icons.thumb_down)
+                : Icon(Icons.thumb_down_outlined)
+              ),
+              Text('低評価'),
+            ],
+          ),
+          Column(
+            children: [
+              IconButton(
+                onPressed: () async {
+                  final data = ClipboardData(text: url + widget.videoId);
+                  await Clipboard.setData(data);
+                  final snackBar = SnackBar(
+                    content: Text('動画のURLをコピーしました'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+                icon: Icon(Icons.copy),
+              ),
+              Text('コピー'),
+            ],
+          ),
+          TextButton(
+            onPressed: () {
+              launch(url + widget.videoId);
+            },
+            child: Text('ブラウザで開く')
+          )
+        ],
+      ),
     );
   }
 }

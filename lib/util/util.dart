@@ -5,7 +5,6 @@ import 'package:min_tube/screens/playlist_screen.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 /// util
 class Util {
@@ -129,7 +128,6 @@ class Util {
             }
             final playlistId = convertUrlToPlaylistId(url);
             if (playlistId != null) {
-              print(playlistId);
               Navigator.push(
                 context,
                 MaterialPageRoute(
