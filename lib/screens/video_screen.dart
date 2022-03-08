@@ -42,7 +42,6 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void initState() {
     super.initState();
-    // get video and channel info
     Future(() async {
       try {
         var video = await _api.getVideoResponse(ids: [widget.videoId]);
@@ -78,7 +77,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller!.pause();
+    _controller?.pause();
     super.deactivate();
   }
 
@@ -177,13 +176,19 @@ class _VideoScreenState extends State<VideoScreen> {
                   Divider(color: Colors.grey,),
                   ProfileCardForVideoScreen(channel: _channel!,),
                   Divider(color: Colors.grey,),
-                  SizedBox(height: 8,),
-                  Util.getDescriptionWithUrl(
-                    _video!.snippet!.description!,
-                    context,
-                  ),
-                  SizedBox(height: 8,),
-                  Divider(color: Colors.grey,),
+                  _video!.snippet!.description! != ''
+                  ? Column(
+                    children: [
+                      SizedBox(height: 8,),
+                      Util.getDescriptionWithUrl(
+                        _video!.snippet!.description!,
+                        context,
+                      ),
+                      SizedBox(height: 8,),
+                      Divider(color: Colors.grey,),
+                    ],
+                  )
+                  : Container(),
                   SizedBox(height: 8,),
                   Container(
                     width: double.infinity,
@@ -216,18 +221,7 @@ class _VideoScreenState extends State<VideoScreen> {
             children: [
               IconButton(
                 onPressed: _isLikeEnabled
-                ? () {
-                  setState(() {
-                    _isLikeEnabled = false;
-                  });
-                  Future(() async {
-                    await _api.rateVideo(id: widget.videoId, rating: 'like');
-                    setState(() {
-                      _rating = 'like';
-                      _isLikeEnabled = true;
-                    });
-                  });
-                }
+                ? _tapLikeButton
                 : null,
                 icon: _rating == 'like'
                 ? Icon(Icons.thumb_up)
@@ -240,18 +234,7 @@ class _VideoScreenState extends State<VideoScreen> {
             children: [
               IconButton(
                 onPressed: _isDislikeEnabled
-                ? () {
-                  setState(() {
-                    _isDislikeEnabled = false;
-                  });
-                  Future(() async {
-                    await _api.rateVideo(id: widget.videoId, rating: 'dislike');
-                    setState(() {
-                      _rating = 'dislike';
-                      _isDislikeEnabled = true;
-                    });
-                  });
-                }
+                ? _tapDislikeButton
                 : null,
                 icon: _rating == 'dislike'
                 ? Icon(Icons.thumb_down)
@@ -281,5 +264,47 @@ class _VideoScreenState extends State<VideoScreen> {
         ],
       ),
     );
+  }
+
+  void _tapLikeButton() {
+    setState(() {
+      _isLikeEnabled = false;
+    });
+    Future(() async {
+      if (_rating != 'like') {
+        await _api.rateVideo(id: widget.videoId, rating: 'like');
+        setState(() {
+          _rating = 'like';
+          _isLikeEnabled = true;
+        });
+      } else {
+        await _api.rateVideo(id: widget.videoId, rating: 'none');
+        setState(() {
+          _rating = 'none';
+          _isLikeEnabled = true;
+        });
+      }
+    });
+  }
+
+  void _tapDislikeButton() {
+    setState(() {
+      _isDislikeEnabled = false;
+    });
+    Future(() async {
+      if (_rating != 'dislike') {
+        await _api.rateVideo(id: widget.videoId, rating: 'dislike');
+        setState(() {
+          _rating = 'dislike';
+          _isDislikeEnabled = true;
+        });
+      } else {
+        await _api.rateVideo(id: widget.videoId, rating: 'none');
+        setState(() {
+          _rating = 'none';
+          _isDislikeEnabled = true;
+        });
+      }
+    });
   }
 }

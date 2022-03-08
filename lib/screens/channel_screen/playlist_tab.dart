@@ -40,9 +40,9 @@ class _PlaylistTabState extends State<PlaylistTab> {
           setState(() {
             _response = response;
             _items = response.items!;
+            _isLoading = false;
           });
         }
-        _isLoading = false;
       } catch (e) {
         Navigator.pushReplacement(
           context,
@@ -70,9 +70,9 @@ class _PlaylistTabState extends State<PlaylistTab> {
             setState(() {
               _response = response;
               _items.addAll(response.items!);
+              _isLoading = false;
             });
           }
-          _isLoading = false;
         } catch (e) {
           Navigator.pushReplacement(
             context,

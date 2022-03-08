@@ -41,9 +41,9 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           setState(() {
             _response = response;
             _items = response.items!;
+            _isLoading = false;
           });
         }
-        _isLoading = false;
       } catch (e) {
         Navigator.pushReplacement(
           context,
@@ -71,9 +71,9 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             setState(() {
               _response = response;
               _items.addAll(response.items!);
+              _isLoading = false;
             });
           }
-          _isLoading = false;
         } catch (e) {
           Navigator.pushReplacement(
             context,

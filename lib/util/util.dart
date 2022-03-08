@@ -41,7 +41,8 @@ class Util {
   }
 
   /// format timeago
-  static String formatTimeago(DateTime date) {
+  static String formatTimeago(DateTime? date) {
+    if (date == null) return '';
     DateTime now = DateTime.now();
     Duration difference = now.difference(date);
     int sec = difference.inSeconds;

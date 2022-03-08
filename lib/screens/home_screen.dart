@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/error_screen.dart';
@@ -16,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// current user
+  GoogleSignInAccount? _currentUser;
   /// is loading
   bool _isLoading = false;
   /// subscription response
@@ -29,12 +32,16 @@ class _HomeScreenState extends State<HomeScreen> {
     _isLoading = true;
     Future(() async {
       try {
+        final user = await _api.user;
         final response = await _api.getSubscriptionResponse();
-        setState(() {
-          _response = response;
-          _items = response.items!;
-        });
-        _isLoading = false;
+        if (mounted) {
+          setState(() {
+            _currentUser = user;
+            _response = response;
+            _items = response.items!;
+            _isLoading = false;
+          });
+        }
       } catch (e) {
         Navigator.pushReplacement(
           context,
@@ -61,9 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               _response = response;
               _items.addAll(response.items!);
+              _isLoading = false;
             });
           }
-          _isLoading = false;
         } catch (e) {
           Navigator.pushReplacement(
             context,
@@ -103,15 +110,23 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
-            itemCount: _items.length + 1,
+            itemCount: _items.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if (index == _items.length) {
+              if (index == 0) {
+                return Column(
+                  children: [
+                    MyProfileCard(currentUser: _currentUser!),
+                    Divider(color: Colors.grey,),
+                  ],
+                );
+              }
+              if (index == _items.length + 1) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
                   return Center(child: CircularProgressIndicator(),);
                 }
                 return Container();
               }
-              return ProfileCardForHomeScreen(subscription: _items[index]);
+              return ProfileCardForHomeScreen(subscription: _items[index - 1]);
             },
           ),
         ),

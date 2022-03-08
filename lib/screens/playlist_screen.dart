@@ -46,7 +46,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     } else {
       Future(() async {
         try {
-          final response = await _api.getPlaylistResponse(ids: [widget.playlistId!]);
+          final response = await _api.getPlaylistResponse(ids: [widget.playlistId ?? 'LL']);
           if (mounted) {
             setState(() {
               _playlist = response.items![0];
@@ -74,9 +74,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         setState(() {
           _response = response;
           _items = response.items!;
+          _isLoading = false;
         });
       }
-      _isLoading = false;
     } catch (e) {
       Navigator.pushReplacement(
         context,
@@ -103,9 +103,9 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
             setState(() {
               _response = response;
               _items.addAll(response.items!);
+              _isLoading = false;
             });
           }
-          _isLoading = false;
         } catch (e) {
           Navigator.pushReplacement(
             context,

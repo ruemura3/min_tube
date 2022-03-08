@@ -94,10 +94,15 @@ class VideoCardForPlaylist extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              Image(
+              playlistItem.snippet!.thumbnails!.medium != null
+              ? Image(
                 image: NetworkImage(
                   playlistItem.snippet!.thumbnails!.medium!.url!
                 ),
+              )
+              : AspectRatio(
+                aspectRatio: 320/180,
+                child: Container(),
               ),
               SizedBox(width: 16,),
               Expanded(
@@ -115,7 +120,7 @@ class VideoCardForPlaylist extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      Util.formatTimeago(playlistItem.contentDetails!.videoPublishedAt!),
+                      Util.formatTimeago(playlistItem.contentDetails!.videoPublishedAt),
                       style: TextStyle(
                         color: Colors.grey,
                       ),

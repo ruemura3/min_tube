@@ -120,6 +120,7 @@ class ApiService {
   Future<PlaylistListResponse> getPlaylistResponse({
     String? channelId,
     List<String> ids = const [],
+    bool? mine,
     String pageToken = '',
   }) async {
     final youTubeApi = await getYouTubeApi();
@@ -128,6 +129,7 @@ class ApiService {
       channelId: channelId,
       id: ids,
       maxResults: 8,
+      mine: mine,
       pageToken: pageToken,
     );
     return response;
