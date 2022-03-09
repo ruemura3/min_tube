@@ -23,9 +23,9 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   /// is loading
   bool _isLoading = false;
   /// upload video response
-  PlaylistItemListResponse? _response;
+  SearchListResponse? _response;
   /// upload video list
-  List<PlaylistItem> _items = [];
+  List<SearchResult> _items = [];
 
   @override
   void initState() {
@@ -33,8 +33,9 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     _isLoading = true;
     Future(() async {
       try {
-        final response = await _api.getPlaylistItemResponse(
-          id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+        final response = await _api.getSearchResponse(
+          channelId: widget.channel.id!,
+          order: 'date',
         );
         if (mounted) {
           setState(() {
@@ -62,8 +63,9 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
       _isLoading = true;
       Future(() async {
         try {
-          final response = await _api.getPlaylistItemResponse(
-            id: widget.channel.contentDetails!.relatedPlaylists!.uploads!,
+          final response = await _api.getSearchResponse(
+            channelId: widget.channel.id!,
+            order: 'date',
             pageToken: _response!.nextPageToken!,
           );
           if (mounted) {
@@ -107,7 +109,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
                 }
                 return Container();
               }
-              return VideoCardForPlaylist(playlistItem: _items[index]);
+              return VideoCardForUpload(searchResult: _items[index]);
             },
           ),
         ),

@@ -51,6 +51,7 @@ class ApiService {
   /// get search response
   Future<SearchListResponse> getSearchResponse({
     String? channelId,
+    int? maxResults = 8,
     String? order,
     String? pageToken,
     String? query,
@@ -62,6 +63,7 @@ class ApiService {
       order: order,
       pageToken: pageToken,
       q: query,
+      maxResults: maxResults,
     );
     return response;
   }

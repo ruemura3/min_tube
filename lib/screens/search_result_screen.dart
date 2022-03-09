@@ -102,7 +102,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSearchResult,
         child: ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(top: 8),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
@@ -112,16 +112,10 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               return Container();
             }
             if (_items[index].id!.kind! == 'youtube#video') {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: VideoCardForSearchResult(searchResult: _items[index],),
-              );
+              return VideoCardForSearchResult(searchResult: _items[index],);
             }
             if (_items[index].id!.kind! == 'youtube#channel') {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: ProfileCardForSearchResult(searchResult: _items[index],),
-              );
+              return ProfileCardForSearchResult(searchResult: _items[index],);
             }
             return Container();
           },
