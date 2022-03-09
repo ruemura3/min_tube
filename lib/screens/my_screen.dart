@@ -107,14 +107,23 @@ class _MyScreenState extends State<MyScreen> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          content: Text("ログアウトしますか？"),
+          content: Text(
+            "ログアウトしますか？",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           actions: <Widget>[
             TextButton(
-              child: Text("キャンセル"),
+              child: Text(
+                "キャンセル",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text("ログアウト"),
+              child: Text(
+                "ログアウト",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               onPressed: () async {
                 await _api.logout();
                 if (mounted) {

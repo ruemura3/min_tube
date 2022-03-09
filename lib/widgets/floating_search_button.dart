@@ -49,6 +49,7 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
             TextButton(
               child: Text(
                 'キャンセル',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -57,6 +58,7 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
             TextButton(
               child: Text(
                 '検索',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
                 _search();
