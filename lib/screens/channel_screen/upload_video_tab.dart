@@ -36,6 +36,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         final response = await _api.getSearchResponse(
           channelId: widget.channel.id!,
           order: 'date',
+          type: ['video'],
         );
         if (mounted) {
           setState(() {
@@ -67,6 +68,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
             channelId: widget.channel.id!,
             order: 'date',
             pageToken: _response!.nextPageToken!,
+            type: ['video'],
           );
           if (mounted) {
             setState(() {

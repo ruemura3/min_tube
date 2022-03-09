@@ -55,15 +55,17 @@ class ApiService {
     String? order,
     String? pageToken,
     String? query,
+    List<String>? type,
   }) async {
     final youTubeApi = await getYouTubeApi();
     final SearchListResponse response = await youTubeApi.search.list(
       ['snippet'],
       channelId: channelId,
+      maxResults: maxResults,
       order: order,
       pageToken: pageToken,
       q: query,
-      maxResults: maxResults,
+      type: type,
     );
     return response;
   }
@@ -125,9 +127,9 @@ class ApiService {
   /// get playlist
   Future<PlaylistListResponse> getPlaylistResponse({
     String? channelId,
-    List<String> ids = const [],
+    List<String>? ids,
     bool? mine,
-    String pageToken = '',
+    String? pageToken,
   }) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistListResponse response = await youTubeApi.playlists.list(

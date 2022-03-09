@@ -186,7 +186,7 @@ class VideoCardForUpload extends StatelessWidget {
                       searchResult.snippet!.thumbnails!.medium!.url!
                     ),
                   ),
-                  searchResult.snippet!.liveBroadcastContent != 'live'
+                  searchResult.snippet!.liveBroadcastContent == 'live'
                   ? Padding(
                     padding: const EdgeInsets.all(4),
                     child: Container(
