@@ -106,20 +106,16 @@ class VideoCardForPlaylist extends StatelessWidget {
           ),
         ),
       ),
-      child: Container(
+      child: playlistItem.snippet!.thumbnails!.medium != null
+      ? Container(
           height: 112,
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              playlistItem.snippet!.thumbnails!.medium != null
-              ? Image(
+              Image(
                 image: NetworkImage(
                   playlistItem.snippet!.thumbnails!.medium!.url!
                 ),
-              )
-              : AspectRatio(
-                aspectRatio: 320/180,
-                child: Container(),
               ),
               SizedBox(width: 16,),
               Expanded(
@@ -148,7 +144,8 @@ class VideoCardForPlaylist extends StatelessWidget {
               ),
             ],
           ),
-        ),
+        )
+        : Container(),
     );
   }
 }
@@ -177,8 +174,7 @@ class VideoCardForUpload extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              searchResult.snippet!.thumbnails!.medium != null
-              ? Stack(
+              Stack(
                 alignment: Alignment.bottomRight,
                 children: [
                   Image(
@@ -203,10 +199,6 @@ class VideoCardForUpload extends StatelessWidget {
                   )
                   : Container(),
                 ]
-              )
-              : AspectRatio(
-                aspectRatio: 320/180,
-                child: Container(),
               ),
               SizedBox(width: 16,),
               Expanded(
