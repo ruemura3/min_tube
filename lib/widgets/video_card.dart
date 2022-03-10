@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
+import 'package:min_tube/screens/video_for_playlist_screen.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
@@ -89,11 +90,22 @@ class VideoCardForSearchResult extends StatelessWidget {
 
 /// video card for playlist
 class VideoCardForPlaylist extends StatelessWidget {
-  /// search result
-  final PlaylistItem playlistItem;
+  /// playlist
+  final Playlist playlist;
+  /// playlist response
+  final PlaylistItemListResponse response;
+  /// playlist items
+  final List<PlaylistItem> items;
+  /// current index
+  final int idx;
 
   /// constructor
-  VideoCardForPlaylist({required this.playlistItem});
+  VideoCardForPlaylist({
+    required this.playlist,
+    required this.response,
+    required this.items,
+    required this.idx,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -101,12 +113,15 @@ class VideoCardForPlaylist extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => VideoScreen(
-            videoId: playlistItem.contentDetails!.videoId!,
+          builder: (_) => VideoForPlaylistScreen(
+            playlist: playlist,
+            response: response,
+            items: items,
+            idx: idx,
           ),
         ),
       ),
-      child: playlistItem.snippet!.thumbnails!.medium != null
+      child: items[idx].snippet!.thumbnails!.medium != null
       ? Container(
           height: 112,
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
@@ -114,7 +129,7 @@ class VideoCardForPlaylist extends StatelessWidget {
             children: <Widget>[
               Image(
                 image: NetworkImage(
-                  playlistItem.snippet!.thumbnails!.medium!.url!
+                  items[idx].snippet!.thumbnails!.medium!.url!
                 ),
               ),
               SizedBox(width: 16,),
@@ -124,7 +139,7 @@ class VideoCardForPlaylist extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        playlistItem.snippet!.title!,
+                        items[idx].snippet!.title!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -133,7 +148,7 @@ class VideoCardForPlaylist extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      Util.formatTimeago(playlistItem.contentDetails!.videoPublishedAt),
+                      Util.formatTimeago(items[idx].contentDetails!.videoPublishedAt),
                       style: TextStyle(
                         color: Colors.grey,
                       ),

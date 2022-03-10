@@ -51,7 +51,7 @@ class ApiService {
   /// get search response
   Future<SearchListResponse> getSearchResponse({
     String? channelId,
-    int? maxResults = 50,
+    int maxResults = 30,
     String? order,
     String? pageToken,
     String? query,
@@ -112,12 +112,13 @@ class ApiService {
   /// get playlist item by playlist id
   Future<PlaylistItemListResponse> getPlaylistItemResponse({
     required String id,
+    int maxResults = 30,
     String pageToken = '',
   }) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
       ['snippet', 'contentDetails'],
-      maxResults: 50,
+      maxResults: maxResults,
       pageToken: pageToken,
       playlistId: id,
     );
@@ -128,6 +129,7 @@ class ApiService {
   Future<PlaylistListResponse> getPlaylistResponse({
     String? channelId,
     List<String>? ids,
+    int maxResults = 30,
     bool? mine,
     String? pageToken,
   }) async {
@@ -136,7 +138,7 @@ class ApiService {
       ['snippet', 'contentDetails'],
       channelId: channelId,
       id: ids,
-      maxResults: 50,
+      maxResults: maxResults,
       mine: mine,
       pageToken: pageToken,
     );
@@ -146,13 +148,14 @@ class ApiService {
   /// get login user's subscription
   Future<SubscriptionListResponse> getSubscriptionResponse({
     String forChannelId = '',
+    int maxResults = 30,
     String pageToken = ''
   }) async {
     final youTubeApi = await getYouTubeApi();
     final SubscriptionListResponse response = await youTubeApi.subscriptions.list(
       ['snippet', 'contentDetails'],
       forChannelId: forChannelId,
-      maxResults: 50,
+      maxResults: maxResults,
       mine: true,
       pageToken: pageToken,
     );

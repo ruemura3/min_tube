@@ -9,7 +9,7 @@ import 'package:min_tube/widgets/video_card.dart';
 
 /// playlist screen
 class PlaylistScreen extends StatefulWidget {
-  /// playlist Id
+  /// playlist id
   final String? playlistId;
   /// playlist
   final Playlist? playlist;
@@ -87,8 +87,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     }
   }
 
-  /// get additional upload video
-  bool _getAdditionalUploadVideo(ScrollNotification scrollDetails) {
+  /// get additional playlist item
+  bool _getAdditionalPlaylistItem(ScrollNotification scrollDetails) {
     if (!_isLoading &&
       scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
       _items.length < _response!.pageInfo!.totalResults!) {
@@ -141,7 +141,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         );
       }
       return NotificationListener<ScrollNotification>(
-        onNotification: _getAdditionalUploadVideo,
+        onNotification: _getAdditionalPlaylistItem,
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
@@ -156,7 +156,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 }
                 return Container();
               }
-              return VideoCardForPlaylist(playlistItem: _items[index - 1]);
+              return VideoCardForPlaylist(
+                playlist: _playlist!,
+                response: _response!,
+                items: _items,
+                idx: index - 1,
+              );
             },
           ),
         ),

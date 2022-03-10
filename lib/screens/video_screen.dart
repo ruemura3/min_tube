@@ -37,71 +37,93 @@ class _VideoScreenState extends State<VideoScreen> {
   /// is dislike button enabled
   bool _isDislikeEnabled = false;
   /// youtube player controller
-  YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    Future(() async {
-      try {
-        var video = await _api.getVideoResponse(ids: [widget.videoId]);
-        var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
-        var rating = await _api.getVideoRating(ids: [widget.videoId]);
-        if (mounted) {
-          setState(() {
-            _video = video.items![0];
-            _channel = channel.items![0];
-            _rating = rating.items![0].rating;
-            _controller = YoutubePlayerController(
-              initialVideoId: widget.videoId,
-              flags: YoutubePlayerFlags(
-                hideThumbnail: true,
-                captionLanguage: 'ja',
-              ),
-            );
-            _isLikeEnabled = true;
-            _isDislikeEnabled = true;
-          });
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
-        );
-      }
-    });
+    _getVideoByVideoId();
+    _controller = YoutubePlayerController(
+      initialVideoId: widget.videoId,
+      flags: YoutubePlayerFlags(
+        hideThumbnail: true,
+        captionLanguage: 'ja',
+      ),
+    );
   }
 
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller?.pause();
+    _controller.pause();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+
+  /// get video by video id
+  void _getVideoByVideoId() async {
+    try {
+      var video = await _api.getVideoResponse(ids: [widget.videoId]);
+      var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
+      var rating = await _api.getVideoRating(ids: [widget.videoId]);
+      if (mounted) {
+        setState(() {
+          _video = video.items![0];
+          _channel = channel.items![0];
+          _rating = rating.items![0].rating;
+          _isLikeEnabled = true;
+          _isDislikeEnabled = true;
+        });
+      }
+    } catch (e) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ErrorScreen(),
+        )
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _controller != null
-    ? YoutubePlayerBuilder(
+    return YoutubePlayerBuilder(
       onExitFullScreen: () {
         SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       },
       player: YoutubePlayer(
-        controller: _controller!,
+        controller: _controller,
+        showVideoProgressIndicator: true,
         progressColors: ProgressBarColors(
           playedColor: Colors.red,
           handleColor: Colors.redAccent,
         ),
-        bottomActions: _video!.snippet!.liveBroadcastContent! != 'live'
-        ? [
+        bottomActions: _bottomActions(),
+        onEnded: (data) {
+        },
+      ),
+      builder: (context, player) => Scaffold(
+        appBar: SearchBar(
+          title: _video != null
+          ? _video!.snippet!.title!
+          : '',
+        ),
+        body: _videoScreenBody(player),
+        floatingActionButton: FloatingSearchButton(),
+      ),
+    );
+  }
+
+  /// bottom actions
+  List<Widget> _bottomActions() {
+    if (_video != null) {
+      if (_video!.snippet!.liveBroadcastContent! != 'live') {
+        return [
           const SizedBox(width: 14.0),
           CurrentPosition(),
           const SizedBox(width: 8.0),
@@ -117,45 +139,28 @@ class _VideoScreenState extends State<VideoScreen> {
           RemainingDuration(),
           const PlaybackSpeedButton(),
           FullScreenButton(),
-        ]
-        : [
-          SizedBox(width: 10,),
-          Container(
-            padding: const EdgeInsets.only(left: 3, top: 2, right: 3, bottom: 2),
-            color: Colors.red.withOpacity(0.7),
-            child: Text('LIVE'),
-          ),
-          Expanded(child: Row(),),
-          FullScreenButton(),
-        ],
-        onReady: () {},
-        onEnded: (data) {},
+        ];
+      }
+    return [
+      SizedBox(width: 10,),
+      Container(
+        padding: const EdgeInsets.only(left: 4, top: 2, right: 4, bottom: 2),
+        color: Colors.red.withOpacity(0.7),
+        child: Text('LIVE'),
       ),
-      builder: (context, player) => Scaffold(
-        appBar: SearchBar(
-          title: _video != null
-          ? _video!.snippet!.title!
-          : '',
-        ),
-        body: _videoScreenBody(player),
-        floatingActionButton: FloatingSearchButton(),
-      ),
-    )
-    : Scaffold(
-      appBar: SearchBar(
-        title: _video != null
-        ? _video!.snippet!.title!
-        : '',
-      ),
-      body: Center(child: CircularProgressIndicator(),),
-    );
+      Expanded(child: Row(),),
+      FullScreenButton(),
+    ];
+    }
+    return [];
   }
 
   Widget _videoScreenBody(Widget player) {
     return Column(
       children: [
         player,
-        Expanded(
+        _video != null && _channel != null
+        ? Expanded(
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -212,7 +217,8 @@ class _VideoScreenState extends State<VideoScreen> {
               ),
             ),
           ),
-        ),
+        )
+        : Center(child: CircularProgressIndicator(),),
       ],
     );
   }
