@@ -13,10 +13,27 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 /// video screen
 class VideoScreen extends StatefulWidget {
   /// video id
-  final String videoId;
+  final String? videoId;
+  /// playlist
+  final Playlist? playlist;
+  /// playlist response
+  final PlaylistItemListResponse? response;
+  /// playlist items
+  final List<PlaylistItem>? items;
+  /// current index
+  final int? idx;
+  /// is for playlist
+  final bool isForPlaylist;
 
   /// constructor
-  VideoScreen({required this.videoId});
+  VideoScreen({
+    this.videoId,
+    this.playlist,
+    this.response,
+    this.items,
+    this.idx,
+    this.isForPlaylist = false,
+  });
 
   @override
   _VideoScreenState createState() => _VideoScreenState();
@@ -26,6 +43,8 @@ class VideoScreen extends StatefulWidget {
 class _VideoScreenState extends State<VideoScreen> {
   /// api service
   ApiService _api = ApiService.instance;
+  /// is loading
+  bool _isLoading = false;
   /// video instance
   Video? _video;
   /// channel instance
@@ -38,13 +57,29 @@ class _VideoScreenState extends State<VideoScreen> {
   bool _isDislikeEnabled = false;
   /// youtube player controller
   late YoutubePlayerController _controller;
+  /// playlist response
+  late PlaylistItemListResponse _response;
+  /// playlist items
+  late List<PlaylistItem> _items;
+  /// current index
+  late int _idx;
+  /// video id
+  late String _videoId;
 
   @override
   void initState() {
     super.initState();
+    if (widget.isForPlaylist) {
+      _response = widget.response!;
+      _items = widget.items!;
+      _idx = widget.idx!;
+      _videoId = _items[_idx].contentDetails!.videoId!;
+    } else {
+      _videoId = widget.videoId!;
+    }
     _getVideoByVideoId();
     _controller = YoutubePlayerController(
-      initialVideoId: widget.videoId,
+      initialVideoId: _videoId,
       flags: YoutubePlayerFlags(
         hideThumbnail: true,
         captionLanguage: 'ja',
@@ -68,9 +103,9 @@ class _VideoScreenState extends State<VideoScreen> {
   /// get video by video id
   void _getVideoByVideoId() async {
     try {
-      var video = await _api.getVideoResponse(ids: [widget.videoId]);
+      var video = await _api.getVideoResponse(ids: [_videoId]);
       var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
-      var rating = await _api.getVideoRating(ids: [widget.videoId]);
+      var rating = await _api.getVideoRating(ids: [_videoId]);
       if (mounted) {
         setState(() {
           _video = video.items![0];
@@ -78,6 +113,82 @@ class _VideoScreenState extends State<VideoScreen> {
           _rating = rating.items![0].rating;
           _isLikeEnabled = true;
           _isDislikeEnabled = true;
+        });
+      }
+    } catch (e) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ErrorScreen(),
+        )
+      );
+    }
+  }
+
+  /// start previous video
+  void _startPreviousVideo() {
+    if (_idx > 0) {
+      setState(() {
+        _video = null;
+        _channel = null;
+        _rating = null;
+        _idx -= 1;
+      });
+      _videoId = _items[_idx].contentDetails!.videoId!;
+      _getVideoByVideoId();
+      _controller.load(_videoId);
+    }
+  }
+
+  /// start next video
+  void _startNextVideo() {
+    if (_idx == _items.length - 2) {
+      _getAdditionalPlaylistItemByLastVideo();
+    }
+    if (_idx < _response.pageInfo!.totalResults!) {
+      setState(() {
+        _video = null;
+        _channel = null;
+        _rating = null;
+      });
+      _idx += 1;
+      _videoId = _items[_idx].contentDetails!.videoId!;
+      _getVideoByVideoId();
+      _controller.load(_videoId);
+    }
+  }
+
+  /// get additional playlist item by scroll
+  bool _getAdditionalPlaylistItemByScroll(ScrollNotification scrollDetails) {
+    if (!_isLoading &&
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
+      _items.length < _response.pageInfo!.totalResults!) {
+      _isLoading = true;
+      _getAdditionalPlaylist();
+    }
+    return false;
+  }
+
+  /// get additional playlist item by last video
+  void _getAdditionalPlaylistItemByLastVideo() {
+    if (!_isLoading && _items.length < _response.pageInfo!.totalResults!) {
+      _isLoading = true;
+      _getAdditionalPlaylist();
+    }
+  }
+
+  /// get additional playlist item
+  Future<void> _getAdditionalPlaylist() async {
+    try {
+      final response = await _api.getPlaylistItemResponse(
+        id: widget.playlist!.id!,
+        pageToken: _response.nextPageToken!,
+      );
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+          _isLoading = false;
         });
       }
     } catch (e) {
@@ -105,6 +216,9 @@ class _VideoScreenState extends State<VideoScreen> {
         ),
         bottomActions: _bottomActions(),
         onEnded: (data) {
+          if(widget.isForPlaylist) {
+            _startNextVideo();
+          }
         },
       ),
       builder: (context, player) => Scaffold(
@@ -209,13 +323,29 @@ class _VideoScreenState extends State<VideoScreen> {
                   Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        launch('https://www.youtube.com/watch?v=${widget.videoId}');
+                      onPressed: () async {
+                        final data = ClipboardData(
+                          text: 'https://www.youtube.com/watch?v=$_videoId'
+                        );
+                        await Clipboard.setData(data);
+                        final snackBar = SnackBar(
+                          content: Text('動画のURLをコピーしました'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       },
-                      child: Text('この動画を外部ブラウザで開く')
+                      child: Text('動画のURLをコピーする'),
                     ),
                   ),
-                  SizedBox(height: 80,),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        launch('https://www.youtube.com/watch?v=$_videoId');
+                      },
+                      child: Text('この動画をブラウザで開く'),
+                    ),
+                  ),
+                  SizedBox(height: 96,),
                 ],
               ),
             ),
@@ -234,7 +364,9 @@ class _VideoScreenState extends State<VideoScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.skip_previous)),
+          widget.isForPlaylist
+          ? IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous))
+          : Container(),
           IconButton(onPressed: () {}, icon: Icon(Icons.forward_10)),
           IconButton(
             onPressed: _isLikeEnabled
@@ -245,19 +377,6 @@ class _VideoScreenState extends State<VideoScreen> {
             : Icon(Icons.thumb_up_outlined)
           ),
           IconButton(
-            onPressed: () async {
-              final data = ClipboardData(
-                text: 'https://www.youtube.com/watch?v=${widget.videoId}'
-              );
-              await Clipboard.setData(data);
-              final snackBar = SnackBar(
-                content: Text('動画のURLをコピーしました'),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            },
-            icon: Icon(Icons.copy),
-          ),
-          IconButton(
             onPressed: _isDislikeEnabled
             ? _tapDislikeButton
             : null,
@@ -266,25 +385,28 @@ class _VideoScreenState extends State<VideoScreen> {
             : Icon(Icons.thumb_down_outlined)
           ),
           IconButton(onPressed: () {}, icon: Icon(Icons.replay_10)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.skip_next)),
+          widget.isForPlaylist
+          ? IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
+          : Container(),
         ],
       ),
     );
   }
 
+  /// tap like button
   void _tapLikeButton() {
     setState(() {
       _isLikeEnabled = false;
     });
     Future(() async {
       if (_rating != 'like') {
-        await _api.rateVideo(id: widget.videoId, rating: 'like');
+        await _api.rateVideo(id: _videoId, rating: 'like');
         setState(() {
           _rating = 'like';
           _isLikeEnabled = true;
         });
       } else {
-        await _api.rateVideo(id: widget.videoId, rating: 'none');
+        await _api.rateVideo(id: _videoId, rating: 'none');
         setState(() {
           _rating = 'none';
           _isLikeEnabled = true;
@@ -293,19 +415,20 @@ class _VideoScreenState extends State<VideoScreen> {
     });
   }
 
+  /// tap dislike button
   void _tapDislikeButton() {
     setState(() {
       _isDislikeEnabled = false;
     });
     Future(() async {
       if (_rating != 'dislike') {
-        await _api.rateVideo(id: widget.videoId, rating: 'dislike');
+        await _api.rateVideo(id: _videoId, rating: 'dislike');
         setState(() {
           _rating = 'dislike';
           _isDislikeEnabled = true;
         });
       } else {
-        await _api.rateVideo(id: widget.videoId, rating: 'none');
+        await _api.rateVideo(id: _videoId, rating: 'none');
         setState(() {
           _rating = 'none';
           _isDislikeEnabled = true;

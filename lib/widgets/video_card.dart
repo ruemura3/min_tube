@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/screens/video_screen/video_for_playlist_screen.dart';
 import 'package:min_tube/screens/video_screen/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
@@ -113,11 +112,12 @@ class VideoCardForPlaylist extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => VideoForPlaylistScreen(
+          builder: (_) => VideoScreen(
             playlist: playlist,
             response: response,
             items: items,
             idx: idx,
+            isForPlaylist: true,
           ),
         ),
       ),
@@ -130,7 +130,10 @@ class VideoCardForPlaylist extends StatelessWidget {
               Image.network(
                   items[idx].snippet!.thumbnails!.medium!.url!,
                   errorBuilder: (c, o, s) {
-                    return Container();
+                    return AspectRatio(
+                      child: Container(),
+                      aspectRatio: 16/9,
+                    );
                   },
               ),
               SizedBox(width: 16,),
@@ -196,7 +199,10 @@ class VideoCardForUpload extends StatelessWidget {
                   Image.network(
                     searchResult.snippet!.thumbnails!.medium!.url!,
                     errorBuilder: (c, o, s) {
-                      return Container();
+                      return AspectRatio(
+                        child: Container(),
+                        aspectRatio: 16/9,
+                      );
                     },
                   ),
                   searchResult.snippet!.liveBroadcastContent == 'live'
