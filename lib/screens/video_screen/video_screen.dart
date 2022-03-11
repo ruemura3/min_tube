@@ -55,6 +55,8 @@ class _VideoScreenState extends State<VideoScreen> {
   bool _isLikeEnabled = false;
   /// is dislike button enabled
   bool _isDislikeEnabled = false;
+  /// is not available
+  bool _isNotAvailable = false;
   /// youtube player controller
   late YoutubePlayerController _controller;
   /// playlist response
@@ -101,9 +103,25 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   /// get video by video id
-  void _getVideoByVideoId() async {
-    try {
+  void _getVideoByVideoId({bool? isToNext}) async {
+    setState(() {
+      _isNotAvailable = false;
+    });
+    // try {
       var video = await _api.getVideoResponse(ids: [_videoId]);
+      if (video.items!.length == 0) {
+        if (isToNext != null) {
+          if (isToNext) {
+            _startNextVideo();
+          } else {
+            _startPreviousVideo();
+          }
+        }
+        setState(() {
+          _isNotAvailable = true;
+        });
+        return;
+      }
       var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
       var rating = await _api.getVideoRating(ids: [_videoId]);
       if (mounted) {
@@ -115,14 +133,14 @@ class _VideoScreenState extends State<VideoScreen> {
           _isDislikeEnabled = true;
         });
       }
-    } catch (e) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ErrorScreen(),
-        )
-      );
-    }
+    // } catch (e) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (_) => ErrorScreen(),
+    //     )
+    //   );
+    // }
   }
 
   /// start previous video
@@ -135,7 +153,7 @@ class _VideoScreenState extends State<VideoScreen> {
         _idx -= 1;
       });
       _videoId = _items[_idx].contentDetails!.videoId!;
-      _getVideoByVideoId();
+      _getVideoByVideoId(isToNext: false);
       _controller.load(_videoId);
     }
   }
@@ -145,7 +163,7 @@ class _VideoScreenState extends State<VideoScreen> {
     if (_idx == _items.length - 2) {
       _getAdditionalPlaylistItemByLastVideo();
     }
-    if (_idx < _response.pageInfo!.totalResults!) {
+    if (_idx < _response.pageInfo!.totalResults! - 1) {
       setState(() {
         _video = null;
         _channel = null;
@@ -153,7 +171,7 @@ class _VideoScreenState extends State<VideoScreen> {
       });
       _idx += 1;
       _videoId = _items[_idx].contentDetails!.videoId!;
-      _getVideoByVideoId();
+      _getVideoByVideoId(isToNext: true);
       _controller.load(_videoId);
     }
   }
@@ -276,7 +294,7 @@ class _VideoScreenState extends State<VideoScreen> {
     return Column(
       children: [
         player,
-        _video != null && _channel != null
+        _video != null && _channel != null && _rating != null
         ? Expanded(
           child: SingleChildScrollView(
             child: Padding(
@@ -351,7 +369,15 @@ class _VideoScreenState extends State<VideoScreen> {
             ),
           ),
         )
-        : Center(child: CircularProgressIndicator(),),
+        : _isNotAvailable
+        ? Padding(
+          padding: const EdgeInsets.only(top: 32),
+          child: Center(child: Text('この動画は非公開または削除されました'),),
+        )
+        : Padding(
+          padding: const EdgeInsets.only(top: 32),
+          child: Center(child: CircularProgressIndicator(),),
+        ),
       ],
     );
   }
