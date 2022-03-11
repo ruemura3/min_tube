@@ -107,7 +107,7 @@ class _VideoScreenState extends State<VideoScreen> {
     setState(() {
       _isNotAvailable = false;
     });
-    // try {
+    try {
       var video = await _api.getVideoResponse(ids: [_videoId]);
       if (video.items!.length == 0) {
         if (isToNext != null) {
@@ -133,14 +133,14 @@ class _VideoScreenState extends State<VideoScreen> {
           _isDislikeEnabled = true;
         });
       }
-    // } catch (e) {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (_) => ErrorScreen(),
-    //     )
-    //   );
-    // }
+    } catch (e) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ErrorScreen(),
+        )
+      );
+    }
   }
 
   /// start previous video
