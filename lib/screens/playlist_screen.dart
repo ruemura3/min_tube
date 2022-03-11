@@ -4,7 +4,7 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
 /// playlist screen
@@ -122,7 +122,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(
+      appBar: BaseAppBar(
         title: _playlist != null
         ? _playlist!.snippet!.title!
         : '',

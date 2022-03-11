@@ -8,9 +8,11 @@ import 'package:min_tube/widgets/playlist_card.dart';
 class PlaylistTab extends StatefulWidget {
   /// channel instance
   final Channel channel;
+  /// is mine
+  final bool isMine;
 
   /// constructor
-  PlaylistTab({required this.channel});
+  PlaylistTab({required this.channel, required this.isMine});
 
   @override
   _PlaylistTabState createState() => _PlaylistTabState();
@@ -52,6 +54,14 @@ class _PlaylistTabState extends State<PlaylistTab> {
         );
       }
     });
+  }
+
+  /// get item length
+  int _getTotalResults() {
+    if (widget.isMine) {
+      return _response!.pageInfo!.totalResults! - 1;
+    }
+    return _response!.pageInfo!.totalResults!;
   }
 
   /// get additional playlist
@@ -102,7 +112,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
             itemCount: _items.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == _items.length) {
-                if (_items.length < _response!.pageInfo!.totalResults!) {
+                if (_items.length < _getTotalResults()) {
                   return Center(child: CircularProgressIndicator(),);
                 }
                 return Container();

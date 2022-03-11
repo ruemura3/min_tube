@@ -3,8 +3,9 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
+import 'package:min_tube/widgets/playlist_card.dart';
 import 'package:min_tube/widgets/profile_card.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
 /// search result screen
@@ -65,7 +66,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         try {
           final response = await _api.getSearchResponse(
             query: widget.query,
-            pageToken: _response!.nextPageToken!
+            pageToken: _response!.nextPageToken!,
           );
           if (mounted) {
             setState(() {
@@ -90,7 +91,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(title: widget.query,),
+      appBar: BaseAppBar(title: widget.query,),
       body: _searchResultScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );
@@ -116,6 +117,9 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
             }
             if (_items[index].id!.kind! == 'youtube#channel') {
               return ProfileCardForSearchResult(searchResult: _items[index],);
+            }
+            if (_items[index].id!.kind! == 'youtube#playlist') {
+              return PlaylistCardForSearchResult(searchResult: _items[index],);
             }
             return Container();
           },

@@ -6,7 +6,7 @@ import 'package:min_tube/screens/login_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 
 class MyScreen extends StatefulWidget {
   @override
@@ -39,7 +39,7 @@ class _MyScreenState extends State<MyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(title: 'マイページ',),
+      appBar: BaseAppBar(title: 'マイページ',),
       body: _myScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );

@@ -399,7 +399,7 @@ class MyProfileCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ChannelScreen(channel: channel,),
+          builder: (_) => ChannelScreen(channel: channel, isMine: true,),
         ),
       ),
       child: Padding(

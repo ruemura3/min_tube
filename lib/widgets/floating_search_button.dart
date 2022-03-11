@@ -14,7 +14,7 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
   /// search query text editing controller
   final _controller = TextEditingController();
 
-  /// pop search dialog
+  /// show search dialog
   _showSearchDialog(BuildContext context) {
     return showDialog(
       context: context,

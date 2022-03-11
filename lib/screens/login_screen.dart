@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 
 /// login screen
 class LoginScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(
+      appBar: BaseAppBar(
         title: null,
         shouldShowTitle: false,
         shouldShowBack: false,

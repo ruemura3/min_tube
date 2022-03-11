@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
-import 'package:min_tube/screens/video_screen.dart';
+import 'package:min_tube/screens/video_screen/video_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 

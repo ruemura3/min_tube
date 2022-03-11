@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:min_tube/screens/home_screen.dart';
 
 /// search bar
-class SearchBar extends StatelessWidget with PreferredSizeWidget {
+class BaseAppBar extends StatelessWidget with PreferredSizeWidget {
   /// app bar text
   final String? title;
   /// should show title
@@ -13,7 +13,7 @@ class SearchBar extends StatelessWidget with PreferredSizeWidget {
   final bool shouldShowBack;
 
   /// constructor
-  SearchBar({this.title, this.shouldShowTitle = true, this.tabBar, this.shouldShowBack = true});
+  BaseAppBar({this.title, this.shouldShowTitle = true, this.tabBar, this.shouldShowBack = true});
 
   @override
   Size get preferredSize {

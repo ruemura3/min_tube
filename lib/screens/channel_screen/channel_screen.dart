@@ -7,7 +7,7 @@ import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
 import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 
 /// channel screen
 class ChannelScreen extends StatefulWidget {
@@ -17,9 +17,16 @@ class ChannelScreen extends StatefulWidget {
   final Channel? channel;
   /// animate to
   final int tabPage;
+  /// is mine
+  final bool isMine;
 
   /// constructor
-  ChannelScreen({this.channelId, this.channel, this.tabPage = 0});
+  ChannelScreen({
+    this.channelId,
+    this.channel,
+    this.tabPage = 0,
+    this.isMine = false
+  });
 
   @override
   _ChannelScreenState createState() => _ChannelScreenState();
@@ -82,7 +89,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
     return DefaultTabController(
       length: _tabs.length,
       child: Scaffold(
-        appBar: SearchBar(
+        appBar: BaseAppBar(
           title: _channel != null
           ? _channel!.snippet!.title
           : '',
@@ -107,7 +114,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
         children: [
           HomeTab(channel: _channel!),
           UploadVideoTab(channel: _channel!),
-          PlaylistTab(channel: _channel!),
+          PlaylistTab(channel: _channel!, isMine: widget.isMine),
         ],
       );
     }

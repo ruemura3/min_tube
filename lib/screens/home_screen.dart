@@ -5,7 +5,7 @@ import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/screens/my_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
-import 'package:min_tube/widgets/search_bar.dart';
+import 'package:min_tube/widgets/app_bar.dart';
 
 /// home screen
 class HomeScreen extends StatefulWidget {
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBar(
+      appBar: BaseAppBar(
         title: null,
         shouldShowTitle: true,
         shouldShowBack: false,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/screens/video_for_playlist_screen.dart';
-import 'package:min_tube/screens/video_screen.dart';
+import 'package:min_tube/screens/video_screen/video_for_playlist_screen.dart';
+import 'package:min_tube/screens/video_screen/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
 /// video card for search result
@@ -127,10 +127,11 @@ class VideoCardForPlaylist extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
           child: Row(
             children: <Widget>[
-              Image(
-                image: NetworkImage(
-                  items[idx].snippet!.thumbnails!.medium!.url!
-                ),
+              Image.network(
+                  items[idx].snippet!.thumbnails!.medium!.url!,
+                  errorBuilder: (c, o, s) {
+                    return Container();
+                  },
               ),
               SizedBox(width: 16,),
               Expanded(
@@ -165,7 +166,7 @@ class VideoCardForPlaylist extends StatelessWidget {
   }
 }
 
-/// video card for playlist
+/// video card for upload
 class VideoCardForUpload extends StatelessWidget {
   /// search result
   final SearchResult searchResult;
@@ -192,10 +193,11 @@ class VideoCardForUpload extends StatelessWidget {
               Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  Image(
-                    image: NetworkImage(
-                      searchResult.snippet!.thumbnails!.medium!.url!
-                    ),
+                  Image.network(
+                    searchResult.snippet!.thumbnails!.medium!.url!,
+                    errorBuilder: (c, o, s) {
+                      return Container();
+                    },
                   ),
                   searchResult.snippet!.liveBroadcastContent == 'live'
                   ? Padding(
