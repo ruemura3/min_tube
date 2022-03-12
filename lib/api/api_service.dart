@@ -36,7 +36,7 @@ class ApiService {
     return _user;
   }
 
-  /// login
+  /// logout
   Future<GoogleSignInAccount?> logout() async {
     await _googleSignIn.signOut();
     _user = null;
@@ -51,7 +51,7 @@ class ApiService {
   /// get search response
   Future<SearchListResponse> getSearchResponse({
     String? channelId,
-    int maxResults = 30,
+    int maxResults = 50,
     String? order,
     String? pageToken,
     String? query,
@@ -112,7 +112,7 @@ class ApiService {
   /// get playlist item by playlist id
   Future<PlaylistItemListResponse> getPlaylistItemResponse({
     required String id,
-    int maxResults = 30,
+    int maxResults = 5,
     String pageToken = '',
   }) async {
     final youTubeApi = await getYouTubeApi();
