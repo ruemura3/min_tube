@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
+import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/util.dart';
 
 /// profile card for search result
@@ -31,7 +32,7 @@ class ProfileCardForSearchResult extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 32,
+                  radius: 24,
                   backgroundImage: NetworkImage(
                     searchResult.snippet!.thumbnails!.medium!.url!
                   ),
@@ -278,15 +279,24 @@ class _SubscribeButtonState extends State<SubscribeButton> {
   void initState() {
     super.initState();
     Future(() async {
-      final response = await _api.getSubscriptionResponse(forChannelId: widget.channel.id!);
-      if (mounted) {
-        setState(() {
-          _isSubscribed = response.items!.length != 0;
-          if (_isSubscribed) {
-            _subscription = response.items![0];
-          }
-          _isEnabled = true;
-        });
+      try {
+        final response = await _api.getSubscriptionResponse(forChannelId: widget.channel.id!);
+        if (mounted) {
+          setState(() {
+            _isSubscribed = response.items!.length != 0;
+            if (_isSubscribed) {
+              _subscription = response.items![0];
+            }
+            _isEnabled = true;
+          });
+        }
+      } catch (e) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ErrorScreen(),
+          )
+        );
       }
     });
   }

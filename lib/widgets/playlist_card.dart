@@ -114,30 +114,32 @@ class PlaylistCardForSearchResult extends StatelessWidget {
         children: [
           Container(
             height: 112,
-            padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+            padding: const EdgeInsets.only(top: 4, right: 16, bottom: 4, left: 16),
             child: Row(
               children: <Widget>[
-                Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    Image.network(
-                      searchResult.snippet!.thumbnails!.medium!.url!,
-                      errorBuilder: (c, o, s) {
-                        return Container();
-                      },
-                    ),
-                    Container(
-                      color: Colors.black.withOpacity(0.7),
-                      width: 64,
-                      height: double.infinity,
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.all(4).copyWith(left: 0, right: 16),
+                  child: Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      Image.network(
+                        searchResult.snippet!.thumbnails!.medium!.url!,
+                        errorBuilder: (c, o, s) {
+                          return Container();
+                        },
                       ),
-                    ),
-                  ],
+                      Container(
+                        color: Colors.black.withOpacity(0.7),
+                        width: 64,
+                        height: double.infinity,
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 16,),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

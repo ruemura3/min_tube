@@ -93,7 +93,6 @@ class _VideoScreenState extends State<VideoScreen> {
 
   @override
   void deactivate() {
-    // Pauses video while navigating to next page.
     _controller.pause();
     super.deactivate();
   }
@@ -417,7 +416,9 @@ class _VideoScreenState extends State<VideoScreen> {
           widget.isForPlaylist
           ? IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous))
           : Container(),
-          IconButton(onPressed: () {}, icon: Icon(Icons.forward_10)),
+          IconButton(onPressed: () {
+            _controller.seekTo(_controller.value.position - Duration(seconds: 10));
+          }, icon: Icon(Icons.forward_10)),
           IconButton(
             onPressed: _isLikeEnabled
             ? _tapLikeButton
@@ -434,7 +435,9 @@ class _VideoScreenState extends State<VideoScreen> {
             ? Icon(Icons.thumb_down)
             : Icon(Icons.thumb_down_outlined)
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.replay_10)),
+          IconButton(onPressed: () {
+            _controller.seekTo(_controller.value.position + Duration(seconds: 10));
+          }, icon: Icon(Icons.replay_10)),
           widget.isForPlaylist
           ? IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
           : Container(),

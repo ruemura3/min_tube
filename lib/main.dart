@@ -41,8 +41,8 @@ class _MinTubeState extends State<MinTube> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(
-        colorScheme: ColorScheme.light().copyWith(
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(
           primary: Colors.cyan,
           onPrimary: Colors.white,
           secondary: Colors.cyan,
@@ -53,8 +53,8 @@ class _MinTubeState extends State<MinTube> {
           foregroundColor: Colors.black,
         )
       ),
-      darkTheme: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.dark().copyWith(
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.dark(
           primary: Colors.cyan,
           onPrimary: Colors.white,
           secondary: Colors.cyan,

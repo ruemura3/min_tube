@@ -112,7 +112,7 @@ class ApiService {
   /// get playlist item by playlist id
   Future<PlaylistItemListResponse> getPlaylistItemResponse({
     required String id,
-    int maxResults = 5,
+    int maxResults = 30,
     String pageToken = '',
   }) async {
     final youTubeApi = await getYouTubeApi();
