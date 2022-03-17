@@ -132,9 +132,21 @@ class PlaylistCardForSearchResult extends StatelessWidget {
                         color: Colors.black.withOpacity(0.7),
                         width: 64,
                         height: double.infinity,
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              'プレイ\nリスト',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

@@ -6,6 +6,7 @@ import 'package:min_tube/screens/my_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/app_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// home screen
 class HomeScreen extends StatefulWidget {
@@ -17,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   /// api service
   ApiService _api = ApiService.instance;
-  /// is loading
-  bool _isLoading = false;
   /// subscription response
   SubscriptionListResponse? _response;
   ///  subscription list
@@ -27,15 +26,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     Future(() async {
       try {
         final response = await _api.getSubscriptionResponse();
+        _items = response.items!;
+        _response = response;
+        int itemLength = _items.length;
+        while (itemLength < _response!.pageInfo!.totalResults!) {
+          final response = await _api.getSubscriptionResponse(
+            pageToken: _response!.nextPageToken!,
+          );
+          _items.addAll(response.items!);
+          itemLength = _items.length;
+        }
         if (mounted) {
           setState(() {
-            _response = response;
-            _items = response.items!;
-            _isLoading = false;
+            _response = _response;
+            _items = _response!.items!;
           });
         }
       } catch (e) {
@@ -46,38 +53,18 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         );
       }
-    });
-  }
-
-  /// get additional subscription
-  bool _getAdditionalSubscription(ScrollNotification scrollDetails) {
-    if (!_isLoading &&
-      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-      _items.length < _response!.pageInfo!.totalResults!) {
-      _isLoading = true;
-      Future(() async {
-        try {
-          final response = await _api.getSubscriptionResponse(
-            pageToken: _response!.nextPageToken!,
+      final preferences = await SharedPreferences.getInstance();
+      List<String>? favoriteIds = preferences.getStringList('favorites');
+      if (favoriteIds != null) {
+        for (var f in favoriteIds) {
+          final favoriteChannel = _items.firstWhere(
+            (subscription) => subscription.snippet!.resourceId!.channelId! == f
           );
-          if (mounted) {
-            setState(() {
-              _response = response;
-              _items.addAll(response.items!);
-              _isLoading = false;
-            });
-          }
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+          _items.remove(favoriteChannel);
+          _items.insert(0, favoriteChannel);
         }
-      });
-    }
-    return false;
+      }
+    });
   }
 
   @override
@@ -96,58 +83,52 @@ class _HomeScreenState extends State<HomeScreen> {
   /// home screen body
   Widget _homeScreenBody() {
     if (_response != null) {
-      return NotificationListener<ScrollNotification>(
-        onNotification: _getAdditionalSubscription,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: ListView.builder(
-            itemCount: _items.length + 2,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 0) {
-                return Column(
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MyScreen(),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'マイページ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            Icon(Icons.arrow_forward_ios)
-                          ],
-                        ),
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: ListView.builder(
+          itemCount: _items.length + 2,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == 0) {
+              return Column(
+                children: [
+                  InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MyScreen(),
                       ),
                     ),
-                    Divider(color: Colors.grey,),
-                  ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'マイページ',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Icon(Icons.arrow_forward_ios)
+                        ],
+                      ),
+                    ),
+                  ),
+                  Divider(color: Colors.grey,),
+                ],
+              );
+            }
+            if (index == _items.length + 1) {
+              if (_items.length == 0) {
+                return Center(
+                  child: Text('登録しているチャンネルがありません'),
                 );
               }
-              if (index == _items.length + 1) {
-                if (_items.length < _response!.pageInfo!.totalResults!) {
-                  return Center(child: CircularProgressIndicator(),);
-                }
-                if (_items.length == 0) {
-                  return Center(
-                    child: Text('登録しているチャンネルがありません'),
-                  );
-                }
-                return Container();
-              }
-              return ProfileCardForHomeScreen(subscription: _items[index - 1]);
-            },
-          ),
+              return Container();
+            }
+            return ProfileCardForHomeScreen(subscription: _items[index - 1]);
+          },
         ),
       );
     }

@@ -203,9 +203,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
             ),
           ),
           SizedBox(height: 8,),
-          Text(
-            _playlist!.snippet!.description!,
-            style: TextStyle(color: Colors.grey),
+          Container(
+            width: double.infinity,
+            child: Text(
+              _playlist!.snippet!.description!,
+              style: TextStyle(color: Colors.grey),
+            ),
           )
         ],
       ),

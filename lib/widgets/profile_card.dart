@@ -4,6 +4,7 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// profile card for search result
 /// use only when kind is 'youtube#channel'
@@ -205,10 +206,10 @@ class ProfileCardForChannelScreen extends StatelessWidget {
   }
 }
 
-/// profile card for search result
+/// profile card for home screen
 /// use only when kind is 'youtube#channel'
 class ProfileCardForHomeScreen extends StatelessWidget {
-  /// search result
+  /// subscription
   final Subscription subscription;
 
   /// constructor
@@ -238,20 +239,17 @@ class ProfileCardForHomeScreen extends StatelessWidget {
             ),
             SizedBox(width: 16,),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    subscription.snippet!.title!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+              child: Text(
+                subscription.snippet!.title!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
+            ),
+            FavoriteButton(
+              channelId: subscription.snippet!.resourceId!.channelId!,
             ),
           ],
         ),
@@ -370,7 +368,6 @@ class _SubscribeButtonState extends State<SubscribeButton> {
         return AlertDialog(
           content: Text("${widget.channel.snippet!.title} のチャンネル登録を解除しますか？"),
           actions: <Widget>[
-            // ボタン領域
             TextButton(
               child: Text("キャンセル"),
               onPressed: () => Navigator.pop(context),
@@ -415,7 +412,11 @@ class MyProfileCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ChannelScreen(channel: channel, isMine: true,),
+          builder: (_) => ChannelScreen(
+            channel: channel,
+            tabPage: 2,
+            isMine: true,
+          ),
         ),
       ),
       child: Padding(
@@ -447,5 +448,91 @@ class MyProfileCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  /// subscription
+  final String channelId;
+
+  FavoriteButton({required this.channelId});
+
+  @override
+  State<FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  /// is in favorites
+  bool _isInFavorites = false;
+  /// is button enabled
+  bool _isEnabled = false;
+  /// favorite ids
+  List<String> _favoriteIds = [];
+  late SharedPreferences _preferences;
+
+  @override
+  void initState() {
+    super.initState();
+    Future(() async {
+      _preferences = await SharedPreferences.getInstance();
+      _setFavoriteIdList();
+      final id = _favoriteIds.firstWhere(
+        (id) => id == widget.channelId,
+        orElse: () => '',
+      );
+      setState(() {
+        if (id != '') {
+          _isInFavorites = true;
+        }
+      });
+      _isEnabled = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: _isEnabled
+      ? () {
+        setState(() {
+          _isEnabled = false;
+        });
+        _onFavoriteButtonPressed();
+      }
+      : null,
+      icon: _isInFavorites
+      ? Icon(Icons.star)
+      : Icon(Icons.star_border),
+    );
+  }
+
+  void _setFavoriteIdList() {
+    final favoriteIds = _preferences.getStringList('favorites');
+    if (favoriteIds != null) {
+      _favoriteIds = favoriteIds;
+    }
+  }
+
+  Future<void> _onFavoriteButtonPressed() async {
+    _setFavoriteIdList();
+    if (_isInFavorites) {
+      _favoriteIds.remove(widget.channelId);
+      _preferences.setStringList('favorites', _favoriteIds);
+      if (mounted) {
+        setState(() {
+          _isInFavorites = false;
+          _isEnabled = true;
+        });
+      }
+    } else {
+      _favoriteIds.add(widget.channelId);
+      _preferences.setStringList('favorites', _favoriteIds);
+      if (mounted) {
+        setState(() {
+          _isInFavorites = true;
+          _isEnabled = true;
+        });
+      }
+    }
   }
 }
