@@ -112,7 +112,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       return TabBarView(
         controller: _tabController,
         children: [
-          HomeTab(channel: _channel!),
+          HomeTab(channel: _channel!, isMine: widget.isMine),
           UploadVideoTab(channel: _channel!),
           PlaylistTab(channel: _channel!, isMine: widget.isMine),
         ],

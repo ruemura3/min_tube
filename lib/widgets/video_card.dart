@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/screens/video_screen/video_screen.dart';
+import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
 /// video card for search result

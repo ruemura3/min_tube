@@ -130,9 +130,11 @@ class ProfileCardForVideoScreen extends StatelessWidget {
 class ProfileCardForChannelScreen extends StatelessWidget {
   /// channel instance
   final Channel channel;
+  /// is mine
+  final bool isMine;
 
   /// constructor
-  ProfileCardForChannelScreen({required this.channel});
+  ProfileCardForChannelScreen({required this.channel, required this.isMine});
 
   @override
   Widget build(BuildContext context) {
@@ -175,8 +177,12 @@ class ProfileCardForChannelScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.grey),
                 )
                 : Container(),
-                SizedBox(height: 16,),
-                SubscribeButton(channel: channel,),
+                !isMine
+                ? Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: SubscribeButton(channel: channel,),
+                )
+                : Container(),
                 channel.snippet!.description! != ''
                 ? Column(
                   children: [

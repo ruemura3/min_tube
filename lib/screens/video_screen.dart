@@ -176,18 +176,7 @@ class _VideoScreenState extends State<VideoScreen> {
       _controller.load(_videoId);
     }
   }
-
-  /// get additional playlist item by scroll
-  bool _getAdditionalPlaylistItemByScroll(ScrollNotification scrollDetails) {
-    if (!_isLoading &&
-      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-      _items.length < _response.pageInfo!.totalResults!) {
-      _isLoading = true;
-      _getAdditionalPlaylist();
-    }
-    return false;
-  }
-
+  
   /// get additional playlist item by last video
   void _getAdditionalPlaylistItemByLastVideo() {
     if (!_isLoading && _items.length < _response.pageInfo!.totalResults!) {
