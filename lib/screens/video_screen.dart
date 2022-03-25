@@ -176,7 +176,7 @@ class _VideoScreenState extends State<VideoScreen> {
       _controller.load(_videoId);
     }
   }
-  
+
   /// get additional playlist item by last video
   void _getAdditionalPlaylistItemByLastVideo() {
     if (!_isLoading && _items.length < _response.pageInfo!.totalResults!) {
@@ -242,26 +242,10 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   /// bottom actions
-  List<Widget> _bottomActions() {
+  List<Widget>? _bottomActions() {
     if (_video != null) {
       if (_video!.snippet!.liveBroadcastContent! != 'live') {
-        return [
-          const SizedBox(width: 14.0),
-          CurrentPosition(),
-          const SizedBox(width: 8.0),
-          ProgressBar(
-            isExpanded: true,
-            colors: ProgressBarColors(
-              backgroundColor: Colors.white.withOpacity(0.6),
-              playedColor: Colors.red,
-              bufferedColor: Colors.white,
-              handleColor: Colors.redAccent,
-            ),
-          ),
-          RemainingDuration(),
-          const PlaybackSpeedButton(),
-          FullScreenButton(),
-        ];
+        return null;
       }
       return [
         SizedBox(width: 8,),
