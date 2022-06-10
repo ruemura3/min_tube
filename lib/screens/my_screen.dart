@@ -8,6 +8,8 @@ import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 
+import 'channel_screen/channel_screen.dart';
+
 class MyScreen extends StatefulWidget {
   @override
   _MyScreenState createState() => _MyScreenState();
@@ -39,7 +41,7 @@ class _MyScreenState extends State<MyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(title: 'マイページ',),
+      appBar: OriginalAppBar(title: 'マイページ',),
       body: _myScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );
@@ -67,6 +69,35 @@ class _MyScreenState extends State<MyScreen> {
                   Expanded(
                     child: Text(
                       '高く評価した動画',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChannelScreen(
+                  channel: _channel!,
+                  tabPage: 2,
+                  isMine: true,
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(Icons.playlist_play),
+                  SizedBox(width: 16,),
+                  Expanded(
+                    child: Text(
+                      'プレイリスト',
                       style: TextStyle(
                         fontSize: 16,
                       ),

@@ -230,7 +230,7 @@ class _VideoScreenState extends State<VideoScreen> {
         },
       ),
       builder: (context, player) => Scaffold(
-        appBar: BaseAppBar(
+        appBar: OriginalAppBar(
           title: _video != null
           ? _video!.snippet!.title!
           : '',

@@ -91,7 +91,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(title: widget.query,),
+      appBar: OriginalAppBar(title: widget.query,),
       body: _searchResultScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );

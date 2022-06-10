@@ -7,8 +7,9 @@ import 'package:min_tube/screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp]
+  ).then((_) {
     runApp(new MinTube());
   });
 }

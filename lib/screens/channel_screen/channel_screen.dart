@@ -89,7 +89,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
     return DefaultTabController(
       length: _tabs.length,
       child: Scaffold(
-        appBar: BaseAppBar(
+        appBar: OriginalAppBar(
           title: _channel != null
           ? _channel!.snippet!.title
           : '',

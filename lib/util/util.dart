@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
@@ -107,7 +108,7 @@ class Util {
             if (videoId != null) {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                CupertinoPageRoute(
                   builder: (_) => VideoScreen(
                     videoId: videoId,
                   ),

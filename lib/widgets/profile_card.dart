@@ -414,7 +414,6 @@ class MyProfileCard extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => ChannelScreen(
             channel: channel,
-            tabPage: 2,
             isMine: true,
           ),
         ),

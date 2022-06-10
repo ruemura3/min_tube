@@ -122,7 +122,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(
+      appBar: OriginalAppBar(
         title: _playlist != null
         ? _playlist!.snippet!.title!
         : '',
