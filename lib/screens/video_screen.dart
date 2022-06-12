@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/profile_card.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/subscribe_button.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -276,7 +277,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         ),
                         _videoScreenButtons(),
                         Divider(color: Colors.grey,),
-                        ProfileCardForVideoScreen(channel: _channel!,),
+                        _profileCard(_channel!,),
                         Divider(color: Colors.grey,),
                         _video!.snippet!.description! != ''
                           ? Column(
@@ -499,5 +500,58 @@ class _VideoScreenState extends State<VideoScreen> {
       );
     }
     return Center(child: CircularProgressIndicator(),);
+  }
+
+  /// プロフィールカード
+  Widget _profileCard(Channel channel) {
+    return Container(
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChannelScreen(
+              channel: channel,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
+                  channel.snippet!.thumbnails!.medium!.url!
+                ),
+              ),
+              SizedBox(width: 8,),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      channel.snippet!.title!,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    channel.statistics!.subscriberCount != null
+                      ? Text(
+                        Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13
+                        ),
+                      )
+                      : Container(),
+                  ],
+                ),
+              ),
+              SubscribeButton(channel: channel,),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

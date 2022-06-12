@@ -7,34 +7,33 @@ import 'package:min_tube/screens/playlist_screen.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 
-/// search result screen
+/// 検索結果画面
 class SearchResultScreen extends StatefulWidget {
-  /// search query
+  /// 検索クエリ
   final String query;
 
-  /// constructor
+  /// コンストラクタ
   SearchResultScreen({required this.query});
 
   @override
   _SearchResultScreenState createState() => _SearchResultScreenState();
 }
 
-/// search result screen state
+/// 検索結果画面ステート
 class _SearchResultScreenState extends State<SearchResultScreen> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// is loading
+  /// ロード中フラグ
   bool _isLoading = false;
-  /// search response
+  /// APIレスポンス
   SearchListResponse? _response;
-  /// search result list
+  /// 検索結果一覧
   List<SearchResult> _items = [];
 
   @override
   void initState() {
-    super.initState();
     _isLoading = true;
     Future(() async {
       final response = await _api.getSearchList(query: widget.query);
@@ -46,13 +45,14 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         });
       }
     });
+    super.initState();
   }
 
-  /// get additional search result
+  /// 追加の検索結果を取得する
   bool _getAdditionalSearchResult(ScrollNotification scrollDetails) {
-    if (!_isLoading &&
-      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-      _items.length < _response!.pageInfo!.totalResults!) {
+    if (!_isLoading && // ロード中でない
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent && // 最後までスクロールしている
+      _items.length < _response!.pageInfo!.totalResults!) { // 現在のアイテム数が全アイテム数より少ない
       _isLoading = true;
       Future(() async {
         final response = await _api.getSearchList(
@@ -80,13 +80,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     );
   }
 
-  /// search result screen body
+  /// 検索結果画面ボディ
   Widget _searchResultScreenBody() {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalSearchResult,
         child: ListView.builder(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.all(8).copyWith(bottom: 0),
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (index == _items.length) {
@@ -127,41 +127,40 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         children: [
           Container(
             height: 112,
-            padding: const EdgeInsets.only(top: 4, right: 16, bottom: 4, left: 16),
+            padding: const EdgeInsets.all(8),
             child: Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(4).copyWith(left: 0, right: 16),
-                  child: Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      searchResult.snippet!.liveBroadcastContent! == 'none'
-                        ? Image.network(
-                          searchResult.snippet!.thumbnails!.medium!.url!,
-                        )
-                        : AspectRatio(
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Image.network(
+                      searchResult.snippet!.thumbnails!.medium!.url!,
+                      errorBuilder: (c, o, s) {
+                        return AspectRatio(
+                          child: Container(),
                           aspectRatio: 16/9,
-                          child: Container(height: double.infinity,),
-                        ),
-                      searchResult.snippet!.liveBroadcastContent == 'live'
-                        ? Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Container(
-                            color: Colors.red.withOpacity(0.8),
-                            padding: const EdgeInsets.only(left: 4, top: 2, right: 4, bottom: 2),
-                            child: Text(
-                              'LIVE',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        );
+                      },
+                    ),
+                    searchResult.snippet!.liveBroadcastContent == 'live'
+                      ? Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Container(
+                          color: Colors.red.withOpacity(0.8),
+                          padding: const EdgeInsets.only(left: 4, top: 2, right: 4, bottom: 2),
+                          child: Text(
+                            'LIVE',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                        : Container(),
-                    ]
-                  ),
+                        ),
+                      )
+                      : Container(),
+                  ]
                 ),
+                SizedBox(width: 16,),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,21 +170,15 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                           searchResult.snippet!.title!,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                       Text(
-                        searchResult.snippet!.channelTitle!,
-                        overflow: TextOverflow.ellipsis,
+                        '${Util.formatTimeago(searchResult.snippet!.publishedAt)} ・ ${searchResult.snippet!.channelTitle!}',
                         style: TextStyle(
                           color: Colors.grey,
-                          fontSize: 12
-                        ),
-                      ),
-                      Text(
-                        Util.formatTimeago(searchResult.snippet!.publishedAt),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -265,44 +258,42 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
         children: [
           Container(
             height: 112,
-            padding: const EdgeInsets.only(top: 4, right: 16, bottom: 4, left: 16),
+            padding: const EdgeInsets.all(8),
             child: Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(4).copyWith(left: 0, right: 16),
-                  child: Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      Image.network(
-                        searchResult.snippet!.thumbnails!.medium!.url!,
-                        errorBuilder: (c, o, s) {
-                          return Container();
-                        },
-                      ),
-                      Container(
-                        color: Colors.black.withOpacity(0.7),
-                        width: 64,
-                        height: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.play_arrow,
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    Image.network(
+                      searchResult.snippet!.thumbnails!.medium!.url!,
+                      errorBuilder: (c, o, s) {
+                        return Container();
+                      },
+                    ),
+                    Container(
+                      color: Colors.black.withOpacity(0.7),
+                      width: 64,
+                      height: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            'プレイ\nリスト',
+                            style: TextStyle(
                               color: Colors.white,
+                              fontSize: 12
                             ),
-                            Text(
-                              'プレイ\nリスト',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                SizedBox(width: 16,),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

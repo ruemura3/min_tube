@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
+/// カラーユーティリティクラス
 class ColorUtil {
-  /// text color
+  /// テキストカラー
   static textColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-    ? Colors.white
-    : Colors.black;
+      ? Colors.white
+      : Colors.black;
   }
 
-  /// reversed text color
-  /// text color
+  /// 逆のテキストカラー
   static reversedTextColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-    ? Colors.black
-    : Colors.white;
+      ? Colors.black
+      : Colors.white;
   }
 }

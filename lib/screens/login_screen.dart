@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 
 /// ログイン画面
 class LoginScreen extends StatefulWidget {
@@ -22,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
         title: null,
         shouldShowTitle: false,
         shouldShowProfileButton: false,
-        shouldShowBack: false,
       ),
       body: _loginScreenBody(),
     );

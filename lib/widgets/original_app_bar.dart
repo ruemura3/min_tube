@@ -4,26 +4,23 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/screens/my_screen.dart';
 
-/// search bar
+/// オリジナルアップバー
 class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
-  /// app bar text
+  /// アップバータイトル
   final String? title;
-  /// should show title
+  /// タイトルを表示すべきかどうか
   final bool shouldShowTitle;
-  /// should show home button
+  /// プロフィールボタンを表示すべきかどうか
   final bool shouldShowProfileButton;
-  /// tab bar
+  /// タブバー
   final TabBar? tabBar;
-  /// should show back button
-  final bool shouldShowBack;
 
-  /// constructor
+  /// コンストラクタ
   OriginalAppBar({
     this.title,
     this.shouldShowTitle = true,
     this.shouldShowProfileButton = true,
     this.tabBar,
-    this.shouldShowBack = true
   });
 
   @override
@@ -38,16 +35,15 @@ class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
   _OriginalAppBarState createState() => _OriginalAppBarState();
 }
 
-/// search bar state
+/// オリジナルアップバーステート
 class _OriginalAppBarState extends State<OriginalAppBar> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// current user
+  /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
 
   @override
   void initState() {
-    super.initState();
     Future(() async {
       final user = await _api.user;
       if (mounted) {
@@ -56,6 +52,7 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
         });
       }
     });
+    super.initState();
   }
 
   @override
@@ -63,13 +60,12 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
     return AppBar(
       elevation: 0,
       title: _appBarTitle(),
-      automaticallyImplyLeading: widget.shouldShowBack,
       actions: _appBarActions(),
       bottom: widget.tabBar,
     );
   }
 
-  /// app bar title
+  /// アップバータイトル
   Widget _appBarTitle() {
     if (!widget.shouldShowTitle) {
       return Container();
@@ -91,14 +87,14 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
       ),
       child: Image.asset(
         Theme.of(context).brightness == Brightness.dark
-        ? 'assets/images/logo_dark.png'
-        : 'assets/images/logo_light.png',
-        width: 120,
+          ? 'assets/images/logo_dark.png'
+          : 'assets/images/logo_light.png',
+          width: 120,
       ),
     );
   }
 
-  /// profile Icon
+  /// プロフィールアイコン
   List<Widget> _appBarActions() {
     if (widget.shouldShowProfileButton) {
       if (_currentUser != null) {
@@ -111,13 +107,13 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
               ),
             ),
             child: _currentUser!.photoUrl != null
-            ? CircleAvatar(
-              backgroundImage: NetworkImage(_currentUser!.photoUrl!)
-            )
-            : CircleAvatar(
-              backgroundColor: Colors.blueGrey,
-              child: Text(_currentUser!.displayName!.substring(0, 1)),
-            )
+              ? CircleAvatar(
+                backgroundImage: NetworkImage(_currentUser!.photoUrl!)
+              )
+              : CircleAvatar(
+                backgroundColor: Colors.blueGrey,
+                child: Text(_currentUser!.displayName!.substring(0, 1)),
+              )
           ),
           SizedBox(width: 16,),
         ];

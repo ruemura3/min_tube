@@ -5,7 +5,7 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/login_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 
 /// マイページ画面
 class MyPageScreen extends StatefulWidget {

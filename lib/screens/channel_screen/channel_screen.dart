@@ -6,7 +6,7 @@ import 'package:min_tube/screens/channel_screen/playlist_tab.dart';
 import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 
 /// チャンネル画面
 class ChannelScreen extends StatefulWidget {

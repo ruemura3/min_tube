@@ -75,7 +75,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (_response != null) { // レスポンスがnull出ない場合
+    if (_response != null) { // レスポンスがnullでない場合
       if (_items.length == 0) { // アイテム数が0の場合
         return Center(
           child: Text('このチャンネルには動画がありません'),

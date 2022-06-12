@@ -3,8 +3,8 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/profile_card.dart';
-import 'package:min_tube/widgets/app_bar.dart';
+import 'package:min_tube/widgets/favorite_button.dart';
+import 'package:min_tube/widgets/original_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// ホーム画面
@@ -63,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: OriginalAppBar(
         title: null,
         shouldShowTitle: true,
-        shouldShowBack: false,
       ),
       body: _homeScreenBody(),
       floatingActionButton: FloatingSearchButton(),

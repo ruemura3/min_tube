@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/util/util.dart';
-import 'package:min_tube/widgets/profile_card.dart';
+import 'package:min_tube/widgets/subscribe_button.dart';
 
 /// チャンネル画面のホームタブ
 class HomeTab extends StatelessWidget {

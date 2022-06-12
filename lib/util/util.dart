@@ -7,9 +7,9 @@ import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// util
+/// ユーティリティクラス
 class Util {
-  /// format view count
+  /// フォーマットされた視聴回数
   static String formatViewCount(String viewCount) {
     int intViewCount = int.parse(viewCount);
     if (intViewCount < 10000) {
@@ -23,8 +23,8 @@ class Util {
     }
   }
 
-  /// format subscriber count
-  /// return null when private
+  /// フォーマットされたチャンネル登録者数
+  /// 非公開の場合はnullを返す
   static String? formatSubScriberCount(String? subscriberCount) {
     if (subscriberCount != null) {
       int intSubscriberCount = int.parse(subscriberCount);
@@ -41,7 +41,7 @@ class Util {
     return null;
   }
 
-  /// format timeago
+  /// フォーマットされた投稿日時
   static String formatTimeago(DateTime? date) {
     if (date == null) return '';
     DateTime now = DateTime.now();
@@ -77,12 +77,12 @@ class Util {
     }
   }
 
-  /// format view count and timeago
+  /// フォーマットされた視聴回数と投稿日時
   static String viewsAndTimeago(String viewCount, DateTime timeago) {
     return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
   }
 
-  /// get description with url
+  /// URLを有効化した説明文
   static RichText getDescriptionWithUrl(String description, BuildContext context) {
     final RegExp urlRegExp = RegExp(r"https?://[\w!\?/\+\-_~=;\.,\*&@#\$%\(\)'\[\]]+");
     final Iterable<RegExpMatch> urlMatches = urlRegExp.allMatches(description);
@@ -161,8 +161,8 @@ class Util {
     );
   }
 
-  /// convert youtube url to video id
-  /// return null when url is not youtube video url
+  /// YouTubeの動画URLを動画IDに変換する
+  /// YouTubeの動画URLでない場合はnullを返す
   static String? convertUrlToVideoId(String url,) {
     for (var exp in [
       RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/watch\?v=([_\-a-zA-Z0-9]{11}).*$"),
@@ -175,8 +175,8 @@ class Util {
     return null;
   }
 
-  /// convert youtube url to channel id
-  /// return null when url is not youtube channel url
+  /// YouTubeのチャンネルURLをチャンネルIDに変換する
+  /// YouTubeのチャンネルURLでない場合はnullを返す
   static String? convertUrlToChannelId(String url,) {
     for (var exp in [
       RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/channel\/([_\-a-zA-Z0-9]{24}).*$"),
@@ -187,8 +187,8 @@ class Util {
     return null;
   }
 
-  /// convert youtube url to playlist\?list= id
-  /// return null when url is not youtube playlist\?list= url
+  //// YouTubeのプレイリストURLをプレイリストIDに変換する
+  /// YouTubeのプレイリストURLでない場合はnullを返す
   static String? convertUrlToPlaylistId(String url,) {
     for (var exp in [
       RegExp(r"^https:\/\/(?:www\.|m\.)?youtube\.com\/playlist\?list=([_\-a-zA-Z0-9]{34}).*$"),

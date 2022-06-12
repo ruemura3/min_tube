@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:min_tube/screens/search_result_screen.dart';
 
-/// floating search button
+/// 右下の検索ボタン
 class FloatingSearchButton extends StatefulWidget {
   @override
   _FloatingSearchButtonState createState() => _FloatingSearchButtonState();
 }
 
-/// floating search button state
+/// 右下の検索ボタンステート
 class _FloatingSearchButtonState extends State<FloatingSearchButton> {
-  /// search query
+  /// 検索クエリ
   String _query = '';
-  /// search query text editing controller
+  /// テキスト編集コントローラ
   final _controller = TextEditingController();
 
-  /// show search dialog
+  /// 検索ダイアログを表示する
   _showSearchDialog(BuildContext context) {
     return showDialog(
       context: context,
@@ -70,7 +70,7 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
     );
   }
 
-  /// transit to search result screen with search query
+  /// 検索を行う
   void _search() {
     if (_query != '') {
       Navigator.push(
