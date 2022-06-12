@@ -28,7 +28,7 @@ class _MyScreenState extends State<MyScreen> {
     super.initState();
     Future(() async {
       final user = await _api.user;
-      final response = await _api.getChannelResponse(mine: true);
+      final response = await _api.getChannelList(mine: true);
       if (mounted) {
         setState(() {
           _currentUser = user;
@@ -46,7 +46,6 @@ class _MyScreenState extends State<MyScreen> {
         shouldShowProfileButton: false,
       ),
       body: _myScreenBody(),
-      floatingActionButton: FloatingSearchButton(),
     );
   }
 

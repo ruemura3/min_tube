@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/playlist_card.dart';
 import 'package:min_tube/widgets/profile_card.dart';
@@ -36,7 +35,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      final response = await _api.getSearchResponse(query: widget.query);
+      final response = await _api.getSearchList(query: widget.query);
       if (mounted) {
         setState(() {
           _response = response;
@@ -54,7 +53,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getSearchResponse(
+        final response = await _api.getSearchList(
           query: widget.query,
           pageToken: _response!.nextPageToken!,
         );

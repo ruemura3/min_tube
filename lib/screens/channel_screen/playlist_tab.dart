@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/playlist_card.dart';
 
 /// channel playlist tab
@@ -34,7 +33,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      final response = await _api.getPlaylistResponse(
+      final response = await _api.getPlaylistList(
         channelId: widget.channel.id!
       );
       if (mounted) {
@@ -62,7 +61,7 @@ class _PlaylistTabState extends State<PlaylistTab> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getPlaylistResponse(
+        final response = await _api.getPlaylistList(
           channelId: widget.channel.id!,
           pageToken: _response!.nextPageToken!,
         );

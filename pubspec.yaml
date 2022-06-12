@@ -16,7 +16,7 @@ dependencies:
   google_sign_in: ^5.2.4
   googleapis: ^8.0.0
   extension_google_sign_in_as_googleapis_auth: ^2.0.4
-  youtube_player_flutter: ^8.0.0
+  youtube_player_flutter: ^8.1.0
   font_awesome_flutter: ^9.2.0
   url_launcher: ^6.0.20
   shared_preferences: ^2.0.13

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
@@ -108,7 +107,7 @@ class _VideoScreenState extends State<VideoScreen> {
     setState(() {
       _isNotAvailable = false;
     });
-    var video = await _api.getVideoResponse(ids: [_videoId]);
+    var video = await _api.getVideoList(ids: [_videoId]);
     if (video.items!.length == 0) {
       if (isToNext != null) {
         if (isToNext) {
@@ -122,7 +121,7 @@ class _VideoScreenState extends State<VideoScreen> {
       });
       return;
     }
-    var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
+    var channel = await _api.getChannelList(ids: [video.items![0].snippet!.channelId!]);
     var rating = await _api.getVideoRating(ids: [_videoId]);
     if (mounted) {
       setState(() {
@@ -178,7 +177,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
   /// get additional playlist item
   Future<void> _getAdditionalPlaylist() async {
-    final response = await _api.getPlaylistItemResponse(
+    final response = await _api.getPlaylistItemList(
       id: widget.playlist!.id!,
       pageToken: _response.nextPageToken!,
     );
@@ -474,7 +473,7 @@ class _VideoScreenState extends State<VideoScreen> {
                   _items.length < _response.pageInfo!.totalResults!) {
                   _isLoading = true;
                   Future(() async {
-                    final response = await _api.getPlaylistItemResponse(
+                    final response = await _api.getPlaylistItemList(
                       id: widget.playlist!.id!,
                       pageToken: _response.nextPageToken!,
                     );

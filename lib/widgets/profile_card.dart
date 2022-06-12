@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -122,85 +121,6 @@ class ProfileCardForVideoScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// profile card for channel screen
-class ProfileCardForChannelScreen extends StatelessWidget {
-  /// channel instance
-  final Channel channel;
-  /// is mine
-  final bool isMine;
-
-  /// constructor
-  ProfileCardForChannelScreen({required this.channel, required this.isMine});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          channel.brandingSettings!.image != null
-          ? Image.network(
-            channel.brandingSettings!.image!.bannerExternalUrl!,
-            fit: BoxFit.cover,
-            width: double.infinity,
-          )
-          : Container(),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundImage: NetworkImage(
-                    channel.snippet!.thumbnails!.medium!.url!
-                  ),
-                ),
-                SizedBox(height: 16,),
-                Text(
-                  channel.snippet!.title!,
-                  style: TextStyle(fontSize: 18),
-                ),
-                SizedBox(height: 8,),
-                channel.statistics!.subscriberCount != null
-                ? Text(
-                  Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
-                  style: TextStyle(color: Colors.grey),
-                )
-                : Container(),
-                !isMine
-                ? Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: SubscribeButton(channel: channel,),
-                )
-                : Container(),
-                channel.snippet!.description! != ''
-                ? Column(
-                  children: [
-                    SizedBox(height: 8,),
-                    Divider(color: Colors.grey,),
-                    SizedBox(height: 8,),
-                    Util.getDescriptionWithUrl(
-                      channel.snippet!.description!,
-                      context
-                    ),
-                  ]
-                )
-                : Container(),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

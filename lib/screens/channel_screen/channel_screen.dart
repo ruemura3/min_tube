@@ -4,23 +4,22 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/home_tab.dart';
 import 'package:min_tube/screens/channel_screen/playlist_tab.dart';
 import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 
-/// channel screen
+/// チャンネル画面
 class ChannelScreen extends StatefulWidget {
-  /// channel id
+  /// チャンネルID
   final String? channelId;
-  /// channel instance
+  /// チャンネルインスタンス
   final Channel? channel;
-  /// animate to
+  /// 初期タブ
   final int tabPage;
-  /// is mine
+  /// ログイン中ユーザのチャンネルかどうか
   final bool isMine;
 
-  /// constructor
+  /// コンストラクタ
   ChannelScreen({
     this.channelId,
     this.channel,
@@ -32,13 +31,13 @@ class ChannelScreen extends StatefulWidget {
   _ChannelScreenState createState() => _ChannelScreenState();
 }
 
-/// channel home tab state
+/// チャンネル画面ステート
 class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProviderStateMixin {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// channel instance
+  /// チャンネルインスタンス
   Channel? _channel;
-  /// tab controller
+  /// タブコントローラ
   late TabController _tabController;
 
   /// channel screen tabs
@@ -50,15 +49,14 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
 
   @override
   void initState() {
-    super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    if (widget.channel != null) {
+    if (widget.channel != null) { // チャンネルインスタンスが取得済みの場合
       setState(() {
         _channel = widget.channel;
       });
-    } else {
+    } else { // チャンネルインスタンスが取得済みでない場合
       Future(() async {
-        final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
+        final channels = await _api.getChannelList(ids: [widget.channelId!]);
         if (mounted) {
           setState(() {
             _channel = channels.items![0];
@@ -67,6 +65,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       });
     }
     _tabController.animateTo(widget.tabPage);
+    super.initState();
   }
 
   @override
@@ -81,9 +80,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       length: _tabs.length,
       child: Scaffold(
         appBar: OriginalAppBar(
-          title: _channel != null
-          ? _channel!.snippet!.title
-          : '',
+          title: _channel != null ? _channel!.snippet!.title : '',
           tabBar: TabBar(
             labelColor: ColorUtil.textColor(context),
             unselectedLabelColor: Colors.grey,
@@ -97,13 +94,13 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
     );
   }
 
-  /// channel screen body
+  /// チャンネル画面のボディ
   Widget _channelScreenBody() {
-    if (_channel != null) {
+    if (_channel != null) { // チャンネルインスタンスがnullでないとき
       return TabBarView(
         controller: _tabController,
         children: [
-          HomeTab(channel: _channel!, isMine: widget.isMine),
+          HomeTab(channel: _channel!, isCurrentUser: widget.isMine),
           UploadVideoTab(channel: _channel!),
           PlaylistTab(channel: _channel!, isMine: widget.isMine),
         ],

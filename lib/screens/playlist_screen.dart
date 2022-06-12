@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
-import 'package:min_tube/screens/error_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
@@ -47,7 +46,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       });
     } else {
       Future(() async {
-        final response = await _api.getPlaylistResponse(ids: [widget.playlistId ?? 'LL']);
+        final response = await _api.getPlaylistList(ids: [widget.playlistId ?? 'LL']);
         if (mounted) {
           setState(() {
             _playlist = response.items![0];
@@ -59,7 +58,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   }
 
   Future<void> _getPlaylistItems() async {
-    final response = await _api.getPlaylistItemResponse(
+    final response = await _api.getPlaylistItemList(
       id: _playlist!.id!,
     );
     if (mounted) {
@@ -79,7 +78,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        final response = await _api.getPlaylistItemResponse(
+        final response = await _api.getPlaylistItemList(
           id: _playlist!.id!,
           pageToken: _response!.nextPageToken!,
         );

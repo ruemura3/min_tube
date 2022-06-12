@@ -17,11 +17,11 @@ class ApiService {
     ],
   );
 
-  /// current user
-  static GoogleSignInAccount? _user = _googleSignIn.currentUser;
+  /// 現在のユーザ
+  GoogleSignInAccount? _user = _googleSignIn.currentUser;
 
-  /// get login user
-  /// return null when user isn't logged in
+  /// 現在のユーザを取得する
+  /// ログインしていない場合はnullを返す
   Future<GoogleSignInAccount?> get user async {
     if (_user == null) {
       _user = await _googleSignIn.signInSilently();
@@ -29,26 +29,26 @@ class ApiService {
     return _user;
   }
 
-  /// login
+  /// ログインしてユーザを返す
   Future<GoogleSignInAccount?> login() async {
     _user = await _googleSignIn.signIn();
     return _user;
   }
 
-  /// logout
-  Future<GoogleSignInAccount?> logout() async {
+  /// ログアウトする
+  Future<void> logout() async {
     await _googleSignIn.signOut();
     _user = null;
   }
 
-  /// get youtube api
+  /// YouTube API
   Future<YouTubeApi> getYouTubeApi() async {
     final httpClient = await _googleSignIn.authenticatedClient();
     return YouTubeApi(httpClient!);
   }
 
-  /// get search response
-  Future<SearchListResponse> getSearchResponse({
+  /// 検索結果のリストを取得する
+  Future<SearchListResponse> getSearchList({
     String? channelId,
     int maxResults = 50,
     String? order,
@@ -69,8 +69,8 @@ class ApiService {
     return response;
   }
 
-  /// get videos by video ids
-  Future<VideoListResponse> getVideoResponse({required List<String> ids,}) async {
+  /// 動画のリストを取得する
+  Future<VideoListResponse> getVideoList({required List<String> ids,}) async {
     final youTubeApi = await getYouTubeApi();
     final VideoListResponse response = await youTubeApi.videos.list(
       ['snippet', 'contentDetails', 'statistics', 'liveStreamingDetails'],
@@ -80,21 +80,21 @@ class ApiService {
     return response;
   }
 
-  /// get video rating
+  /// 動画の評価を取得する
   Future<VideoGetRatingResponse> getVideoRating({required List<String> ids,}) async {
     final youTubeApi = await getYouTubeApi();
     final VideoGetRatingResponse response = await youTubeApi.videos.getRating(ids);
     return response;
   }
 
-  /// rate video
+  /// 動画を評価する
   Future<void> rateVideo({required String id, required String rating}) async {
     final youTubeApi = await getYouTubeApi();
     await youTubeApi.videos.rate(id, rating);
   }
 
-  /// get channels by channel id
-  Future<ChannelListResponse> getChannelResponse({
+  /// チャンネルのリストを取得する
+  Future<ChannelListResponse> getChannelList({
     List<String>? ids,
     bool? mine,
   }) async {
@@ -108,8 +108,8 @@ class ApiService {
     return response;
   }
 
-  /// get playlist item by playlist id
-  Future<PlaylistItemListResponse> getPlaylistItemResponse({
+  /// プレイリスト内のアイテムのリストを取得する
+  Future<PlaylistItemListResponse> getPlaylistItemList({
     required String id,
     int maxResults = 30,
     String pageToken = '',
@@ -124,8 +124,8 @@ class ApiService {
     return response;
   }
 
-  /// get playlist
-  Future<PlaylistListResponse> getPlaylistResponse({
+  /// プレイリストのリストを取得する
+  Future<PlaylistListResponse> getPlaylistList({
     String? channelId,
     List<String>? ids,
     int maxResults = 30,
@@ -144,7 +144,7 @@ class ApiService {
     return response;
   }
 
-  /// get login user's subscription
+  /// ログイン中ユーザの登録チャンネルのリストを取得する
   Future<SubscriptionListResponse> getSubscriptionResponse({
     String? forChannelId,
     int maxResults = 50,
@@ -163,7 +163,7 @@ class ApiService {
     return response;
   }
 
-  /// insert subscription
+  /// チャンネル登録をする
   Future<Subscription> insertSubscription({
     required Channel channel,
   }) async {
@@ -179,7 +179,7 @@ class ApiService {
     return response;
   }
 
-  /// delete subscription
+  /// チャンネル登録を解除する
   Future<void> deleteSubscription({
     required Subscription subscription,
   }) async {
