@@ -41,7 +41,10 @@ class _MyScreenState extends State<MyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OriginalAppBar(title: 'マイページ',),
+      appBar: OriginalAppBar(
+        title: 'マイページ',
+        shouldShowProfileButton: false,
+      ),
       body: _myScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );

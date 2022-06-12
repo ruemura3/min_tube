@@ -27,31 +27,22 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future(() async {
-      try {
-        final response = await _api.getSubscriptionResponse();
-        _items = response.items!;
-        _response = response;
-        int itemLength = _items.length;
-        while (itemLength < _response!.pageInfo!.totalResults!) {
-          final response = await _api.getSubscriptionResponse(
-            pageToken: _response!.nextPageToken!,
-          );
-          _items.addAll(response.items!);
-          itemLength = _items.length;
-        }
-        if (mounted) {
-          setState(() {
-            _response = _response;
-            _items = _response!.items!;
-          });
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
+      final response = await _api.getSubscriptionResponse();
+      _items = response.items!;
+      _response = response;
+      int itemLength = _items.length;
+      while (itemLength < _response!.pageInfo!.totalResults!) {
+        final response = await _api.getSubscriptionResponse(
+          pageToken: _response!.nextPageToken!,
         );
+        _items.addAll(response.items!);
+        itemLength = _items.length;
+      }
+      if (mounted) {
+        setState(() {
+          _response = _response;
+          _items = _response!.items!;
+        });
       }
       final preferences = await SharedPreferences.getInstance();
       List<String>? favoriteIds = preferences.getStringList('favorites');
@@ -86,40 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: ListView.builder(
-          itemCount: _items.length + 2,
+          itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
-            if (index == 0) {
-              return Column(
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MyScreen(),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'マイページ',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                          Icon(Icons.arrow_forward_ios)
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(color: Colors.grey,),
-                ],
-              );
-            }
-            if (index == _items.length + 1) {
+            if (index == _items.length) {
               if (_items.length == 0) {
                 return Center(
                   child: Text('登録しているチャンネルがありません'),
@@ -127,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return Container();
             }
-            return ProfileCardForHomeScreen(subscription: _items[index - 1]);
+            return ProfileCardForHomeScreen(subscription: _items[index]);
           },
         ),
       );

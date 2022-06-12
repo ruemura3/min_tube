@@ -33,6 +33,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   PlaylistItemListResponse? _response;
   /// upload video list
   List<PlaylistItem> _items = [];
+  /// is there private
+  int _privateCount = 0;
 
   @override
   void initState() {
@@ -45,45 +47,28 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       });
     } else {
       Future(() async {
-        try {
-          final response = await _api.getPlaylistResponse(ids: [widget.playlistId ?? 'LL']);
-          if (mounted) {
-            setState(() {
-              _playlist = response.items![0];
-            });
-          }
-          await _getPlaylistItems();
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+        final response = await _api.getPlaylistResponse(ids: [widget.playlistId ?? 'LL']);
+        if (mounted) {
+          setState(() {
+            _playlist = response.items![0];
+          });
         }
+        await _getPlaylistItems();
       });
     }
   }
 
   Future<void> _getPlaylistItems() async {
-    try {
-      final response = await _api.getPlaylistItemResponse(
-        id: _playlist!.id!,
-      );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items = response.items!;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ErrorScreen(),
-        )
-      );
+    final response = await _api.getPlaylistItemResponse(
+      id: _playlist!.id!,
+    );
+    if (mounted) {
+      setState(() {
+        _response = response;
+        _items = response.items!;
+        _isLoading = false;
+        print(_items);
+      });
     }
   }
 
@@ -94,25 +79,16 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        try {
-          final response = await _api.getPlaylistItemResponse(
-            id: _playlist!.id!,
-            pageToken: _response!.nextPageToken!,
-          );
-          if (mounted) {
-            setState(() {
-              _response = response;
-              _items.addAll(response.items!);
-              _isLoading = false;
-            });
-          }
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+        final response = await _api.getPlaylistItemResponse(
+          id: _playlist!.id!,
+          pageToken: _response!.nextPageToken!,
+        );
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+            _isLoading = false;
+          });
         }
       });
     }
@@ -135,11 +111,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   /// playlist screen body
   Widget _playlistScreenBody() {
     if (_response != null) {
-      if (_items.length == 0) {
-        return Center(
-          child: Text('このプレイリストには動画がありません'),
-        );
-      }
       return NotificationListener<ScrollNotification>(
         onNotification: _getAdditionalPlaylistItem,
         child: Padding(
@@ -150,11 +121,30 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               if (index == 0) {
                 return _playlistDetail();
               }
+              if (_items.length == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 16,),
+                  child: Center(
+                    child: Text('このプレイリストには動画がありません'),
+                  ),
+                );
+              }
               if (index == _items.length + 1) {
                 if (_items.length < _response!.pageInfo!.totalResults!) {
                   return Center(child: CircularProgressIndicator(),);
                 }
+                if (_privateCount != 0) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 16,),
+                    child: Center(
+                      child: Text('$_privateCount本の利用できない動画が非表示になっています'),
+                    ),
+                  );
+                }
                 return Container();
+              }
+              if (_items[index - 1].status!.privacyStatus != 'public') {
+                _privateCount += 1;
               }
               return VideoCardForPlaylist(
                 playlist: _playlist!,

@@ -283,24 +283,15 @@ class _SubscribeButtonState extends State<SubscribeButton> {
   void initState() {
     super.initState();
     Future(() async {
-      try {
-        final response = await _api.getSubscriptionResponse(forChannelId: widget.channel.id!);
-        if (mounted) {
-          setState(() {
-            _isSubscribed = response.items!.length != 0;
-            if (_isSubscribed) {
-              _subscription = response.items![0];
-            }
-            _isEnabled = true;
-          });
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
-        );
+      final response = await _api.getSubscriptionResponse(forChannelId: widget.channel.id!);
+      if (mounted) {
+        setState(() {
+          _isSubscribed = response.items!.length != 0;
+          if (_isSubscribed) {
+            _subscription = response.items![0];
+          }
+          _isEnabled = true;
+        });
       }
     });
   }

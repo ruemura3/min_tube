@@ -76,7 +76,7 @@ class _MinTubeState extends State<MinTube> {
     );
   }
 
-  /// root screen
+  /// ホーム画面
   Widget _home() {
     if (_isLaunched) {
       if (_currentUser != null) {

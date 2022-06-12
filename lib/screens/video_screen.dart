@@ -108,39 +108,30 @@ class _VideoScreenState extends State<VideoScreen> {
     setState(() {
       _isNotAvailable = false;
     });
-    try {
-      var video = await _api.getVideoResponse(ids: [_videoId]);
-      if (video.items!.length == 0) {
-        if (isToNext != null) {
-          if (isToNext) {
-            _startNextVideo();
-          } else {
-            _startPreviousVideo();
-          }
+    var video = await _api.getVideoResponse(ids: [_videoId]);
+    if (video.items!.length == 0) {
+      if (isToNext != null) {
+        if (isToNext) {
+          _startNextVideo();
+        } else {
+          _startPreviousVideo();
         }
-        setState(() {
-          _isNotAvailable = true;
-        });
-        return;
       }
-      var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
-      var rating = await _api.getVideoRating(ids: [_videoId]);
-      if (mounted) {
-        setState(() {
-          _video = video.items![0];
-          _channel = channel.items![0];
-          _rating = rating.items![0].rating;
-          _isLikeEnabled = true;
-          _isDislikeEnabled = true;
-        });
-      }
-    } catch (e) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ErrorScreen(),
-        )
-      );
+      setState(() {
+        _isNotAvailable = true;
+      });
+      return;
+    }
+    var channel = await _api.getChannelResponse(ids: [video.items![0].snippet!.channelId!]);
+    var rating = await _api.getVideoRating(ids: [_videoId]);
+    if (mounted) {
+      setState(() {
+        _video = video.items![0];
+        _channel = channel.items![0];
+        _rating = rating.items![0].rating;
+        _isLikeEnabled = true;
+        _isDislikeEnabled = true;
+      });
     }
   }
 
@@ -187,25 +178,16 @@ class _VideoScreenState extends State<VideoScreen> {
 
   /// get additional playlist item
   Future<void> _getAdditionalPlaylist() async {
-    try {
-      final response = await _api.getPlaylistItemResponse(
-        id: widget.playlist!.id!,
-        pageToken: _response.nextPageToken!,
-      );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items.addAll(response.items!);
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ErrorScreen(),
-        )
-      );
+    final response = await _api.getPlaylistItemResponse(
+      id: widget.playlist!.id!,
+      pageToken: _response.nextPageToken!,
+    );
+    if (mounted) {
+      setState(() {
+        _response = response;
+        _items.addAll(response.items!);
+        _isLoading = false;
+      });
     }
   }
 
@@ -492,25 +474,16 @@ class _VideoScreenState extends State<VideoScreen> {
                   _items.length < _response.pageInfo!.totalResults!) {
                   _isLoading = true;
                   Future(() async {
-                    try {
-                      final response = await _api.getPlaylistItemResponse(
-                        id: widget.playlist!.id!,
-                        pageToken: _response.nextPageToken!,
-                      );
-                      if (mounted) {
-                        setState(() {
-                          _response = response;
-                          _items.addAll(response.items!);
-                          _isLoading = false;
-                        });
-                      }
-                    } catch (e) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ErrorScreen(),
-                        )
-                      );
+                    final response = await _api.getPlaylistItemResponse(
+                      id: widget.playlist!.id!,
+                      pageToken: _response.nextPageToken!,
+                    );
+                    if (mounted) {
+                      setState(() {
+                        _response = response;
+                        _items.addAll(response.items!);
+                        _isLoading = false;
+                      });
                     }
                   });
                 }

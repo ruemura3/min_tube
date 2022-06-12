@@ -58,20 +58,11 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
       });
     } else {
       Future(() async {
-        try {
-          final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
-          if (mounted) {
-            setState(() {
-              _channel = channels.items![0];
-            });
-          }
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+        final channels = await _api.getChannelResponse(ids: [widget.channelId!]);
+        if (mounted) {
+          setState(() {
+            _channel = channels.items![0];
+          });
         }
       });
     }

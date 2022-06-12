@@ -32,26 +32,17 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      try {
-        final response = await _api.getSearchResponse(
-          channelId: widget.channel.id!,
-          order: 'date',
-          type: ['video'],
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items = response.items!;
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
-        );
+      final response = await _api.getSearchResponse(
+        channelId: widget.channel.id!,
+        order: 'date',
+        type: ['video'],
+      );
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+          _isLoading = false;
+        });
       }
     });
   }
@@ -63,27 +54,18 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        try {
-          final response = await _api.getSearchResponse(
-            channelId: widget.channel.id!,
-            order: 'date',
-            pageToken: _response!.nextPageToken!,
-            type: ['video'],
-          );
-          if (mounted) {
-            setState(() {
-              _response = response;
-              _items.addAll(response.items!);
-              _isLoading = false;
-            });
-          }
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+        final response = await _api.getSearchResponse(
+          channelId: widget.channel.id!,
+          order: 'date',
+          pageToken: _response!.nextPageToken!,
+          type: ['video'],
+        );
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+            _isLoading = false;
+          });
         }
       });
     }

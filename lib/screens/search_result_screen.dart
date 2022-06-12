@@ -36,22 +36,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     super.initState();
     _isLoading = true;
     Future(() async {
-      try {
-        final response = await _api.getSearchResponse(query: widget.query);
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items = response.items!;
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ErrorScreen(),
-          )
-        );
+      final response = await _api.getSearchResponse(query: widget.query);
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items = response.items!;
+          _isLoading = false;
+        });
       }
     });
   }
@@ -63,25 +54,16 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
       _items.length < _response!.pageInfo!.totalResults!) {
       _isLoading = true;
       Future(() async {
-        try {
-          final response = await _api.getSearchResponse(
-            query: widget.query,
-            pageToken: _response!.nextPageToken!,
-          );
-          if (mounted) {
-            setState(() {
-              _response = response;
-              _items.addAll(response.items!);
-              _isLoading = false;
-            });
-          }
-        } catch (e) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ErrorScreen(),
-            )
-          );
+        final response = await _api.getSearchResponse(
+          query: widget.query,
+          pageToken: _response!.nextPageToken!,
+        );
+        if (mounted) {
+          setState(() {
+            _response = response;
+            _items.addAll(response.items!);
+            _isLoading = false;
+          });
         }
       });
     }

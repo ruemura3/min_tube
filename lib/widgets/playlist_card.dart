@@ -32,7 +32,10 @@ class PlaylistCard extends StatelessWidget {
                   Image.network(
                     playlist.snippet!.thumbnails!.medium!.url!,
                     errorBuilder: (c, o, s) {
-                      return Container();
+                      return AspectRatio(
+                        child: Container(),
+                        aspectRatio: 16/9,
+                      );
                     },
                   ),
                   Container(

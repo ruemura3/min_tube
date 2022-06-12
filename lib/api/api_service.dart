@@ -2,24 +2,23 @@ import 'package:googleapis/youtube/v3.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 
-/// api service
+/// APIサービスクラス
 class ApiService {
-  /// private constructor
+  /// コンストラクタ
   ApiService._instantiate();
 
-  /// singleton instance
+  /// シングルトンインスタンス
   static final ApiService instance = ApiService._instantiate();
 
-  /// google sign in instance
+  /// GoogleSignInインスタンス
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>[
-      // YouTubeApi.youtubeReadonlyScope,
       YouTubeApi.youtubeScope,
     ],
   );
 
   /// current user
-  GoogleSignInAccount? _user = _googleSignIn.currentUser;
+  static GoogleSignInAccount? _user = _googleSignIn.currentUser;
 
   /// get login user
   /// return null when user isn't logged in
@@ -117,7 +116,7 @@ class ApiService {
   }) async {
     final youTubeApi = await getYouTubeApi();
     final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
-      ['snippet', 'contentDetails'],
+      ['snippet', 'contentDetails', 'status'],
       maxResults: maxResults,
       pageToken: pageToken,
       playlistId: id,

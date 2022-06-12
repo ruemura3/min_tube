@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: OriginalAppBar(
         title: null,
         shouldShowTitle: false,
-        shouldShowHomeButton: false,
+        shouldShowProfileButton: false,
         shouldShowBack: false,
       ),
       body: _loginScreenBody(),
