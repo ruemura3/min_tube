@@ -40,7 +40,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
   /// タブコントローラ
   late TabController _tabController;
 
-  /// channel screen tabs
+  /// タブ
   final _tabs = <Tab> [
     Tab(text: 'ホーム'),
     Tab(text:'動画'),
@@ -102,7 +102,7 @@ class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProvider
         children: [
           HomeTab(channel: _channel!, isCurrentUser: widget.isMine),
           UploadVideoTab(channel: _channel!),
-          PlaylistTab(channel: _channel!, isMine: widget.isMine),
+          PlaylistTab(channel: _channel!, isCurrentUser: widget.isMine),
         ],
       );
     }

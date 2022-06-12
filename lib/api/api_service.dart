@@ -108,22 +108,6 @@ class ApiService {
     return response;
   }
 
-  /// プレイリスト内のアイテムのリストを取得する
-  Future<PlaylistItemListResponse> getPlaylistItemList({
-    required String id,
-    int maxResults = 30,
-    String pageToken = '',
-  }) async {
-    final youTubeApi = await getYouTubeApi();
-    final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
-      ['snippet', 'contentDetails', 'status'],
-      maxResults: maxResults,
-      pageToken: pageToken,
-      playlistId: id,
-    );
-    return response;
-  }
-
   /// プレイリストのリストを取得する
   Future<PlaylistListResponse> getPlaylistList({
     String? channelId,
@@ -140,6 +124,22 @@ class ApiService {
       maxResults: maxResults,
       mine: mine,
       pageToken: pageToken,
+    );
+    return response;
+  }
+
+  /// プレイリスト内のアイテムのリストを取得する
+  Future<PlaylistItemListResponse> getPlaylistItemList({
+    required String id,
+    int maxResults = 30,
+    String pageToken = '',
+  }) async {
+    final youTubeApi = await getYouTubeApi();
+    final PlaylistItemListResponse response = await youTubeApi.playlistItems.list(
+      ['snippet', 'contentDetails', 'status'],
+      maxResults: maxResults,
+      pageToken: pageToken,
+      playlistId: id,
     );
     return response;
   }
