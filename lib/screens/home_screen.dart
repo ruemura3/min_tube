@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
-import 'package:min_tube/screens/my_screen.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// home screen
+/// ホーム画面
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-/// home screen state
+/// ホーム画面ステート
 class _HomeScreenState extends State<HomeScreen> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// subscription response
+  /// APIレスポンス
   SubscriptionListResponse? _response;
-  ///  subscription list
+  /// 登録チャンネル一覧
   List<Subscription> _items = [];
 
   @override
   void initState() {
-    super.initState();
     Future(() async {
       final response = await _api.getSubscriptionResponse();
-      _items = response.items!;
       _response = response;
+      _items = response.items!;
       int itemLength = _items.length;
       while (itemLength < _response!.pageInfo!.totalResults!) {
         final response = await _api.getSubscriptionResponse(
@@ -55,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     });
+    super.initState();
   }
 
   @override
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// home screen body
+  /// ホーム画面ボディ
   Widget _homeScreenBody() {
     if (_response != null) {
       return Padding(
@@ -78,19 +78,61 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView.builder(
           itemCount: _items.length + 1,
           itemBuilder: (BuildContext context, int index) {
-            if (index == _items.length) {
-              if (_items.length == 0) {
+            if (index == _items.length) { // 最後のインデックスの場合
+              if (_items.length == 0) { // アイテム数が0の場合
                 return Center(
                   child: Text('登録しているチャンネルがありません'),
                 );
               }
               return Container();
             }
-            return ProfileCardForHomeScreen(subscription: _items[index]);
+            return _profileCard(_items[index]);
           },
         ),
       );
     }
     return Center(child: CircularProgressIndicator(),);
+  }
+
+  /// プロフィールカード
+  Widget _profileCard(Subscription subscription) {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChannelScreen(
+            channelId: subscription.snippet!.resourceId!.channelId!,
+            tabPage: 1,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundImage: NetworkImage(
+                subscription.snippet!.thumbnails!.medium!.url!
+              ),
+            ),
+            SizedBox(width: 16,),
+            Expanded(
+              child: Text(
+                subscription.snippet!.title!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            FavoriteButton(
+              channelId: subscription.snippet!.resourceId!.channelId!,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -6,40 +6,39 @@ import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
 
-/// playlist screen
+/// プレイリスト画面
 class PlaylistScreen extends StatefulWidget {
-  /// playlist id
+  /// プレイリストID
   final String? playlistId;
-  /// playlist
+  /// プレイリストインスタンス
   final Playlist? playlist;
 
-  /// constructor
+  /// コンストラクタ
   PlaylistScreen({this.playlistId, this.playlist});
 
   @override
   _PlaylistScreenState createState() => _PlaylistScreenState();
 }
 
-/// playlist screen item
+/// プレイリスト画面ステート
 class _PlaylistScreenState extends State<PlaylistScreen> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// is loading
+  /// ロード中フラグ
   bool _isLoading = false;
-  /// playlist instance
+  /// プレイリストインスタンス
   Playlist? _playlist;
-  /// upload video response
+  /// APIレスポンス
   PlaylistItemListResponse? _response;
-  /// upload video list
+  /// プレイリストアイテム一覧
   List<PlaylistItem> _items = [];
-  /// is there private
+  /// 非表示動画の数
   int _privateCount = 0;
 
   @override
   void initState() {
-    super.initState();
     _isLoading = true;
-    if (widget.playlist != null) {
+    if (widget.playlist != null) { // プレイリストインスタンスが取得済みの場合
       _playlist = widget.playlist;
       Future(() async {
         await _getPlaylistItems();
@@ -55,8 +54,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         await _getPlaylistItems();
       });
     }
+    super.initState();
   }
 
+  /// プレイリストアイテムを取得する
   Future<void> _getPlaylistItems() async {
     final response = await _api.getPlaylistItemList(
       id: _playlist!.id!,
@@ -66,16 +67,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         _response = response;
         _items = response.items!;
         _isLoading = false;
-        print(_items);
       });
     }
   }
 
-  /// get additional playlist item
+  /// 追加のプレイリストアイテムを取得する
   bool _getAdditionalPlaylistItem(ScrollNotification scrollDetails) {
-    if (!_isLoading &&
-      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
-      _items.length < _response!.pageInfo!.totalResults!) {
+    if (!_isLoading && // ロード中でない
+      scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent && // 最後までスクロールしている
+      _items.length < _response!.pageInfo!.totalResults!) { // 現在のアイテム数が全アイテム数より少ない
       _isLoading = true;
       Future(() async {
         final response = await _api.getPlaylistItemList(
@@ -98,16 +98,14 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: OriginalAppBar(
-        title: _playlist != null
-        ? _playlist!.snippet!.title!
-        : '',
+        title: _playlist != null ? _playlist!.snippet!.title! : '',
       ),
       body: _playlistScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );
   }
 
-  /// playlist screen body
+  /// プレイリスト画面ボディ
   Widget _playlistScreenBody() {
     if (_response != null) {
       return NotificationListener<ScrollNotification>(
@@ -117,10 +115,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
           child: ListView.builder(
             itemCount: _items.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if (index == 0) {
+              if (index == 0) { // 最初のインデックスの場合
                 return _playlistDetail();
               }
-              if (_items.length == 0) {
+              if (_items.length == 0) { // アイテム数が0の場合
                 return Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 16,),
                   child: Center(
@@ -128,11 +126,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   ),
                 );
               }
-              if (index == _items.length + 1) {
-                if (_items.length < _response!.pageInfo!.totalResults!) {
+              if (index == _items.length + 1) { // 最後のインデックスの場合
+                if (_items.length < _response!.pageInfo!.totalResults!) { // 全てのプレイリストアイテムを読み込んでいない場合
                   return Center(child: CircularProgressIndicator(),);
                 }
-                if (_privateCount != 0) {
+                if (_privateCount != 0) { // 非表示動画があった場合
                   return Padding(
                     padding: const EdgeInsets.only(top: 16, bottom: 16,),
                     child: Center(
@@ -159,7 +157,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     return Center(child: CircularProgressIndicator(),);
   }
 
-  /// playlist detail
+  /// プレイリスト詳細
   Widget _playlistDetail() {
     return Padding(
       padding: const EdgeInsets.all(16),

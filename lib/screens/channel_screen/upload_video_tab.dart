@@ -30,7 +30,6 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
 
   @override
   void initState() {
-    super.initState();
     _isLoading = true;
     Future(() async {
       final response = await _api.getSearchList(
@@ -46,6 +45,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
         });
       }
     });
+    super.initState();
   }
 
   /// 追加の動画読み込み
@@ -89,7 +89,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
             itemCount: _items.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == _items.length) { // 最後のインデックスの場合
-                if (_items.length < _response!.pageInfo!.totalResults!) {
+                if (_items.length < _response!.pageInfo!.totalResults!) { // 全ての動画を読み込んでいない場合
                   return Center(child: CircularProgressIndicator(),);
                 }
                 return Container();

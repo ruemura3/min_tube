@@ -5,65 +5,6 @@ import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// profile card for search result
-/// use only when kind is 'youtube#channel'
-class ProfileCardForSearchResult extends StatelessWidget {
-  /// search result
-  final SearchResult searchResult;
-
-  /// constructor
-  ProfileCardForSearchResult({required this.searchResult});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChannelScreen(
-            channelId: searchResult.snippet!.channelId!,
-          ),
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: NetworkImage(
-                    searchResult.snippet!.thumbnails!.medium!.url!
-                  ),
-                ),
-                SizedBox(width: 16,),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        searchResult.snippet!.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(color: Colors.grey,),
-        ],
-      ),
-    );
-  }
-}
-
 /// profile card for video screen
 class ProfileCardForVideoScreen extends StatelessWidget {
   /// channel instance
@@ -120,58 +61,6 @@ class ProfileCardForVideoScreen extends StatelessWidget {
               SubscribeButton(channel: channel,),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// profile card for home screen
-/// use only when kind is 'youtube#channel'
-class ProfileCardForHomeScreen extends StatelessWidget {
-  /// subscription
-  final Subscription subscription;
-
-  /// constructor
-  ProfileCardForHomeScreen({required this.subscription});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChannelScreen(
-            channelId: subscription.snippet!.resourceId!.channelId!,
-            tabPage: 1,
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage(
-                subscription.snippet!.thumbnails!.medium!.url!
-              ),
-            ),
-            SizedBox(width: 16,),
-            Expanded(
-              child: Text(
-                subscription.snippet!.title!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            FavoriteButton(
-              channelId: subscription.snippet!.resourceId!.channelId!,
-            ),
-          ],
         ),
       ),
     );
@@ -305,58 +194,6 @@ class _SubscribeButtonState extends State<SubscribeButton> {
           ],
         );
       },
-    );
-  }
-}
-
-/// my profile card
-class MyProfileCard extends StatelessWidget {
-  /// current user
-  final Channel channel;
-
-  /// constructor
-  MyProfileCard({required this.channel});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChannelScreen(
-            channel: channel,
-            isMine: true,
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            channel.snippet!.thumbnails!.medium != null
-            ? CircleAvatar(
-            radius: 16,
-            backgroundImage: NetworkImage(channel.snippet!.thumbnails!.medium!.url!)
-            )
-            : CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.blueGrey,
-              child: Text(channel.snippet!.title!.substring(0, 1)),
-            ),
-            SizedBox(width: 16,),
-            Expanded(
-              child: Text(
-                channel.snippet!.title!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

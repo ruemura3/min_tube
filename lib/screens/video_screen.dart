@@ -11,22 +11,22 @@ import 'package:min_tube/widgets/video_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-/// video screen
+/// 動画画面
 class VideoScreen extends StatefulWidget {
-  /// video id
+  /// 動画ID
   final String? videoId;
-  /// playlist
+  /// プレイリストインスタンス
   final Playlist? playlist;
-  /// playlist response
+  /// プレイリストアイテムレスポンス
   final PlaylistItemListResponse? response;
-  /// playlist items
+  /// プレイリストアイテム一覧
   final List<PlaylistItem>? items;
-  /// current index
+  /// 現在のインデックス
   final int? idx;
-  /// is for playlist
+  /// プレイリスト用かどうか
   final bool isForPlaylist;
 
-  /// constructor
+  /// コンストラクタ
   VideoScreen({
     this.videoId,
     this.playlist,
@@ -40,38 +40,37 @@ class VideoScreen extends StatefulWidget {
   _VideoScreenState createState() => _VideoScreenState();
 }
 
-/// video screen state
+/// 動画画面ステート
 class _VideoScreenState extends State<VideoScreen> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// is loading
+  /// ロード中フラグ
   bool _isLoading = false;
-  /// video instance
-  Video? _video;
-  /// channel instance
-  Channel? _channel;
-  /// video rating
-  String? _rating;
-  /// is like button enabled
-  bool _isLikeEnabled = false;
-  /// is dislike button enabled
-  bool _isDislikeEnabled = false;
-  /// is not available
-  bool _isNotAvailable = false;
-  /// youtube player controller
-  late YoutubePlayerController _controller;
-  /// playlist response
-  late PlaylistItemListResponse _response;
-  /// playlist items
-  late List<PlaylistItem> _items;
-  /// current index
-  late int _idx;
-  /// video id
+  /// 動画ID
   late String _videoId;
+  /// 動画インスタンス
+  Video? _video;
+  /// チャンネルインスタンス
+  Channel? _channel;
+  /// 動画の評価
+  String? _rating;
+  /// 高評価ボタン活性フラグ
+  bool _isLikeEnabled = false;
+  /// 低評価ボタン活性フラグ
+  bool _isDislikeEnabled = false;
+  /// 非表示動画かどうか
+  bool _isNotAvailable = false;
+  /// プレイリストアイテムレスポンス
+  late PlaylistItemListResponse _response;
+  /// プレイリストアイテム一覧
+  late List<PlaylistItem> _items;
+  /// 現在のインデックス
+  late int _idx;
+  /// YouTubeプレイヤーコントローラ
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
-    super.initState();
     if (widget.isForPlaylist) {
       _response = widget.response!;
       _items = widget.items!;
@@ -88,6 +87,7 @@ class _VideoScreenState extends State<VideoScreen> {
         captionLanguage: 'ja',
       ),
     );
+    super.initState();
   }
 
   @override
@@ -102,7 +102,7 @@ class _VideoScreenState extends State<VideoScreen> {
     super.dispose();
   }
 
-  /// get video by video id
+  /// 動画IDから動画を取得する
   void _getVideoByVideoId({bool? isToNext}) async {
     setState(() {
       _isNotAvailable = false;
@@ -134,7 +134,7 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
-  /// start previous video
+  /// 1つ前の動画を開始する
   void _startPreviousVideo() {
     if (_idx > 0) {
       setState(() {
@@ -149,10 +149,12 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
-  /// start next video
+  /// 1つ後の動画を開始する
   void _startNextVideo() {
-    if (_idx == _items.length - 2) {
-      _getAdditionalPlaylistItemByLastVideo();
+    if (_idx == _items.length - 3) {
+      if (!_isLoading && _items.length < _response.pageInfo!.totalResults!) {
+        _getAdditionalPlaylist();
+      }
     }
     if (_idx < _response.pageInfo!.totalResults! - 1) {
       setState(() {
@@ -167,27 +169,22 @@ class _VideoScreenState extends State<VideoScreen> {
     }
   }
 
-  /// get additional playlist item by last video
-  void _getAdditionalPlaylistItemByLastVideo() {
-    if (!_isLoading && _items.length < _response.pageInfo!.totalResults!) {
-      _isLoading = true;
-      _getAdditionalPlaylist();
-    }
-  }
-
-  /// get additional playlist item
-  Future<void> _getAdditionalPlaylist() async {
-    final response = await _api.getPlaylistItemList(
-      id: widget.playlist!.id!,
-      pageToken: _response.nextPageToken!,
-    );
-    if (mounted) {
-      setState(() {
-        _response = response;
-        _items.addAll(response.items!);
-        _isLoading = false;
-      });
-    }
+  /// 追加のプレイリストアイテムを読み込む
+  void _getAdditionalPlaylist() async {
+    _isLoading = true;
+    Future(()async {
+      final response = await _api.getPlaylistItemList(
+        id: widget.playlist!.id!,
+        pageToken: _response.nextPageToken!,
+      );
+      if (mounted) {
+        setState(() {
+          _response = response;
+          _items.addAll(response.items!);
+          _isLoading = false;
+        });
+      }
+    });
   }
 
   @override
@@ -212,9 +209,7 @@ class _VideoScreenState extends State<VideoScreen> {
       ),
       builder: (context, player) => Scaffold(
         appBar: OriginalAppBar(
-          title: _video != null
-          ? _video!.snippet!.title!
-          : '',
+          title: _video != null ? _video!.snippet!.title! : '',
         ),
         body: _videoScreenBody(player),
         floatingActionButton: FloatingSearchButton(),
@@ -222,7 +217,7 @@ class _VideoScreenState extends State<VideoScreen> {
     );
   }
 
-  /// bottom actions
+  /// ボタンアクション
   List<Widget>? _bottomActions() {
     if (_video != null) {
       if (_video!.snippet!.liveBroadcastContent! != 'live') {
@@ -245,6 +240,7 @@ class _VideoScreenState extends State<VideoScreen> {
     return [];
   }
 
+  // 動画画面ボディ
   Widget _videoScreenBody(Widget player) {
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -253,113 +249,113 @@ class _VideoScreenState extends State<VideoScreen> {
           children: [
             player,
             _video != null && _channel != null && _rating != null
-            ? Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _video!.snippet!.title!,
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(height: 8,),
-                      Text(
-                        Util.viewsAndTimeago(
-                          _video!.statistics!.viewCount!,
-                          _video!.snippet!.publishedAt!
-                        ),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w300,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      _videoScreenButtons(),
-                      Divider(color: Colors.grey,),
-                      ProfileCardForVideoScreen(channel: _channel!,),
-                      Divider(color: Colors.grey,),
-                      _video!.snippet!.description! != ''
-                      ? Column(
-                        children: [
-                          SizedBox(height: 8,),
-                          Util.getDescriptionWithUrl(
-                            _video!.snippet!.description!,
-                            context,
+              ? Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _video!.snippet!.title!,
+                          style: TextStyle(
+                            fontSize: 18,
                           ),
-                          SizedBox(height: 8,),
-                          Divider(color: Colors.grey,),
-                        ],
-                      )
-                      : Container(),
-                      SizedBox(height: 8,),
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final data = ClipboardData(
-                              text: 'https://www.youtube.com/watch?v=$_videoId'
-                            );
-                            await Clipboard.setData(data);
-                            final snackBar = SnackBar(
-                              content: Text('動画のURLをコピーしました'),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          },
-                          child: Text('動画のURLをコピーする'),
                         ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            launch('https://www.youtube.com/watch?v=$_videoId');
-                          },
-                          child: Text('この動画をブラウザで開く'),
+                        SizedBox(height: 8,),
+                        Text(
+                          Util.viewsAndTimeago(
+                            _video!.statistics!.viewCount!,
+                            _video!.snippet!.publishedAt!
+                          ),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      SizedBox(height: 96,),
-                    ],
+                        _videoScreenButtons(),
+                        Divider(color: Colors.grey,),
+                        ProfileCardForVideoScreen(channel: _channel!,),
+                        Divider(color: Colors.grey,),
+                        _video!.snippet!.description! != ''
+                          ? Column(
+                            children: [
+                              SizedBox(height: 8,),
+                              Util.getDescriptionWithUrl(
+                                _video!.snippet!.description!,
+                                context,
+                              ),
+                              SizedBox(height: 8,),
+                              Divider(color: Colors.grey,),
+                            ],
+                          )
+                          : Container(),
+                        SizedBox(height: 8,),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final data = ClipboardData(
+                                text: 'https://www.youtube.com/watch?v=$_videoId'
+                              );
+                              await Clipboard.setData(data);
+                              final snackBar = SnackBar(
+                                content: Text('動画のURLをコピーしました'),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            },
+                            child: Text('動画のURLをコピーする'),
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              launch('https://www.youtube.com/watch?v=$_videoId');
+                            },
+                            child: Text('この動画をブラウザで開く'),
+                          ),
+                        ),
+                        SizedBox(height: 96,),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-            : _isNotAvailable
-            ? Padding(
-              padding: const EdgeInsets.only(top: 32),
-              child: Center(child: Text('この動画は非公開または削除されました'),),
-            )
-            : Padding(
-              padding: const EdgeInsets.only(top: 32),
-              child: Center(child: CircularProgressIndicator(),),
-            ),
+              )
+              : _isNotAvailable
+                ? Padding(
+                  padding: const EdgeInsets.only(top: 32),
+                  child: Center(child: Text('この動画は非公開または削除されました'),),
+                )
+                : Padding(
+                  padding: const EdgeInsets.only(top: 32),
+                  child: Center(child: CircularProgressIndicator(),),
+                ),
           ],
         ),
         widget.isForPlaylist
-        ? InkWell(
-          onTap: _showPlaylistList,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            height: 72,
-            color: Colors.black.withOpacity(0.8),
-            child: Text(
-              widget.playlist!.snippet!.title!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: ColorUtil.reversedTextColor(context)),
+          ? InkWell(
+            onTap: _showPlaylistItems,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              height: 72,
+              color: Colors.black.withOpacity(0.8),
+              child: Text(
+                widget.playlist!.snippet!.title!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: ColorUtil.reversedTextColor(context)),
+              ),
             ),
-          ),
-        )
-        : Container(),
+          )
+          : Container(),
       ]
     );
   }
 
-  /// video buttons
+  /// 動画用ボタン
   Widget _videoScreenButtons() {
     return Container(
       width: double.infinity,
@@ -368,39 +364,39 @@ class _VideoScreenState extends State<VideoScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           widget.isForPlaylist
-          ? IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous))
-          : Container(),
+            ? IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous))
+            : Container(),
           IconButton(onPressed: () {
             _controller.seekTo(_controller.value.position - Duration(seconds: 10));
           }, icon: Icon(Icons.forward_10)),
           IconButton(
             onPressed: _isLikeEnabled
-            ? _tapLikeButton
-            : null,
+              ? _tapLikeButton
+              : null,
             icon: _rating == 'like'
-            ? Icon(Icons.thumb_up)
-            : Icon(Icons.thumb_up_outlined)
+              ? Icon(Icons.thumb_up)
+              : Icon(Icons.thumb_up_outlined)
           ),
           IconButton(
             onPressed: _isDislikeEnabled
-            ? _tapDislikeButton
-            : null,
+              ? _tapDislikeButton
+              : null,
             icon: _rating == 'dislike'
-            ? Icon(Icons.thumb_down)
-            : Icon(Icons.thumb_down_outlined)
+              ? Icon(Icons.thumb_down)
+              : Icon(Icons.thumb_down_outlined)
           ),
           IconButton(onPressed: () {
             _controller.seekTo(_controller.value.position + Duration(seconds: 10));
           }, icon: Icon(Icons.replay_10)),
           widget.isForPlaylist
-          ? IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
-          : Container(),
+            ? IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
+            : Container(),
         ],
       ),
     );
   }
 
-  /// tap like button
+  /// 高評価ボタン押下時挙動
   void _tapLikeButton() {
     setState(() {
       _isLikeEnabled = false;
@@ -422,7 +418,7 @@ class _VideoScreenState extends State<VideoScreen> {
     });
   }
 
-  /// tap dislike button
+  /// 低評価ボタン押下時挙動
   void _tapDislikeButton() {
     setState(() {
       _isDislikeEnabled = false;
@@ -444,7 +440,8 @@ class _VideoScreenState extends State<VideoScreen> {
     });
   }
 
-  _showPlaylistList() {
+  /// プレイリストアイテムを表示する
+  _showPlaylistItems() {
     return showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -453,14 +450,15 @@ class _VideoScreenState extends State<VideoScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return _playlistList();
+            return _playlistItems();
           }
         );
       }
     );
   }
 
-  Widget _playlistList() {
+  /// プレイリストアイテム
+  Widget _playlistItems() {
     if (_video != null && _channel != null && _rating != null) {
       return StatefulBuilder(
         builder: (context, setState) {
@@ -471,20 +469,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 if (!_isLoading &&
                   scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent &&
                   _items.length < _response.pageInfo!.totalResults!) {
-                  _isLoading = true;
-                  Future(() async {
-                    final response = await _api.getPlaylistItemList(
-                      id: widget.playlist!.id!,
-                      pageToken: _response.nextPageToken!,
-                    );
-                    if (mounted) {
-                      setState(() {
-                        _response = response;
-                        _items.addAll(response.items!);
-                        _isLoading = false;
-                      });
-                    }
-                  });
+                  _getAdditionalPlaylist();
                 }
                 return false;
               },

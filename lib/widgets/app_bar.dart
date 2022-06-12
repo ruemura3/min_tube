@@ -107,7 +107,7 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => MyScreen(),
+                builder: (_) => MyPageScreen(),
               ),
             ),
             child: _currentUser!.photoUrl != null

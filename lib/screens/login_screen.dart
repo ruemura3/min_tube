@@ -4,15 +4,15 @@ import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 
-/// login screen
+/// ログイン画面
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-/// home screen state
+/// ログイン画面ステート
 class _LoginScreenState extends State<LoginScreen> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
 
   @override
@@ -28,9 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// login body
+  /// ログイン画面ボディ
   Widget _loginScreenBody() {
-    /// sign in button height
     final double buttonHeight = 56;
     return Padding(
       padding: const EdgeInsets.all(32),
@@ -41,8 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.only(left: 32, top: 56, right: 32, bottom: 56),
             child: Image.asset(
               Theme.of(context).brightness == Brightness.dark
-              ? 'assets/images/logo_dark.png'
-              : 'assets/images/logo_light.png',
+                ? 'assets/images/logo_dark.png'
+                : 'assets/images/logo_light.png',
             ),
           ),
           ElevatedButton.icon(

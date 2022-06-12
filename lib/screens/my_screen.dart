@@ -2,30 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/login_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
-import 'package:min_tube/widgets/floating_search_button.dart';
-import 'package:min_tube/widgets/profile_card.dart';
 import 'package:min_tube/widgets/app_bar.dart';
 
-import 'channel_screen/channel_screen.dart';
-
-class MyScreen extends StatefulWidget {
+/// マイページ画面
+class MyPageScreen extends StatefulWidget {
   @override
-  _MyScreenState createState() => _MyScreenState();
+  _MyPageScreenState createState() => _MyPageScreenState();
 }
 
-class _MyScreenState extends State<MyScreen> {
-  /// api service
+/// マイページ画面ステート
+class _MyPageScreenState extends State<MyPageScreen> {
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// current user
+  /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
-  /// current user channel
+  /// ログイン中ユーザのチャンネル
   Channel? _channel;
 
   @override
   void initState() {
-    super.initState();
     Future(() async {
       final user = await _api.user;
       final response = await _api.getChannelList(mine: true);
@@ -36,6 +34,7 @@ class _MyScreenState extends State<MyScreen> {
         });
       }
     });
+    super.initState();
   }
 
   @override
@@ -49,12 +48,12 @@ class _MyScreenState extends State<MyScreen> {
     );
   }
 
-  /// my screen body
+  /// マイページ画面ボディ
   Widget _myScreenBody() {
-    if (_currentUser != null && _channel != null) {
+    if (_currentUser != null && _channel != null) { // ユーザとチャンネルがnullでない場合
       return Column(
         children: [
-          MyProfileCard(channel: _channel!),
+          _profileCard(),
           InkWell(
             onTap: () => Navigator.push(
               context,
@@ -135,6 +134,48 @@ class _MyScreenState extends State<MyScreen> {
     return Center(child: CircularProgressIndicator(),);
   }
 
+  Widget _profileCard() {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChannelScreen(
+            channel: _channel,
+            isMine: true,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            _channel!.snippet!.thumbnails!.medium != null
+              ? CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage(_channel!.snippet!.thumbnails!.medium!.url!)
+              )
+              : CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.blueGrey,
+                child: Text(_channel!.snippet!.title!.substring(0, 1)),
+              ),
+            SizedBox(width: 16,),
+            Expanded(
+              child: Text(
+                _channel!.snippet!.title!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   _showLogoutDialog() {
     return showDialog(
       context: context,
@@ -159,11 +200,6 @@ class _MyScreenState extends State<MyScreen> {
               ),
               onPressed: () async {
                 await _api.logout();
-                if (mounted) {
-                  setState(() {
-                    _currentUser = null;
-                  });
-                }
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
