@@ -53,6 +53,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<!-- End of the Google Sign-in Section -->
 	<!-- URL Launcher Section -->
 	<key>LSApplicationQueriesSchemes</key>
