@@ -8,11 +8,4 @@ class ColorUtil {
       ? Colors.white
       : Colors.black;
   }
-
-  /// 逆のテキストカラー
-  static reversedTextColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-      ? Colors.black
-      : Colors.white;
-  }
 }

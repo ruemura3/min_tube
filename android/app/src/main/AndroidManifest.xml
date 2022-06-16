@@ -2,7 +2,7 @@
     package="com.ruemura3.min_tube">
    <application
         android:label="min_tube"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -14,19 +14,19 @@ void main() {
   });
 }
 
-/// mintube
+/// MinTubeクラス
 class MinTube extends StatefulWidget {
   @override
   _MinTubeState createState() => _MinTubeState();
 }
 
-/// mintube state
+/// MinTubeステート
 class _MinTubeState extends State<MinTube> {
-  /// api service
+  /// APIインスタンス
   ApiService _api = ApiService.instance;
-  /// current user
+  /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
-  /// is login finished
+  /// ログイン完了フラグ
   bool _isLaunched = false;
 
   @override

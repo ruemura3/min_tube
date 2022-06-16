@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
-import 'package:min_tube/util/color_util.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/subscribe_button.dart';
@@ -208,12 +207,13 @@ class _VideoScreenState extends State<VideoScreen> {
           }
         },
       ),
-      builder: (context, player) => Scaffold(
-        appBar: OriginalAppBar(
-          title: _video != null ? _video!.snippet!.title! : '',
+      builder: (context, player) => WillPopScope(
+        onWillPop: () async => true,
+        child: Scaffold(
+          appBar: OriginalAppBar(),
+          body: _videoScreenBody(player),
+          floatingActionButton: FloatingSearchButton(),
         ),
-        body: _videoScreenBody(player),
-        floatingActionButton: FloatingSearchButton(),
       ),
     );
   }
@@ -347,7 +347,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 widget.playlist!.snippet!.title!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: ColorUtil.reversedTextColor(context)),
+                style: TextStyle(color:Colors.white),
               ),
             ),
           )
@@ -364,9 +364,6 @@ class _VideoScreenState extends State<VideoScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          widget.isForPlaylist
-            ? IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous))
-            : Container(),
           IconButton(onPressed: () {
             _controller.seekTo(_controller.value.position - Duration(seconds: 10));
           }, icon: Icon(Icons.forward_10)),
@@ -389,9 +386,6 @@ class _VideoScreenState extends State<VideoScreen> {
           IconButton(onPressed: () {
             _controller.seekTo(_controller.value.position + Duration(seconds: 10));
           }, icon: Icon(Icons.replay_10)),
-          widget.isForPlaylist
-            ? IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
-            : Container(),
         ],
       ),
     );
@@ -474,25 +468,30 @@ class _VideoScreenState extends State<VideoScreen> {
                 }
                 return false;
               },
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: ListView.builder(
-                  itemCount: _items.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == _items.length) {
-                      if (_items.length < _response.pageInfo!.totalResults!) {
-                        return Center(child: CircularProgressIndicator(),);
-                      }
-                      return Container();
-                    }
-                    return VideoCardForPlaylist(
-                      playlist: widget.playlist!,
-                      response: _response,
-                      items: _items,
-                      idx: index,
+              child: ListView.builder(
+                itemCount: _items.length + 2,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == 0) {
+                    return Row(
+                      children: [
+                        IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous)),
+                        IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
+                      ],
                     );
-                  },
-                ),
+                  }
+                  if (index == _items.length + 1) {
+                    if (_items.length < _response.pageInfo!.totalResults!) {
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                    return Container();
+                  }
+                  return VideoCardForPlaylist(
+                    playlist: widget.playlist!,
+                    response: _response,
+                    items: _items,
+                    idx: index - 1,
+                  );
+                },
               ),
             ),
           );

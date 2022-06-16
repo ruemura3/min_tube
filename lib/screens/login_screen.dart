@@ -50,14 +50,16 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(fontSize: 18),
             ),
             onPressed: () async {
-              await _api.login();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => HomeScreen(),
-                ),
-                (route) => false
-              );
+              final user = await _api.login();
+              if (user != null) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(),
+                  ),
+                  (route) => false
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, buttonHeight),

@@ -1,21 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
-/// video card for playlist
+/// プレイリスト用の動画カード
 class VideoCardForPlaylist extends StatelessWidget {
-  /// playlist
+  /// プレイリストインスタンス
   final Playlist playlist;
-  /// playlist response
+  /// プレイリストアイテムのレスポンス
   final PlaylistItemListResponse response;
-  /// playlist items
+  /// プレイリストアイテム
   final List<PlaylistItem> items;
-  /// current index
+  /// 現在のインデックス
   final int idx;
 
-  /// constructor
+  /// コンストラクタ
   VideoCardForPlaylist({
     required this.playlist,
     required this.response,
@@ -28,7 +27,7 @@ class VideoCardForPlaylist extends StatelessWidget {
     return InkWell(
       onTap: () => Navigator.push(
         context,
-        CupertinoPageRoute(
+        MaterialPageRoute(
           builder: (_) => VideoScreen(
             playlist: playlist,
             response: response,

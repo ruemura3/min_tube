@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:min_tube/api/api_service.dart';
 import 'package:min_tube/screens/home_screen.dart';
-import 'package:min_tube/screens/my_screen.dart';
+import 'package:min_tube/screens/my_page_screen.dart';
 
 /// オリジナルアップバー
 class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
@@ -79,11 +79,12 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
       );
     }
     return InkWell(
-      onTap: () => Navigator.pushReplacement(
+      onTap: () => Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (_) => HomeScreen(),
-        )
+        ),
+        (route) => false
       ),
       child: Image.asset(
         Theme.of(context).brightness == Brightness.dark
@@ -107,15 +108,21 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
               ),
             ),
             child: _currentUser!.photoUrl != null
-              ? CircleAvatar(
-                backgroundImage: NetworkImage(_currentUser!.photoUrl!)
+              ? Padding(
+                padding: const EdgeInsets.all(8),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(_currentUser!.photoUrl!)
+                ),
               )
-              : CircleAvatar(
-                backgroundColor: Colors.blueGrey,
-                child: Text(_currentUser!.displayName!.substring(0, 1)),
+              : Padding(
+                padding: const EdgeInsets.all(8),
+                child: CircleAvatar(
+                  backgroundColor: Colors.blueGrey,
+                  child: Text(_currentUser!.displayName!.substring(0, 1)),
+                ),
               )
           ),
-          SizedBox(width: 16,),
+          SizedBox(width: 8,),
         ];
       }
       Future(() async {

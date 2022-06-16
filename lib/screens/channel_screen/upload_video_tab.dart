@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:min_tube/api/api_service.dart';
@@ -108,7 +107,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
     return InkWell(
       onTap: () => Navigator.push(
         context,
-        CupertinoPageRoute(
+        MaterialPageRoute(
           builder: (_) => VideoScreen(
             videoId: searchResult.id!.videoId!,
           ),
