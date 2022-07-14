@@ -21,6 +21,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   bool _isEnabled = false;
   /// お気に入りID一覧
   List<String> _favoriteIds = [];
+  /// SharedPreferences
   late SharedPreferences _preferences;
 
   @override
@@ -77,6 +78,10 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           _isEnabled = true;
         });
       }
+      final snackBar = SnackBar(
+        content: Text('お気に入りから外しました'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
       _favoriteIds.add(widget.channelId);
       _preferences.setStringList('favorites', _favoriteIds);
@@ -86,6 +91,10 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           _isEnabled = true;
         });
       }
+      final snackBar = SnackBar(
+        content: Text('お気に入りに登録しました\nお気に入りはホーム画面の一番上に表示されます'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 }

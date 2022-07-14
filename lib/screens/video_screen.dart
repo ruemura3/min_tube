@@ -222,7 +222,19 @@ class _VideoScreenState extends State<VideoScreen> {
   List<Widget>? _bottomActions() {
     if (_video != null) {
       if (_video!.snippet!.liveBroadcastContent! != 'live') {
-        return null;
+        return [
+          const SizedBox(width: 14.0),
+          CurrentPosition(),
+          const SizedBox(width: 8.0),
+          ProgressBar(
+            isExpanded: true,
+            colors: ProgressBarColors(
+              playedColor: Colors.red,
+              handleColor: Colors.redAccent,
+            ),
+          ),
+          RemainingDuration(),
+        ];
       }
       return [
         SizedBox(width: 8,),
@@ -235,7 +247,6 @@ class _VideoScreenState extends State<VideoScreen> {
           ),
         ),
         Expanded(child: Row(),),
-        FullScreenButton(),
       ];
     }
     return [];
@@ -265,10 +276,7 @@ class _VideoScreenState extends State<VideoScreen> {
                         ),
                         SizedBox(height: 8,),
                         Text(
-                          Util.viewsAndTimeago(
-                            _video!.statistics!.viewCount!,
-                            _video!.snippet!.publishedAt!
-                          ),
+                          _statisticInfo(),
                           style: TextStyle(
                             color: Colors.grey,
                             fontWeight: FontWeight.w300,
@@ -354,6 +362,21 @@ class _VideoScreenState extends State<VideoScreen> {
           : Container(),
       ]
     );
+  }
+
+  String _statisticInfo() {
+    if (_video != null) {
+      if (_video!.snippet!.liveBroadcastContent! != 'live') {
+        return Util.viewsAndTimeago(
+          _video!.statistics!.viewCount!,
+          _video!.snippet!.publishedAt!
+        );
+      } else {
+        return Util.formatSubScriberCount(_video!.liveStreamingDetails!.concurrentViewers!)! + ' 人が視聴中';
+      }
+    } else {
+      return '';
+    }
   }
 
   /// 動画用ボタン
@@ -535,6 +558,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     ),
                     channel.statistics!.subscriberCount != null
                       ? Text(
+                        'チャンネル登録者数 ' +
                         Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

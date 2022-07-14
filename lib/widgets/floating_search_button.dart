@@ -2,26 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:min_tube/screens/search_result_screen.dart';
 
 /// 右下の検索ボタン
-class FloatingSearchButton extends StatefulWidget {
-  @override
-  _FloatingSearchButtonState createState() => _FloatingSearchButtonState();
-}
-
-/// 右下の検索ボタンステート
-class _FloatingSearchButtonState extends State<FloatingSearchButton> {
-  /// 検索クエリ
-  String _query = '';
-  /// テキスト編集コントローラ
-  final _controller = TextEditingController();
-
+class FloatingSearchButton extends StatelessWidget {
   /// 検索ダイアログを表示する
   _showSearchDialog(BuildContext context) {
+    /// 検索クエリ
+    String query = '';
+    /// テキスト編集コントローラ
+    final controller = TextEditingController(text: query);
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           content: TextField(
-            controller: _controller,
+            controller: controller,
             autofocus: true,
             decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
@@ -30,8 +23,8 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
               hintText: 'YouTubeを検索',
               suffixIcon: IconButton(
                 onPressed: () {
-                  _controller.clear();
-                  _query = '';
+                  controller.clear();
+                  query = '';
                 },
                 icon: Icon(
                   Icons.clear,
@@ -39,10 +32,10 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
               ),
             ),
             onChanged: (text) {
-              _query = text;
+              query = text;
             },
             onEditingComplete: () {
-              _search();
+              _search(context, query);
             },
           ),
           actions: <Widget>[
@@ -61,7 +54,7 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
-                _search();
+                _search(context, query);
               },
             ),
           ],
@@ -71,12 +64,12 @@ class _FloatingSearchButtonState extends State<FloatingSearchButton> {
   }
 
   /// 検索を行う
-  void _search() {
-    if (_query != '') {
+  void _search(BuildContext context, String query) {
+    if (query != '') {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => SearchResultScreen(query: _query,),
+          builder: (_) => SearchResultScreen(query: query,),
         )
       );
     }

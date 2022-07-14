@@ -60,10 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OriginalAppBar(
-        title: null,
-        shouldShowTitle: true,
-      ),
+      appBar: OriginalAppBar(),
       body: _homeScreenBody(),
       floatingActionButton: FloatingSearchButton(),
     );
@@ -106,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8),
         child: Row(
           children: [
             CircleAvatar(

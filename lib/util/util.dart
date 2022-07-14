@@ -22,19 +22,19 @@ class Util {
     }
   }
 
-  /// フォーマットされたチャンネル登録者数
+  /// フォーマットされた人数
   /// 非公開の場合はnullを返す
   static String? formatSubScriberCount(String? subscriberCount) {
     if (subscriberCount != null) {
       int intSubscriberCount = int.parse(subscriberCount);
       if (intSubscriberCount < 10000) {
-        return 'チャンネル登録者数 $subscriberCount 人';
+        return '$subscriberCount 人';
       } else if (intSubscriberCount < 1000000) {
-        return 'チャンネル登録者数 ${(intSubscriberCount / 10000).toString()} 万人';
+        return '${(intSubscriberCount / 10000).toString()} 万人';
       } else if (intSubscriberCount < 100000000) {
-        return 'チャンネル登録者数 ${(intSubscriberCount / 10000).floor().toString()} 万人';
+        return '${(intSubscriberCount / 10000).floor().toString()} 万人';
       } else {
-        return 'チャンネル登録者数 ${(intSubscriberCount / 100000000).toString()} 億人';
+        return '${(intSubscriberCount / 100000000).toString()} 億人';
       }
     }
     return null;
