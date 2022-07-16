@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
+import 'package:min_tube/screens/search_result_screen.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/color_util.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -196,5 +197,74 @@ class Util {
       if (match != null && match.groupCount >= 1) return match.group(1);
     }
     return null;
+  }
+
+  /// 検索ダイアログを表示する
+  static showSearchDialog(BuildContext context, {String query = ''}) {
+    final controller = TextEditingController(text: query); // テキスト編集コントローラ
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(),
+              ),
+              hintText: 'YouTubeを検索',
+              suffixIcon: IconButton(
+                onPressed: () {
+                  controller.clear();
+                  query = '';
+                },
+                icon: Icon(
+                  Icons.clear,
+                ),
+              ),
+            ),
+            onChanged: (text) {
+              query = text;
+            },
+            onEditingComplete: () {
+              _search(context, query);
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'キャンセル',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text(
+                '検索',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                _search(context, query);
+              },
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  /// 検索結果画面へ遷移する
+  static void _search(BuildContext context, String query) {
+    if (query != '') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SearchResultScreen(query: query,),
+        )
+      );
+    }
   }
 }

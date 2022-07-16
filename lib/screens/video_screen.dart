@@ -68,6 +68,10 @@ class _VideoScreenState extends State<VideoScreen> {
   late int _idx;
   /// YouTubeプレイヤーコントローラ
   late YoutubePlayerController _controller;
+  /// YouTubeプレイヤーが準備できたかどうか
+  bool _isPlayerReady = false;
+  /// ボリューム
+  double _volume = 100;
 
   @override
   void initState() {
@@ -201,6 +205,9 @@ class _VideoScreenState extends State<VideoScreen> {
           handleColor: Colors.redAccent,
         ),
         bottomActions: _bottomActions(),
+        onReady: () {
+          _isPlayerReady = true;
+        },
         onEnded: (data) {
           if(widget.isForPlaylist) {
             _startNextVideo();
@@ -212,7 +219,6 @@ class _VideoScreenState extends State<VideoScreen> {
         child: Scaffold(
           appBar: OriginalAppBar(),
           body: _videoScreenBody(player),
-          floatingActionButton: FloatingSearchButton(),
         ),
       ),
     );
@@ -263,72 +269,67 @@ class _VideoScreenState extends State<VideoScreen> {
             _video != null && _channel != null && _rating != null
               ? Expanded(
                 child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _video!.snippet!.title!,
-                          style: TextStyle(
-                            fontSize: 18,
+                  child: Column(
+                    children: [
+                      widget.isForPlaylist
+                        ? InkWell(
+                          onTap: _showPlaylistItems,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            width: double.infinity,
+                            color: Colors.black,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  widget.playlist!.snippet!.title!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color:Colors.white),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 8,),
-                        Text(
-                          _statisticInfo(),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w300,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        _videoScreenButtons(),
-                        Divider(color: Colors.grey,),
-                        _profileCard(_channel!,),
-                        Divider(color: Colors.grey,),
-                        _video!.snippet!.description! != ''
-                          ? Column(
-                            children: [
-                              SizedBox(height: 8,),
-                              Util.getDescriptionWithUrl(
-                                _video!.snippet!.description!,
-                                context,
+                        )
+                        : Container(),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _video!.snippet!.title!,
+                              style: TextStyle(
+                                fontSize: 18,
                               ),
-                              SizedBox(height: 8,),
-                              Divider(color: Colors.grey,),
-                            ],
-                          )
-                          : Container(),
-                        SizedBox(height: 8,),
-                        Container(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final data = ClipboardData(
-                                text: 'https://www.youtube.com/watch?v=$_videoId'
-                              );
-                              await Clipboard.setData(data);
-                              final snackBar = SnackBar(
-                                content: Text('動画のURLをコピーしました'),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            },
-                            child: Text('動画のURLをコピーする'),
-                          ),
+                            ),
+                            SizedBox(height: 8,),
+                            Text(
+                              _statisticInfo(),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w300,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            _videoScreenButtons(),
+                            Divider(color: Colors.grey,),
+                            _profileCard(_channel!,),
+                            Divider(color: Colors.grey,),
+                            SizedBox(height: 8,),
+                            Util.getDescriptionWithUrl(
+                              _video!.snippet!.description!,
+                              context,
+                            ),
+                            SizedBox(height: 96,),
+                          ],
                         ),
-                        Container(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              launch('https://www.youtube.com/watch?v=$_videoId');
-                            },
-                            child: Text('この動画をブラウザで開く'),
-                          ),
-                        ),
-                        SizedBox(height: 96,),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -343,23 +344,77 @@ class _VideoScreenState extends State<VideoScreen> {
                 ),
           ],
         ),
-        widget.isForPlaylist
-          ? InkWell(
-            onTap: _showPlaylistItems,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              width: double.infinity,
-              height: 72,
-              color: Colors.black.withOpacity(0.8),
-              child: Text(
-                widget.playlist!.snippet!.title!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color:Colors.white),
+        Positioned(
+          left: 16,
+          right: 16,
+          bottom: 49,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 56,
+                width: 296,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: Offset(1, 2),
+                    ),
+                  ]
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(Icons.keyboard_arrow_left, color: Colors.white,)
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _controller.seekTo(_controller.value.position - Duration(seconds: 10));
+                      },
+                      icon: Icon(Icons.forward_10, color: Colors.white,)
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        _controller.value.isPlaying
+                          ? Icons.play_arrow
+                          : Icons.pause,
+                        color: Colors.white,
+                      ),
+                      onPressed: _isPlayerReady
+                        ? () {
+                          _controller.value.isPlaying
+                              ? _controller.pause()
+                              : _controller.play();
+                          setState(() {});
+                        }
+                        : null,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _controller.seekTo(_controller.value.position + Duration(seconds: 10));
+                      },
+                      icon: Icon(Icons.replay_10, color: Colors.white,)
+                    ),
+                    // IconButton(
+                    //   onPressed: () {
+                    //     showSettingDialog(context);
+                    //   },
+                    //   icon: Icon(Icons.more_horiz), color: Colors.white,
+                    // ),
+                  ]
+                ),
               ),
-            ),
-          )
-          : Container(),
+              FloatingSearchButton(),
+            ],
+          ),
+        ),
       ]
     );
   }
@@ -387,9 +442,6 @@ class _VideoScreenState extends State<VideoScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(onPressed: () {
-            _controller.seekTo(_controller.value.position - Duration(seconds: 10));
-          }, icon: Icon(Icons.forward_10)),
           IconButton(
             onPressed: _isLikeEnabled
               ? _tapLikeButton
@@ -406,9 +458,25 @@ class _VideoScreenState extends State<VideoScreen> {
               ? Icon(Icons.thumb_down)
               : Icon(Icons.thumb_down_outlined)
           ),
-          IconButton(onPressed: () {
-            _controller.seekTo(_controller.value.position + Duration(seconds: 10));
-          }, icon: Icon(Icons.replay_10)),
+          IconButton(
+            onPressed: () async {
+              final data = ClipboardData(
+                text: 'https://www.youtube.com/watch?v=$_videoId'
+              );
+              await Clipboard.setData(data);
+              final snackBar = SnackBar(
+                content: Text('動画のURLをコピーしました'),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            },
+            icon: Icon(Icons.content_copy,)
+          ),
+          IconButton(
+            onPressed: () {
+              launch('https://www.youtube.com/watch?v=$_videoId');
+            },
+            icon: Icon(Icons.open_in_browser,)
+          ),
         ],
       ),
     );
@@ -496,9 +564,18 @@ class _VideoScreenState extends State<VideoScreen> {
                 itemBuilder: (BuildContext context, int index) {
                   if (index == 0) {
                     return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous)),
-                        IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next))
+                        Row(children: [
+                          IconButton(onPressed: _startPreviousVideo, icon: Icon(Icons.skip_previous)),
+                          IconButton(onPressed: _startNextVideo, icon: Icon(Icons.skip_next)),
+                        ],),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: Icon(Icons.clear)
+                        ),
                       ],
                     );
                   }
@@ -575,6 +652,52 @@ class _VideoScreenState extends State<VideoScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// 設定ダイアログを表示する
+  showSettingDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              content: Column(
+                children: [
+                  Slider(
+                    inactiveColor: Colors.transparent,
+                    value: _volume,
+                    min: 0.0,
+                    max: 100.0,
+                    divisions: 10,
+                    label: '${(_volume).round()}',
+                    onChanged: _isPlayerReady
+                      ? (value) {
+                          setState(() {
+                            _volume = value;
+                          });
+                          _controller.setVolume(_volume.round());
+                        }
+                      : null,
+                  ),
+                ]
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    '完了',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          }
+        );
+      }
     );
   }
 }
