@@ -15,6 +15,8 @@ class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
   final bool shouldShowProfileButton;
   /// タブバー
   final TabBar? tabBar;
+  /// 戻るボタンを表示すべきかどうか
+  final bool shouldShowBackButton;
 
   /// コンストラクタ
   OriginalAppBar({
@@ -22,6 +24,7 @@ class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
     this.isSearch = false,
     this.shouldShowProfileButton = true,
     this.tabBar,
+    this.shouldShowBackButton = true,
   });
 
   @override
@@ -59,6 +62,7 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: widget.shouldShowBackButton,
       elevation: 0,
       title: _appBarTitle(),
       actions: _appBarActions(),
@@ -106,7 +110,7 @@ class _OriginalAppBarState extends State<OriginalAppBar> {
     );
   }
 
-  /// プロフィールアイコン
+  /// アップバーアクション
   List<Widget> _appBarActions() {
     if (widget.shouldShowProfileButton) {
       if (_currentUser != null) {

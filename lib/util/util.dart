@@ -267,4 +267,12 @@ class Util {
       );
     }
   }
+
+  /// スナックバー（トースト）を表示する
+  static void showSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }

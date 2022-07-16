@@ -8,6 +8,7 @@ import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/subscribe_button.dart';
 import 'package:min_tube/widgets/original_app_bar.dart';
 import 'package:min_tube/widgets/video_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -70,8 +71,10 @@ class _VideoScreenState extends State<VideoScreen> {
   late YoutubePlayerController _controller;
   /// YouTubeプレイヤーが準備できたかどうか
   bool _isPlayerReady = false;
-  /// ボリューム
-  double _volume = 100;
+  /// 再生速度
+  double _speed = 1.0;
+  /// SharedPreferences
+  late SharedPreferences _preferences;
 
   @override
   void initState() {
@@ -88,9 +91,17 @@ class _VideoScreenState extends State<VideoScreen> {
       initialVideoId: _videoId,
       flags: YoutubePlayerFlags(
         hideThumbnail: true,
+        enableCaption: false,
         captionLanguage: 'ja',
       ),
     );
+    Future(() async {
+      _preferences = await SharedPreferences.getInstance();
+      final speed = _preferences.getDouble('speed');
+      if (speed != null) {
+        _speed = speed;
+      }
+    });
     super.initState();
   }
 
@@ -206,7 +217,10 @@ class _VideoScreenState extends State<VideoScreen> {
         ),
         bottomActions: _bottomActions(),
         onReady: () {
-          _isPlayerReady = true;
+          setState(() {
+            _isPlayerReady = true;
+          });
+          _controller.setPlaybackRate(_speed);
         },
         onEnded: (data) {
           if(widget.isForPlaylist) {
@@ -217,7 +231,7 @@ class _VideoScreenState extends State<VideoScreen> {
       builder: (context, player) => WillPopScope(
         onWillPop: () async => true,
         child: Scaffold(
-          appBar: OriginalAppBar(),
+          appBar: OriginalAppBar(shouldShowBackButton: false,),
           body: _videoScreenBody(player),
         ),
       ),
@@ -325,7 +339,7 @@ class _VideoScreenState extends State<VideoScreen> {
                               _video!.snippet!.description!,
                               context,
                             ),
-                            SizedBox(height: 96,),
+                            SizedBox(height: 112,),
                           ],
                         ),
                       ),
@@ -371,43 +385,51 @@ class _VideoScreenState extends State<VideoScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        _controller.pause();
+                        Navigator.of(context).pop();
+                      },
                       icon: Icon(Icons.keyboard_arrow_left, color: Colors.white,)
                     ),
                     IconButton(
-                      onPressed: () {
-                        _controller.seekTo(_controller.value.position - Duration(seconds: 10));
-                      },
+                      onPressed: _isPlayerReady
+                        ? () => _controller.seekTo(_controller.value.position - Duration(seconds: 10))
+                        : null,
                       icon: Icon(Icons.forward_10, color: Colors.white,)
                     ),
                     IconButton(
+                      onPressed: _isPlayerReady
+                        ? () async {
+                          if (_controller.value.isPlaying) {
+                            _controller.pause();
+                          } else {
+                            _controller.play();
+                          }
+                          await Future.delayed(Duration(milliseconds: 100));
+                          setState(() {});
+                        }
+                        : null,
                       icon: Icon(
                         _controller.value.isPlaying
                           ? Icons.play_arrow
                           : Icons.pause,
                         color: Colors.white,
                       ),
-                      onPressed: _isPlayerReady
-                        ? () {
-                          _controller.value.isPlaying
-                              ? _controller.pause()
-                              : _controller.play();
-                          setState(() {});
-                        }
-                        : null,
                     ),
                     IconButton(
-                      onPressed: () {
-                        _controller.seekTo(_controller.value.position + Duration(seconds: 10));
-                      },
+                      onPressed: _isPlayerReady
+                        ? () => _controller.seekTo(_controller.value.position + Duration(seconds: 10))
+                        : null,
                       icon: Icon(Icons.replay_10, color: Colors.white,)
                     ),
-                    // IconButton(
-                    //   onPressed: () {
-                    //     showSettingDialog(context);
-                    //   },
-                    //   icon: Icon(Icons.more_horiz), color: Colors.white,
-                    // ),
+                    IconButton(
+                      onPressed: _isPlayerReady
+                        ? () {
+                          showSettingDialog(context);
+                        }
+                        : null,
+                      icon: Icon(Icons.speed, color: Colors.white,)
+                    ),
                   ]
                 ),
               ),
@@ -464,10 +486,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 text: 'https://www.youtube.com/watch?v=$_videoId'
               );
               await Clipboard.setData(data);
-              final snackBar = SnackBar(
-                content: Text('動画のURLをコピーしました'),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Util.showSnackBar(context, '動画のURLをコピーしました');
             },
             icon: Icon(Icons.content_copy,)
           ),
@@ -664,23 +683,70 @@ class _VideoScreenState extends State<VideoScreen> {
           builder: (context, setState) {
             return AlertDialog(
               content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Slider(
-                    inactiveColor: Colors.transparent,
-                    value: _volume,
-                    min: 0.0,
-                    max: 100.0,
-                    divisions: 10,
-                    label: '${(_volume).round()}',
-                    onChanged: _isPlayerReady
-                      ? (value) {
-                          setState(() {
-                            _volume = value;
-                          });
-                          _controller.setVolume(_volume.round());
-                        }
-                      : null,
+                  SizedBox(height: 16,),
+                  Text(
+                    '再生速度',
+                    style: TextStyle(fontWeight: FontWeight.bold,),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 8,),
+                    child: DropdownButtonFormField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      isExpanded: true,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('2.0'),
+                          value: 2.0,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('1.75'),
+                          value: 1.75,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('1.5'),
+                          value: 1.5,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('1.25'),
+                          value: 1.25,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('標準'),
+                          value: 1.00,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('0.75'),
+                          value: 0.75,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('0.5'),
+                          value: 0.5,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('0.25'),
+                          value: 0.25,
+                        ),
+                      ],
+                      onChanged: _isPlayerReady
+                        ? (double? value) {
+                            setState(() {
+                              _speed = value!;
+                            });
+                            _controller.setPlaybackRate(value!);
+                          }
+                        : null,
+                      value: _speed,
+                    ),
+                  ),
+                  Text(
+                    'デフォルトの再生速度の変更は右上のマイページから行ってください',
+                    style: TextStyle(fontSize: 14),
+                  )
                 ]
               ),
               actions: [

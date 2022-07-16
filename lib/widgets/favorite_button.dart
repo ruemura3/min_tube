@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:min_tube/util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// お気に入りボタン
@@ -26,7 +27,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   @override
   void initState() {
-    super.initState();
     Future(() async {
       _preferences = await SharedPreferences.getInstance();
       _getFavoriteIdList();
@@ -41,6 +41,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
       });
       _isEnabled = true;
     });
+    super.initState();
   }
 
   @override
@@ -78,10 +79,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           _isEnabled = true;
         });
       }
-      final snackBar = SnackBar(
-        content: Text('お気に入りから外しました'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Util.showSnackBar(context, 'お気に入りから外しました');
     } else {
       _favoriteIds.add(widget.channelId);
       _preferences.setStringList('favorites', _favoriteIds);
@@ -91,10 +89,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           _isEnabled = true;
         });
       }
-      final snackBar = SnackBar(
-        content: Text('お気に入りに登録しました\nお気に入りはホーム画面の一番上に表示されます'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Util.showSnackBar(context, 'お気に入りに登録しました\nお気に入りはホーム画面の一番上に表示されます');
     }
   }
 }
