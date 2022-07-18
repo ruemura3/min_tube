@@ -231,7 +231,7 @@ class _VideoScreenState extends State<VideoScreen> {
       builder: (context, player) => WillPopScope(
         onWillPop: () async => true,
         child: Scaffold(
-          appBar: OriginalAppBar(shouldShowBackButton: false,),
+          appBar: OriginalAppBar(),
           body: _videoScreenBody(player),
         ),
       ),
@@ -365,74 +365,76 @@ class _VideoScreenState extends State<VideoScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                height: 56,
-                width: 296,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(1, 2),
-                    ),
-                  ]
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        _controller.pause();
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Icons.keyboard_arrow_left, color: Colors.white,)
-                    ),
-                    IconButton(
-                      onPressed: _isPlayerReady
-                        ? () => _controller.seekTo(_controller.value.position - Duration(seconds: 10))
-                        : null,
-                      icon: Icon(Icons.forward_10, color: Colors.white,)
-                    ),
-                    IconButton(
-                      onPressed: _isPlayerReady
-                        ? () async {
-                          if (_controller.value.isPlaying) {
-                            _controller.pause();
-                          } else {
-                            _controller.play();
-                          }
-                          await Future.delayed(Duration(milliseconds: 100));
-                          setState(() {});
-                        }
-                        : null,
-                      icon: Icon(
-                        _controller.value.isPlaying
-                          ? Icons.play_arrow
-                          : Icons.pause,
-                        color: Colors.white,
+              Expanded(
+                child: Container(
+                  height: 56,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: Offset(1, 2),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: _isPlayerReady
-                        ? () => _controller.seekTo(_controller.value.position + Duration(seconds: 10))
-                        : null,
-                      icon: Icon(Icons.replay_10, color: Colors.white,)
-                    ),
-                    IconButton(
-                      onPressed: _isPlayerReady
-                        ? () {
-                          showSettingDialog(context);
-                        }
-                        : null,
-                      icon: Icon(Icons.speed, color: Colors.white,)
-                    ),
-                  ]
+                    ]
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          _controller.pause();
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(Icons.keyboard_arrow_left, color: Colors.white,)
+                      ),
+                      IconButton(
+                        onPressed: _isPlayerReady
+                          ? () => _controller.seekTo(_controller.value.position - Duration(seconds: 10))
+                          : null,
+                        icon: Icon(Icons.forward_10, color: Colors.white,)
+                      ),
+                      IconButton(
+                        onPressed: _isPlayerReady
+                          ? () async {
+                            if (_controller.value.isPlaying) {
+                              _controller.pause();
+                            } else {
+                              _controller.play();
+                            }
+                            await Future.delayed(Duration(milliseconds: 200));
+                            setState(() {});
+                          }
+                          : null,
+                        icon: Icon(
+                          _controller.value.isPlaying
+                            ? Icons.play_arrow
+                            : Icons.pause,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _isPlayerReady
+                          ? () => _controller.seekTo(_controller.value.position + Duration(seconds: 10))
+                          : null,
+                        icon: Icon(Icons.replay_10, color: Colors.white,)
+                      ),
+                      IconButton(
+                        onPressed: _isPlayerReady
+                          ? () {
+                            showSettingDialog(context);
+                          }
+                          : null,
+                        icon: Icon(Icons.speed, color: Colors.white,)
+                      ),
+                    ]
+                  ),
                 ),
               ),
+              SizedBox(width: 8,),
               FloatingSearchButton(),
             ],
           ),

@@ -17,7 +17,7 @@ class UploadVideoTab extends StatefulWidget {
 }
 
 /// アップロード動画タブステート
-class _UploadVideoTabState extends State<UploadVideoTab> {
+class _UploadVideoTabState extends State<UploadVideoTab> with AutomaticKeepAliveClientMixin {
   /// APIインスタンス
   ApiService _api = ApiService.instance;
   /// ロード中フラグ
@@ -26,6 +26,9 @@ class _UploadVideoTabState extends State<UploadVideoTab> {
   SearchListResponse? _response;
   /// アップロード動画一覧
   List<SearchResult> _items = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {

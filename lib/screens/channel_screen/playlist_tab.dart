@@ -21,7 +21,7 @@ class PlaylistTab extends StatefulWidget {
 }
 
 /// プレイリストタブステート
-class _PlaylistTabState extends State<PlaylistTab> {
+class _PlaylistTabState extends State<PlaylistTab> with AutomaticKeepAliveClientMixin {
   /// APIインスタンス
   ApiService _api = ApiService.instance;
   /// ロード中フラグ
@@ -30,6 +30,9 @@ class _PlaylistTabState extends State<PlaylistTab> {
   PlaylistListResponse? _response;
   /// プレイリスト一覧
   List<Playlist> _items = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {

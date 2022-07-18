@@ -27,8 +27,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!-- <string>com.googleusercontent.apps.191843660410-5a5e7u1pb6214rlu7d4ss31thq1dom01</string> -->
-				<string>com.googleusercontent.apps.525652105735-i03oaloo749fo24sjrf5ro1ua88a9bht</string>
+				<string>com.googleusercontent.apps.191843660410-5a5e7u1pb6214rlu7d4ss31thq1dom01</string>
+				<!-- <string>com.googleusercontent.apps.525652105735-i03oaloo749fo24sjrf5ro1ua88a9bht</string> -->
 			</array>
 		</dict>
 	</array>

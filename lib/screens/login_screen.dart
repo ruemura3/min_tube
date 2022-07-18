@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 32, top: 56, right: 32, bottom: 56),
+            padding: const EdgeInsets.only(left: 32, top: 120, right: 32, bottom: 48),
             child: Image.asset(
               Theme.of(context).brightness == Brightness.dark
                 ? 'assets/images/logo_dark.png'

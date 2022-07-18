@@ -258,6 +258,7 @@ class Util {
 
   /// 検索結果画面へ遷移する
   static void _search(BuildContext context, String query) {
+    Navigator.pop(context);
     if (query != '') {
       Navigator.push(
         context,
