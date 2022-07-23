@@ -48,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
     final preferences = await SharedPreferences.getInstance();
-    List<String>? favoriteIds = preferences.getStringList('favorites');
+    final user = preferences.getString('userId');
+    List<String>? favoriteIds = preferences.getStringList(user! + 'favoriteIds');
     if (favoriteIds != null) {
       for (var f in favoriteIds) {
         final favoriteChannel = _items.firstWhere(

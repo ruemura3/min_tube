@@ -1,6 +1,7 @@
 import 'package:googleapis/youtube/v3.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// APIサービスクラス
 class ApiUtil {
@@ -20,6 +21,9 @@ class ApiUtil {
   /// 現在のユーザ
   GoogleSignInAccount? _user = _googleSignIn.currentUser;
 
+  /// SharedPreferences
+  late SharedPreferences _preferences;
+
   /// 現在のユーザを取得する
   /// ログインしていない場合はnullを返す
   Future<GoogleSignInAccount?> get user async {
@@ -32,6 +36,8 @@ class ApiUtil {
   /// ログインしてユーザを返す
   Future<GoogleSignInAccount?> login() async {
     _user = await _googleSignIn.signIn();
+    _preferences = await SharedPreferences.getInstance();
+    _preferences.setString('userId', _user!.id);
     return _user;
   }
 

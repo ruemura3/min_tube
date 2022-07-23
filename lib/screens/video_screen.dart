@@ -75,6 +75,8 @@ class _VideoScreenState extends State<VideoScreen> {
   double _speed = 1.0;
   /// SharedPreferences
   late SharedPreferences _preferences;
+  /// ユーザID
+  late String _userId;
 
   @override
   void initState() {
@@ -97,7 +99,8 @@ class _VideoScreenState extends State<VideoScreen> {
     );
     Future(() async {
       _preferences = await SharedPreferences.getInstance();
-      final speed = _preferences.getDouble('speed');
+      _userId = _preferences.getString('userId')!;
+      final speed = _preferences.getDouble(_userId + 'speed');
       if (speed != null) {
         _speed = speed;
       }

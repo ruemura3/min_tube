@@ -24,11 +24,14 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   List<String> _favoriteIds = [];
   /// SharedPreferences
   late SharedPreferences _preferences;
+  /// ユーザID
+  late String _userId;
 
   @override
   void initState() {
     Future(() async {
       _preferences = await SharedPreferences.getInstance();
+      _userId = _preferences.getString('userId')!;
       _getFavoriteIdList();
       final id = _favoriteIds.firstWhere(
         (id) => id == widget.channelId,
@@ -61,7 +64,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   /// 最新のお気に入りリストを取得する
   void _getFavoriteIdList() {
-    final favoriteIds = _preferences.getStringList('favorites');
+    final favoriteIds = _preferences.getStringList(_userId + 'favoriteIds');
     if (favoriteIds != null) {
       _favoriteIds = favoriteIds;
     }
@@ -72,7 +75,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     _getFavoriteIdList();
     if (_isInFavorites) {
       _favoriteIds.remove(widget.channelId);
-      _preferences.setStringList('favorites', _favoriteIds);
+      _preferences.setStringList(_userId + 'favoriteIds', _favoriteIds);
       if (mounted) {
         setState(() {
           _isInFavorites = false;
@@ -82,7 +85,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
       Util.showSnackBar(context, 'お気に入りから外しました');
     } else {
       _favoriteIds.add(widget.channelId);
-      _preferences.setStringList('favorites', _favoriteIds);
+      _preferences.setStringList(_userId + 'favoriteIds', _favoriteIds);
       if (mounted) {
         setState(() {
           _isInFavorites = true;

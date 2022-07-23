@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ruemura3.min_tube">
    <application
-        android:label="min_tube"
+        android:label="MinTube"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
