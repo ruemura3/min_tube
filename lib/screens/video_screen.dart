@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/util/util.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
@@ -44,7 +44,7 @@ class VideoScreen extends StatefulWidget {
 /// 動画画面ステート
 class _VideoScreenState extends State<VideoScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ロード中フラグ
   bool _isLoading = false;
   /// 動画ID
@@ -446,12 +446,9 @@ class _VideoScreenState extends State<VideoScreen> {
   String _statisticInfo() {
     if (_video != null) {
       if (_video!.snippet!.liveBroadcastContent! != 'live') {
-        return Util.viewsAndTimeago(
-          _video!.statistics!.viewCount!,
-          _video!.snippet!.publishedAt!
-        );
+        return '${Util.formatNumber(_video!.statistics!.viewCount!)} 回視聴・${Util.formatTimeago(_video!.snippet!.publishedAt!)}';
       } else {
-        return Util.formatSubScriberCount(_video!.liveStreamingDetails!.concurrentViewers!)! + ' 人が視聴中';
+        return Util.formatNumber(_video!.liveStreamingDetails!.concurrentViewers!) + ' 人が視聴中';
       }
     } else {
       return '';
@@ -656,8 +653,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     ),
                     channel.statistics!.subscriberCount != null
                       ? Text(
-                        'チャンネル登録者数 ' +
-                        Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
+                        'チャンネル登録者数 ${Util.formatNumber(channel.statistics!.subscriberCount!)}人',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.grey,

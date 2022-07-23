@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
 
 /// チャンネル画面のプレイリストタブ
@@ -23,7 +23,7 @@ class PlaylistTab extends StatefulWidget {
 /// プレイリストタブステート
 class _PlaylistTabState extends State<PlaylistTab> with AutomaticKeepAliveClientMixin {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ロード中フラグ
   bool _isLoading = false;
   /// APIレスポンス

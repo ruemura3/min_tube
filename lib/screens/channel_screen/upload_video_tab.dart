@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:html_unescape/html_unescape.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/video_screen.dart';
 import 'package:min_tube/util/util.dart';
 
@@ -19,35 +20,41 @@ class UploadVideoTab extends StatefulWidget {
 /// アップロード動画タブステート
 class _UploadVideoTabState extends State<UploadVideoTab> with AutomaticKeepAliveClientMixin {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ロード中フラグ
   bool _isLoading = false;
   /// APIレスポンス
   SearchListResponse? _response;
   /// アップロード動画一覧
   List<SearchResult> _items = [];
+  /// 並び順
+  String _order = 'date';
 
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
-    _isLoading = true;
-    Future(() async {
-      final response = await _api.getSearchList(
-        channelId: widget.channel.id!,
-        order: 'date',
-        type: ['video'],
-      );
-      if (mounted) {
-        setState(() {
-          _response = response;
-          _items = response.items!;
-          _isLoading = false;
-        });
-      }
-    });
+    getVideos(_order);
     super.initState();
+  }
+
+  /// 動画一覧を取得する
+  Future<void> getVideos(String order, {String? pageToken}) async {
+    _isLoading = true;
+    final response = await _api.getSearchList(
+      channelId: widget.channel.id!,
+      order: order,
+      pageToken: pageToken,
+      type: ['video'],
+    );
+    if (mounted) {
+      setState(() {
+        _response = response;
+        _items.addAll(response.items!);
+        _isLoading = false;
+      });
+    }
   }
 
   /// 追加の動画読み込み
@@ -55,22 +62,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> with AutomaticKeepAlive
     if (!_isLoading && // ロード中でない
     scrollDetails.metrics.pixels == scrollDetails.metrics.maxScrollExtent && // 最後までスクロールしている
       _items.length < _response!.pageInfo!.totalResults!) { // 現在のアイテム数が全アイテム数より少ない
-      _isLoading = true;
-      Future(() async {
-        final response = await _api.getSearchList(
-          channelId: widget.channel.id!,
-          order: 'date',
-          pageToken: _response!.nextPageToken!,
-          type: ['video'],
-        );
-        if (mounted) {
-          setState(() {
-            _response = response;
-            _items.addAll(response.items!);
-            _isLoading = false;
-          });
-        }
-      });
+      getVideos(_order, pageToken: _response!.nextPageToken!);
     }
     return false;
   }
@@ -88,15 +80,41 @@ class _UploadVideoTabState extends State<UploadVideoTab> with AutomaticKeepAlive
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ListView.builder(
-            itemCount: _items.length + 1,
+            itemCount: _items.length + 2,
             itemBuilder: (BuildContext context, int index) {
-              if (index == _items.length) { // 最後のインデックスの場合
+              if (index == 0) { // 最初のインデックスの場合
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+                  child: DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text('アップロード順'),
+                        value: 'date',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('人気順'),
+                        value: 'viewCount',
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      _order = value!;
+                      _items = [];
+                      getVideos(_order);
+                    },
+                    value: _order,
+                  ),
+                );
+              }
+              if (index == _items.length + 1) { // 最後のインデックスの場合
                 if (_items.length < _response!.pageInfo!.totalResults!) { // 全ての動画を読み込んでいない場合
                   return Center(child: CircularProgressIndicator(),);
                 }
                 return Container();
               }
-              return _videoCard(_items[index]);
+              return _videoCard(_items[index - 1]);
             },
           ),
         ),
@@ -158,7 +176,7 @@ class _UploadVideoTabState extends State<UploadVideoTab> with AutomaticKeepAlive
                 children: [
                   Expanded(
                     child: Text(
-                      searchResult.snippet!.title!,
+                      HtmlUnescape().convert(searchResult.snippet!.title!),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

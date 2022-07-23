@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// チャンネル登録ボタン
@@ -18,7 +18,7 @@ class SubscribeButton extends StatefulWidget {
 /// チャンネル登録ボタンステート
 class _SubscribeButtonState extends State<SubscribeButton> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// 登録済みフラグ
   bool _isSubscribed = false;
   /// 登録インスタンス

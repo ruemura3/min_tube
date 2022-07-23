@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/screens/login_screen.dart';
 
@@ -23,7 +23,7 @@ class MinTube extends StatefulWidget {
 /// MinTubeステート
 class _MinTubeState extends State<MinTube> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
   /// ログイン完了フラグ

@@ -21,6 +21,7 @@ dependencies:
   url_launcher: ^6.0.20
   shared_preferences: ^2.0.13
   flutter_launcher_icons: ^0.9.3
+  html_unescape: ^2.0.0
 
 dev_dependencies:
   flutter_test:

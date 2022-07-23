@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/home_screen.dart';
 
 /// ログイン画面
@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 /// ログイン画面ステート
 class _LoginScreenState extends State<LoginScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
 
   @override
   Widget build(BuildContext context) {

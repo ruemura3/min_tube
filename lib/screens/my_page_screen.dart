@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/login_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
@@ -17,7 +17,7 @@ class MyPageScreen extends StatefulWidget {
 /// マイページ画面ステート
 class _MyPageScreenState extends State<MyPageScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
   /// ログイン中ユーザのチャンネル

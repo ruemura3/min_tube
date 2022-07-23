@@ -65,8 +65,7 @@ class HomeTab extends StatelessWidget {
                 SizedBox(height: 8,),
                 channel.statistics!.subscriberCount != null // 登録者数非表示でない場合は表示
                   ? Text(
-                    'チャンネル登録者数 ' +
-                    Util.formatSubScriberCount(channel.statistics!.subscriberCount)!,
+                    'チャンネル登録者数 ${Util.formatNumber(channel.statistics!.subscriberCount!)}人',
                     style: TextStyle(color: Colors.grey),
                   )
                   : Container(),

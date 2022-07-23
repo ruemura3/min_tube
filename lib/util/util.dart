@@ -9,36 +9,21 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// ユーティリティクラス
 class Util {
-  /// フォーマットされた視聴回数
-  static String formatViewCount(String viewCount) {
-    int intViewCount = int.parse(viewCount);
-    if (intViewCount < 10000) {
-      return viewCount + ' 回視聴';
-    } else if (intViewCount < 100000) {
-      return ((intViewCount / 10000 * 10).floor() / 10).toString() + '万 回視聴';
-    } else if (intViewCount < 100000000) {
-      return (intViewCount / 10000).floor().toString() + '万 回視聴';
+  /// フォーマットされた数字
+  /// nullの場合はnullを返す
+  static String formatNumber(String number) {
+    int intNumber = int.parse(number);
+    if (intNumber < 10000) { // 1万未満
+      return number;
+    } else if (intNumber < 100000) { // 10万未満
+      return ((intNumber / 10000 * 10).floor() / 10).toString() + '万';
+    } else if (intNumber < 100000000) { // 1億未満
+      return (intNumber / 10000).floor().toString() + '万';
+    } else if (intNumber < 1000000000) { // 10億未満
+      return ((intNumber / 100000000 * 10).floor() / 10).toString() + '億';
     } else {
-      return (intViewCount / 100000000).floor().toString() + '億 回視聴';
+      return (intNumber / 100000000).floor().toString() + '億';
     }
-  }
-
-  /// フォーマットされた人数
-  /// 非公開の場合はnullを返す
-  static String? formatSubScriberCount(String? subscriberCount) {
-    if (subscriberCount != null) {
-      int intSubscriberCount = int.parse(subscriberCount);
-      if (intSubscriberCount < 10000) {
-        return '$subscriberCount 人';
-      } else if (intSubscriberCount < 1000000) {
-        return '${(intSubscriberCount / 10000).toString()} 万人';
-      } else if (intSubscriberCount < 100000000) {
-        return '${(intSubscriberCount / 10000).floor().toString()} 万人';
-      } else {
-        return '${(intSubscriberCount / 100000000).toString()} 億人';
-      }
-    }
-    return null;
   }
 
   /// フォーマットされた投稿日時
@@ -75,11 +60,6 @@ class Util {
         }
       }
     }
-  }
-
-  /// フォーマットされた視聴回数と投稿日時
-  static String viewsAndTimeago(String viewCount, DateTime timeago) {
-    return '${Util.formatViewCount(viewCount)}・${Util.formatTimeago(timeago)}';
   }
 
   /// URLを有効化した説明文
@@ -187,7 +167,7 @@ class Util {
     return null;
   }
 
-  //// YouTubeのプレイリストURLをプレイリストIDに変換する
+  /// YouTubeのプレイリストURLをプレイリストIDに変換する
   /// YouTubeのプレイリストURLでない場合はnullを返す
   static String? convertUrlToPlaylistId(String url,) {
     for (var exp in [

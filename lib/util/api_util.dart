@@ -3,12 +3,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 
 /// APIサービスクラス
-class ApiService {
+class ApiUtil {
   /// コンストラクタ
-  ApiService._instantiate();
+  ApiUtil._instantiate();
 
   /// シングルトンインスタンス
-  static final ApiService instance = ApiService._instantiate();
+  static final ApiUtil instance = ApiUtil._instantiate();
 
   /// GoogleSignInインスタンス
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -50,7 +50,7 @@ class ApiService {
   /// 検索結果のリストを取得する
   Future<SearchListResponse> getSearchList({
     String? channelId,
-    int maxResults = 50,
+    int maxResults = 30,
     String? order,
     String? pageToken,
     String? query,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/home_tab.dart';
 import 'package:min_tube/screens/channel_screen/playlist_tab.dart';
 import 'package:min_tube/screens/channel_screen/upload_video_tab.dart';
@@ -34,7 +34,7 @@ class ChannelScreen extends StatefulWidget {
 /// チャンネル画面ステート
 class _ChannelScreenState extends State<ChannelScreen> with SingleTickerProviderStateMixin {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// チャンネルインスタンス
   Channel? _channel;
   /// タブコントローラ

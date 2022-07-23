@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:html_unescape/html_unescape.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/screens/playlist_screen.dart';
 import 'package:min_tube/screens/video_screen.dart';
@@ -23,7 +24,7 @@ class SearchResultScreen extends StatefulWidget {
 /// 検索結果画面ステート
 class _SearchResultScreenState extends State<SearchResultScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ロード中フラグ
   bool _isLoading = false;
   /// APIレスポンス
@@ -169,7 +170,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          searchResult.snippet!.title!,
+                          HtmlUnescape().convert(searchResult.snippet!.title!),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -190,7 +191,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
               ],
             ),
           ),
-          Divider(color: Colors.grey,),
         ],
       ),
     );
@@ -207,40 +207,35 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           ),
         ),
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: NetworkImage(
-                    searchResult.snippet!.thumbnails!.medium!.url!
-                  ),
-                ),
-                SizedBox(width: 16,),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        searchResult.snippet!.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundImage: NetworkImage(
+                searchResult.snippet!.thumbnails!.medium!.url!
+              ),
             ),
-          ),
-          Divider(color: Colors.grey,),
-        ],
+            SizedBox(width: 16,),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    searchResult.snippet!.title!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -256,75 +251,70 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
           ),
         ),
       ),
-      child: Column(
-        children: [
-          Container(
-            height: 112,
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: <Widget>[
-                Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    Image.network(
-                      searchResult.snippet!.thumbnails!.medium!.url!,
-                      errorBuilder: (c, o, s) {
-                        return Container();
-                      },
-                    ),
-                    Container(
-                      color: Colors.black.withOpacity(0.7),
-                      width: 64,
-                      height: double.infinity,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            'プレイ\nリスト',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+      child: Container(
+        height: 112,
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          children: <Widget>[
+            Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                Image.network(
+                  searchResult.snippet!.thumbnails!.medium!.url!,
+                  errorBuilder: (c, o, s) {
+                    return Container();
+                  },
                 ),
-                SizedBox(width: 16,),
-                Expanded(
+                Container(
+                  color: Colors.black.withOpacity(0.7),
+                  width: 64,
+                  height: double.infinity,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Text(
-                          searchResult.snippet!.title!,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
+                      Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
                       ),
                       Text(
-                        searchResult.snippet!.channelTitle!,
+                        'プレイ\nリスト',
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Colors.white,
+                          fontSize: 12
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(color: Colors.grey,),
-        ],
+            SizedBox(width: 16,),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      HtmlUnescape().convert(searchResult.snippet!.title!),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    searchResult.snippet!.channelTitle!,
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

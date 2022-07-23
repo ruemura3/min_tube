@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/original_app_bar.dart';
@@ -23,7 +23,7 @@ class PlaylistScreen extends StatefulWidget {
 /// プレイリスト画面ステート
 class _PlaylistScreenState extends State<PlaylistScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ロード中フラグ
   bool _isLoading = false;
   /// プレイリストインスタンス

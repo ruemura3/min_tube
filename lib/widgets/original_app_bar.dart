@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/home_screen.dart';
 import 'package:min_tube/screens/my_page_screen.dart';
 import 'package:min_tube/util/util.dart';
@@ -42,7 +42,7 @@ class OriginalAppBar extends StatefulWidget with PreferredSizeWidget {
 /// オリジナルアップバーステート
 class _OriginalAppBarState extends State<OriginalAppBar> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// ログイン中ユーザ
   GoogleSignInAccount? _currentUser;
 

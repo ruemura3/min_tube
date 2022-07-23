@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
-import 'package:min_tube/api/api_service.dart';
+import 'package:min_tube/util/api_util.dart';
 import 'package:min_tube/screens/channel_screen/channel_screen.dart';
 import 'package:min_tube/widgets/floating_search_button.dart';
 import 'package:min_tube/widgets/favorite_button.dart';
@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 /// ホーム画面ステート
 class _HomeScreenState extends State<HomeScreen> {
   /// APIインスタンス
-  ApiService _api = ApiService.instance;
+  ApiUtil _api = ApiUtil.instance;
   /// APIレスポンス
   SubscriptionListResponse? _response;
   /// 登録チャンネル一覧
@@ -24,37 +24,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    Future(() async {
-      final response = await _api.getSubscriptionResponse();
-      _response = response;
-      _items = response.items!;
-      int itemLength = _items.length;
-      while (itemLength < _response!.pageInfo!.totalResults!) {
-        final response = await _api.getSubscriptionResponse(
-          pageToken: _response!.nextPageToken!,
-        );
-        _items.addAll(response.items!);
-        itemLength = _items.length;
-      }
-      if (mounted) {
-        setState(() {
-          _response = _response;
-          _items = _response!.items!;
-        });
-      }
-      final preferences = await SharedPreferences.getInstance();
-      List<String>? favoriteIds = preferences.getStringList('favorites');
-      if (favoriteIds != null) {
-        for (var f in favoriteIds) {
-          final favoriteChannel = _items.firstWhere(
-            (subscription) => subscription.snippet!.resourceId!.channelId! == f
-          );
-          _items.remove(favoriteChannel);
-          _items.insert(0, favoriteChannel);
-        }
-      }
-    });
+    initHomeScreen();
     super.initState();
+  }
+
+  /// ホーム画面を初期化する
+  Future<void> initHomeScreen() async {
+    final response = await _api.getSubscriptionResponse();
+    _response = response;
+    _items = response.items!;
+    int itemLength = _items.length;
+    while (itemLength < _response!.pageInfo!.totalResults!) {
+      final response = await _api.getSubscriptionResponse(
+        pageToken: _response!.nextPageToken!,
+      );
+      _items.addAll(response.items!);
+      itemLength = _items.length;
+    }
+    if (mounted) {
+      setState(() {
+        _response = _response;
+        _items = _response!.items!;
+      });
+    }
+    final preferences = await SharedPreferences.getInstance();
+    List<String>? favoriteIds = preferences.getStringList('favorites');
+    if (favoriteIds != null) {
+      for (var f in favoriteIds) {
+        final favoriteChannel = _items.firstWhere(
+          (subscription) => subscription.snippet!.resourceId!.channelId! == f
+        );
+        _items.remove(favoriteChannel);
+        _items.insert(0, favoriteChannel);
+      }
+    }
   }
 
   @override
