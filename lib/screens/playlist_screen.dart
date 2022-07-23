@@ -183,10 +183,12 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   ),
                 ),
               ),
-              child: Text(
-                _playlist!.snippet!.channelTitle!,
-                style: TextStyle(fontSize: 16),
-              ),
+              child: _playlist!.snippet!.channelTitle != null
+                ? Text(
+                  _playlist!.snippet!.channelTitle!,
+                  style: TextStyle(fontSize: 16),
+                )
+                : Container(),
             ),
           ),
           SizedBox(height: 8,),

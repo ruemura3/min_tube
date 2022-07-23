@@ -37,7 +37,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
       if (mounted) {
         setState(() {
           _currentUser = user;
-          _channel = response.items![0];
+          if (response.items != null) {
+            _channel = response.items![0];
+          }
         });
       }
       _preferences = await SharedPreferences.getInstance();
@@ -63,7 +65,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
   /// マイページ画面ボディ
   Widget _myScreenBody() {
-    if (_currentUser != null && _channel != null) { // ユーザとチャンネルがnullでない場合
+    if (_currentUser != null) { // ユーザとチャンネルがnullでない場合
       return Column(
         children: [
           _profileCard(),
@@ -92,35 +94,37 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ),
             ),
           ),
-          InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ChannelScreen(
-                  channel: _channel!,
-                  tabPage: 2,
-                  isMine: true,
+          _channel != null
+            ? InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChannelScreen(
+                    channel: _channel,
+                    tabPage: 2,
+                    isMine: true,
+                  ),
                 ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.playlist_play),
-                  SizedBox(width: 16,),
-                  Expanded(
-                    child: Text(
-                      'プレイリスト',
-                      style: TextStyle(
-                        fontSize: 16,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.playlist_play),
+                    SizedBox(width: 16,),
+                    Expanded(
+                      child: Text(
+                        'プレイリスト',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ),
+            )
+            : Container(),
           InkWell(
             onTap: () => showSettingDialog(),
             child: Padding(
@@ -170,33 +174,30 @@ class _MyPageScreenState extends State<MyPageScreen> {
   /// プロフィールカードを返す
   Widget _profileCard() {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChannelScreen(
-            channel: _channel,
-            isMine: true,
+      onTap: () => _channel != null
+        ? Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChannelScreen(
+              channel: _channel,
+              isMine: true,
+            ),
           ),
-        ),
-      ),
+        )
+        : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            _channel!.snippet!.thumbnails!.medium != null
-              ? CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(_channel!.snippet!.thumbnails!.medium!.url!)
-              )
-              : CircleAvatar(
-                radius: 16,
-                backgroundColor: Colors.blueGrey,
-                child: Text(_channel!.snippet!.title!.substring(0, 1)),
-              ),
+            CircleAvatar(
+              backgroundImage: NetworkImage(_currentUser!.photoUrl!)
+            ),
             SizedBox(width: 16,),
             Expanded(
               child: Text(
-                _channel!.snippet!.title!,
+                _channel != null
+                  ? _channel!.snippet!.title!
+                  : _currentUser!.displayName!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
